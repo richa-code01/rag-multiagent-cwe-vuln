@@ -1,5 +1,7 @@
 # System Overview
 
+The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). **Assignment 1 (dataset + baseline) is the only implemented milestone.** The notes below are a high-level product sketch, not a claim that RAG, agents, or evaluation are done.
+
 This project proposes a multi-agent AI system for detecting security bugs in code. The goal is not only to identify vulnerabilities, but also to explain why a code pattern is risky using domain knowledge from security standards.
 
 To support explainable vulnerability detection, the system will use **Retrieval-Augmented Generation (RAG)** to retrieve relevant facts from the **Common Weakness Enumeration (CWE)** database. By grounding each analysis in CWE references, the agents can produce outputs that are more transparent, traceable, and useful in practice.

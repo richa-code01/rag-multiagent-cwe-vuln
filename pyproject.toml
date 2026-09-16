@@ -1,0 +1,27 @@
+[project]
+name = "cwe-vuln"
+version = "0.1.0"
+description = "Assignment 1: authored Java CWE seed dataset and SAST-style regex baseline for explainable vulnerability detection research."
+readme = "README.md"
+authors = [
+    { name = "Richa Verma" },
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+cwe-vuln = "cwe_vuln.evaluate:main"
+cwe-vuln-eval = "cwe_vuln.evaluate:main"
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

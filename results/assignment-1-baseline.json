@@ -1,0 +1,254 @@
+{
+  "assignment": 1,
+  "generated_at": "2026-09-16T18:26:40Z",
+  "evaluation_scope": "authored_seed_only",
+  "seed_only_not_a_benchmark": true,
+  "disclaimer": "seed-only \u2014 not a benchmark. Metrics are computed only on this 12-unit authored pedagogical seed. Rules were written against the same seed. Do not treat these scores as Juliet, OWASP Benchmark, or Big-Vul results.",
+  "n_units": 12,
+  "split": {
+    "train": 8,
+    "test": 4
+  },
+  "detector": {
+    "type": "regex_sast_style",
+    "llm_detector": "skipped_no_api_key"
+  },
+  "overall": {
+    "tp": 6,
+    "fp": 0,
+    "tn": 6,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 12
+  },
+  "train": {
+    "tp": 4,
+    "fp": 0,
+    "tn": 4,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 8
+  },
+  "test": {
+    "tp": 2,
+    "fp": 0,
+    "tn": 2,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 4
+  },
+  "per_cwe": {
+    "CWE-89": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-79": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-22": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-502": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-798": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-327": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    }
+  },
+  "predictions": [
+    {
+      "unit_id": "java_cwe89_sqli_concat",
+      "cwe_id": "CWE-89",
+      "split": "train",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-89"
+      ],
+      "matched_rules": [
+        "sql_string_concat"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe89_sqli_prepared",
+      "cwe_id": "CWE-89",
+      "split": "train",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe79_xss_unescaped",
+      "cwe_id": "CWE-79",
+      "split": "train",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-79"
+      ],
+      "matched_rules": [
+        "html_output_unencoded"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe79_xss_encoded",
+      "cwe_id": "CWE-79",
+      "split": "train",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe22_path_concat",
+      "cwe_id": "CWE-22",
+      "split": "train",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-22"
+      ],
+      "matched_rules": [
+        "file_path_concat"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe22_path_resolved",
+      "cwe_id": "CWE-22",
+      "split": "train",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe502_readobject",
+      "cwe_id": "CWE-502",
+      "split": "train",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-502"
+      ],
+      "matched_rules": [
+        "java_deserialization"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe502_json_parse",
+      "cwe_id": "CWE-502",
+      "split": "train",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe798_hardcoded",
+      "cwe_id": "CWE-798",
+      "split": "test",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-798"
+      ],
+      "matched_rules": [
+        "hardcoded_secret_literal"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe798_env_config",
+      "cwe_id": "CWE-798",
+      "split": "test",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe327_md5",
+      "cwe_id": "CWE-327",
+      "split": "test",
+      "label": "vulnerable",
+      "predicted_label": "vulnerable",
+      "predicted_cwes": [
+        "CWE-327"
+      ],
+      "matched_rules": [
+        "weak_crypto_algorithm"
+      ],
+      "correct": true
+    },
+    {
+      "unit_id": "java_cwe327_sha256",
+      "cwe_id": "CWE-327",
+      "split": "test",
+      "label": "not_vulnerable",
+      "predicted_label": "not_vulnerable",
+      "predicted_cwes": [],
+      "matched_rules": [],
+      "correct": true
+    }
+  ]
+}
