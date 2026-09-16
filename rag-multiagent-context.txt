@@ -17,16 +17,16 @@ seed-only eval on authored units/queries; Java units are teaching samples, not e
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: Assignment 4
-Branch: assignment-4
+Last phase in this file: SAST evidence
+Branch: sast-evidence
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
 | A1 dataset+baseline | DONE PR #1 | assignment-1 | docs/assignment-1-dataset-baseline.md | uv run cwe-vuln |
 | A2 CWE knowledge | DONE PR #2 | assignment-2 | docs/assignment-2-cwe-knowledge.md | uv run cwe-vuln-kb demo |
 | A3 hybrid retrieval | DONE PR #3 | assignment-3 | docs/assignment-3-hybrid-retrieval.md | uv run cwe-vuln-retrieve |
-| A4 output schema | THIS PR | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
-| SAST evidence | NOT STARTED | sast-evidence | — | — |
+| A4 output schema | DONE PR #4 | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
+| SAST evidence | THIS PR | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
 | Reasoning agent | NOT STARTED | reasoning-agent | — | — |
 | Validator | NOT STARTED | validator | — | — |
 | Orchestrator | NOT STARTED | orchestrator | — | — |
@@ -67,6 +67,7 @@ uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve
 uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/not_vulnerable.json data/schema_samples/uncertain.json
+uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat
 
 ============================================================
 ARCHITECTURE (packages and data flow)
@@ -79,12 +80,14 @@ Implemented modules now:
   dataset     load labels/split/source only
   config      top_k, rrf_k, LLM env names
   detector    regex rules + binary detect()
+  evidence    Evidence dataclasses from rule spans
+  ports       EvidenceExtractor protocol
   knowledge   CWE JSON store + query API
   retrieval   TF-IDF + SAST signal + relationship RRF (no reasoner calls)
   schema      Draft 2020-12 JSON Schema + ReasoningResult to_dict/from_dict
   evaluate    A1 baseline metrics CLI
 
-Not implemented yet: evidence product objects, reasoner, validator, orchestrator, framework CLI.
+Not implemented yet: reasoner, validator, orchestrator, framework CLI.
 
 ============================================================
 KEY FILES
@@ -102,7 +105,7 @@ data/schema_samples/{vulnerable,not_vulnerable,uncertain,invalid_missing_fields}
 data/seed/labels.jsonl
 data/cwe/knowledge.json
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/{dataset,config,detector,knowledge,retrieval,schema,evaluate,metrics}.py
+src/cwe_vuln/{dataset,config,detector,evidence,ports,knowledge,retrieval,schema,evaluate,metrics}.py
 results/assignment-1-baseline.json
 results/assignment-3-retrieval.json
 

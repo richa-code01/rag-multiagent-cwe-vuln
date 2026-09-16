@@ -2,7 +2,7 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** Assignment 4 — structured reasoning output schema (Assignments 1–3 are on `main`)
+**Current milestone:** SAST evidence extraction (Assignments 1–4 are on `main`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 
@@ -10,17 +10,17 @@ Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 
 This thesis studies **explainable** vulnerability detection: map a code unit to a CWE and ground that mapping in a CWE knowledge base. The full multi-agent framework is **not** implemented yet.
 
-Implemented: Java seed, regex/SAST baseline, curated CWE knowledge, hybrid retrieval (lexical TF-IDF + SAST + relationships), and a Draft 2020-12 JSON Schema for future reasoning output. Scores are **seed-only — not a benchmark**.
+Implemented: Java seed, regex/SAST baseline, curated CWE knowledge, hybrid retrieval, Assignment 4 JSON Schema, and structured SAST `Evidence` objects. Scores are **seed-only — not a benchmark**. The reasoning agent is **not** implemented yet.
 
 ## Pipeline sketch
 
 ```text
 code unit
     → regex / SAST-style baseline (A1)
+    → structured SAST Evidence[] (this PR)
     → CWE knowledge lookup (A2)
     → hybrid retrieval (A3; lexical TF-IDF, not neural RAG)
     → structured JSON (A4 schema; agent not built yet)
-    → (future) SAST evidence extraction
     → (future) reasoning agent
     → (future) validator
     → (future) cost-aware orchestrator
@@ -37,8 +37,9 @@ See [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) (sequence) and [`
 | CWE knowledge store + query API | Done (A2, [PR #2](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/2)) |
 | Hybrid retrieval (TF-IDF + SAST + relationships) | Done (A3, [PR #3](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/3)) |
 | Neural embeddings / full RAG | **Not implemented** |
-| Reasoning output JSON Schema | **This PR** (A4) |
-| Reasoning agent, SAST evidence objects, validator, orchestrator, framework | **Not implemented** |
+| Reasoning output JSON Schema | Done (A4, [PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4)) |
+| SAST evidence objects | **This PR** |
+| Reasoning agent, validator, orchestrator, framework | **Not implemented** |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 
@@ -77,6 +78,10 @@ Lexical TF-IDF + SAST + relationship RRF. **Not** MiniLM.
 uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/not_vulnerable.json data/schema_samples/uncertain.json
 ```
 
+## SAST evidence (this PR)
+
+`Evidence` records from regex matches: `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` — [`docs/sast-evidence.md`](docs/sast-evidence.md)
+
 ## Install
 
 Python 3.11+ and [uv](https://docs.astral.sh/uv/).
@@ -88,4 +93,5 @@ uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve
 uv run cwe-vuln-schema data/schema_samples/vulnerable.json
+uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat
 ```

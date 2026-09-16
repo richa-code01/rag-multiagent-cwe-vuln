@@ -6,7 +6,7 @@ production SAST engine and are not evaluated on public benchmarks.
 
 from __future__ import annotations
 
-import os
+from cwe_vuln.config import settings
 import re
 from dataclasses import dataclass
 from typing import Literal
@@ -127,21 +127,14 @@ def detect(unit: SeedUnit) -> Detection:
 
 
 def llm_detect(source: str) -> Detection | None:
-    """Optional LLM detector stub.
-
-    Assignment 1 does not call a model. If no API key is present the stub is
-    skipped. If a key is present it still returns None — the model-backed
-    detector is future work, not part of this baseline.
-    """
-    del source  # unused in the Assignment 1 stub
-    key = os.environ.get("CWE_VULN_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY")
-    if not key:
+    """Optional LLM detector; Assignment 1 never calls a model."""
+    del source
+    if not settings.llm_api_key():
         return None
     return None
 
 
 def llm_detector_status() -> str:
-    key = os.environ.get("CWE_VULN_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY")
-    if not key:
+    if not settings.llm_api_key():
         return "skipped_no_api_key"
     return "skipped_not_implemented_in_assignment_1"
