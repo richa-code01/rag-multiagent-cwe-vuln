@@ -17,6 +17,7 @@ cwe-vuln-eval = "cwe_vuln.evaluate:main"
 cwe-vuln-kb = "cwe_vuln.knowledge_cli:main"
 cwe-vuln-retrieve = "cwe_vuln.retrieval_cli:main"
 cwe-vuln-schema = "cwe_vuln.schema:main"
+cwe-vuln-evidence = "cwe_vuln.evidence:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]

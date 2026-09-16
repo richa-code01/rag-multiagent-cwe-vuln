@@ -1,6 +1,6 @@
 # System Overview
 
-The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt). **Assignments 1–4 are the implemented milestones** (seed, regex baseline, CWE knowledge, hybrid lexical retrieval, output schema). The reasoning agent and wired framework are **not** done. The notes below are a high-level product sketch.
+The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt). **Assignments 1–4 plus SAST evidence objects are implemented.** The reasoning agent and wired framework are **not** done. The notes below are a high-level product sketch.
 
 This project proposes a multi-agent AI system for detecting security bugs in code. The goal is not only to identify vulnerabilities, but also to explain why a code pattern is risky using domain knowledge from security standards.
 

@@ -42,10 +42,11 @@ flowchart LR
 | `dataset` | Load labels/split/source. No detection. | Implemented |
 | `config` | Top-K, RRF k, LLM env names. No CWE facts. | Implemented |
 | `detector` | Regex rules + binary `detect()`. | Implemented (A1) |
-| `evidence` / SAST product objects | `Evidence` with file/lines/snippet | **Not implemented** (next) |
+| `evidence` | `Evidence` with file/lines/snippet/rationale | **This PR** |
+| `ports` | `EvidenceExtractor` protocol | **This PR** |
 | `knowledge` | CWE store + get/search/relationships/mitigations | Implemented |
 | `retrieval` | Index, TF-IDF, SAST signal, relationship expand, RRF | Implemented |
-| `schema` | JSON Schema + `ReasoningResult` dump/load | **This PR** |
+| `schema` | JSON Schema + `ReasoningResult` dump/load | Implemented (A4) |
 | `reasoner` | Unit + evidence + hits → `ReasoningResult` | Not implemented |
 | `validator` | Schema + KB + cited lines + decision consistency | Not implemented |
 | `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | Not implemented |

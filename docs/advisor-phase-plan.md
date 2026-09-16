@@ -12,23 +12,23 @@ Cost-aware routing is later work. It is **not** in the thesis title.
 
 | # | Assignment | Status | Doc | How to run |
 | --- | --- | --- | --- | --- |
-| 1 | Dataset + baseline | **Done** [PR #1](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/1) | [assignment-1-dataset-baseline.md](assignment-1-dataset-baseline.md) | `uv run cwe-vuln` → [results/assignment-1-baseline.json](../results/assignment-1-baseline.json) |
+| 1 | Dataset + baseline | **Done** [PR #1](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/1) | [assignment-1-dataset-baseline.md](assignment-1-dataset-baseline.md) | `uv run cwe-vuln` |
 | 2 | CWE knowledge layer | **Done** [PR #2](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/2) | [assignment-2-cwe-knowledge.md](assignment-2-cwe-knowledge.md) | `uv run cwe-vuln-kb demo` |
-| 3 | Hybrid retrieval | **Done** [PR #3](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/3) | [assignment-3-hybrid-retrieval.md](assignment-3-hybrid-retrieval.md) | `uv run cwe-vuln-retrieve` → [results/assignment-3-retrieval.json](../results/assignment-3-retrieval.json) |
-| 4 | Structured reasoning output schema | **This PR** | [assignment-4-output-schema.md](assignment-4-output-schema.md) | `uv run cwe-vuln-schema data/schema_samples/vulnerable.json` |
+| 3 | Hybrid retrieval | **Done** [PR #3](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/3) | [assignment-3-hybrid-retrieval.md](assignment-3-hybrid-retrieval.md) | `uv run cwe-vuln-retrieve` |
+| 4 | Structured reasoning output schema | **Done** [PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4) | [assignment-4-output-schema.md](assignment-4-output-schema.md) | `uv run cwe-vuln-schema data/schema_samples/vulnerable.json` |
 
-## After Assignment 4 (not started)
+## After Assignment 4
 
-| Component | Status | Branch |
-| --- | --- | --- |
-| SAST evidence extraction | Not started | `sast-evidence` |
-| Reasoning agent | Not started | `reasoning-agent` |
-| Validator | Not started | `validator` |
-| Cost-aware orchestrator | Not started | `orchestrator` |
-| Complete multi-agent framework | Not started | `framework` |
+| Component | Status | Branch | Doc | How to run |
+| --- | --- | --- | --- | --- |
+| SAST evidence extraction | **This PR** | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
+| Reasoning agent | Not started | `reasoning-agent` | — | — |
+| Validator | Not started | `validator` | — | — |
+| Cost-aware orchestrator | Not started | `orchestrator` | — | — |
+| Complete multi-agent framework | Not started | `framework` | — | — |
 
 ## Honesty
 
 - A1 detection and A3 retrieval scores are **seed-only — not a benchmark**
 - A3 retrieval is lexical TF-IDF, not neural embeddings
-- A4 is schema + samples only; no reasoning agent yet
+- A4 is schema + samples; the reasoning agent is not in this PR
