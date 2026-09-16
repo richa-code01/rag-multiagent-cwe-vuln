@@ -5,6 +5,7 @@ Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
 Canonical context: [`rag-multiagent-context.txt`](../rag-multiagent-context.txt)
 How packages compose: [`architecture.md`](architecture.md)
+Work executed this pass: [`implementation-plan.md`](implementation-plan.md)
 
 Cost-aware routing is an orchestrator component. It is **not** in the thesis title.
 
@@ -22,10 +23,11 @@ Cost-aware routing is an orchestrator component. It is **not** in the thesis tit
 | Component | Status | Branch | Doc | How to run |
 | --- | --- | --- | --- | --- |
 | SAST evidence extraction | **Done** [PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5) | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
-| Reasoning agent | **Done** [PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6) | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/test_reasoner.py` |
-| Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/test_validator.py` |
-| Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/test_orchestrator.py` |
-| Complete multi-agent framework | **This PR** | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
+| Reasoning agent | **Done** [PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6) | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/reasoner/test_reasoner.py` |
+| Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/validator/test_validator.py` |
+| Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/orchestrator/test_orchestrator.py` |
+| Complete multi-agent framework | **Done** [PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9) | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
+| Layered package layout | **This PR** | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
 
 ## Honesty
 

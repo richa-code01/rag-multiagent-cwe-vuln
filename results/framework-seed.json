@@ -1,6 +1,6 @@
 {
   "assignment": "framework",
-  "generated_at": "2026-09-16T18:49:45Z",
+  "generated_at": "2026-09-16T19:03:14Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",

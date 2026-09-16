@@ -2,20 +2,20 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** wired seed pipeline (`cwe-vuln-pipeline`)
+**Current milestone:** layered seed pipeline (`cwe-vuln-pipeline`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
-Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md)
+Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
 
 ## Problem statement
 
-This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. The runnable path is a **seed-only** offline pipeline (regex SAST + lexical hybrid retrieval + template reasoner). It is **not** a public benchmark and does not call an LLM unless you later add a key-backed implementation.
+This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. The runnable path is a **seed-only** offline pipeline (regex SAST + lexical hybrid retrieval + template reasoner). It is **not** a public benchmark and does not call an LLM unless a key-backed implementation is added later.
 
 ## Pipeline
 
 ```text
 Java SeedUnit
-    → SAST Evidence[]              detector + evidence
+    → SAST Evidence[]              sast (detector + evidence)
     → hybrid RankedHit[]           TF-IDF + SAST + CWE relationships (RRF)
     → ReasoningResult              template reasoner (A4 JSON Schema)
     → ValidationReport             schema / KB / cited lines / decision
@@ -42,20 +42,21 @@ Recorded test-split metrics (**seed-only — not a benchmark**): precision=1.000
 | Regex baseline + P/R/F1 | Done (A1) `uv run cwe-vuln` |
 | CWE knowledge store + query API | Done ([PR #2](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/2)) `uv run cwe-vuln-kb demo` |
 | Hybrid retrieval (TF-IDF + SAST + relationships) | Done ([PR #3](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/3)) `uv run cwe-vuln-retrieve` |
-| Neural embeddings / dense RAG | **Not implemented** |
+| Neural embeddings / dense RAG | **Not implemented** (TF-IDF is lexical) |
 | Reasoning output JSON Schema | Done ([PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4)) |
 | SAST evidence objects | Done ([PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5)) |
 | Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) |
 | Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)) |
 | Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)) |
-| Framework CLI on the seed | **This PR** |
+| Framework CLI on the seed | Done ([PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9)) |
+| Layered packages (`models`, `dataset`, `sast`, …) | **This PR** |
 | Live LLM reasoner | **Not implemented** (skipped without a key) |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 
 ## Seed (Assignment 1)
 
-`data/seed/java/` + `data/seed/labels.jsonl`. Split lists in `src/cwe_vuln/dataset.py`.
+`data/seed/java/` + `data/seed/labels.jsonl`. Split lists in `src/cwe_vuln/dataset/seed.py`.
 
 | Split | n | CWEs | Labels |
 | --- | --- | --- | --- |

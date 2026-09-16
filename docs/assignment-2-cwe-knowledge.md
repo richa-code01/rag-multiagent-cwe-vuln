@@ -16,7 +16,7 @@ Each entry has: `id`, `name`, `description`, `relationships` (`parents` / `child
 
 ## Query interface
 
-`CWEKnowledgeBase` in `src/cwe_vuln/knowledge.py`:
+`CWEKnowledgeBase` in `src/cwe_vuln/knowledge/` (`from cwe_vuln.knowledge import CWEKnowledgeBase`):
 
 | Method | Role |
 | --- | --- |

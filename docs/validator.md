@@ -3,7 +3,7 @@
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
-`ResultValidator.check(result, unit, evidence)` records pass/fail. It does not retrieve.
+`ResultValidator.check(result, unit, evidence)` in `src/cwe_vuln/validator/` records pass/fail. It does not retrieve.
 
 Checks:
 
@@ -13,5 +13,5 @@ Checks:
 4. Decision consistency: `vulnerable` requires SAST evidence; `not_vulnerable` requires none; `uncertain` is allowed
 
 ```bash
-uv run pytest tests/test_validator.py
+uv run pytest tests/validator/test_validator.py
 ```

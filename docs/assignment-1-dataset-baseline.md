@@ -22,7 +22,7 @@ Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
 ### Deterministic 8/4 split
 
-The split is **not** randomized. `TRAIN_UNIT_IDS` and `TEST_UNIT_IDS` in `src/cwe_vuln/dataset.py` are the source of truth; `labels.jsonl` must match them.
+The split is **not** randomized. `TRAIN_UNIT_IDS` and `TEST_UNIT_IDS` in `src/cwe_vuln/dataset/seed.py` are the source of truth; `labels.jsonl` must match them.
 
 **Train (8)** — CWE-89, CWE-79, CWE-22, CWE-502; one vulnerable and one safe each:
 
@@ -50,7 +50,7 @@ Train and test both mix vulnerable and not_vulnerable units. Test holds out two 
 
 ## Baseline
 
-- **Type:** regex / SAST-style pattern detector (`src/cwe_vuln/detector.py`). No API key.
+- **Type:** regex / SAST-style pattern detector (`src/cwe_vuln/sast/detector.py`). No API key.
 - **LLM stub:** `llm_detect` is skipped without `CWE_VULN_LLM_API_KEY` / `OPENAI_API_KEY`, and is **not implemented** in Assignment 1 even if a key is set.
 - **Positive class:** `vulnerable` vs `not_vulnerable` (binary). A unit is predicted vulnerable if **any** configured rule matches.
 - **Rules (seed-oriented):**

@@ -9,7 +9,7 @@ Schema **before** the reasoning agent. This PR does not implement the agent.
 
 - File: `schemas/reasoning_output.schema.json`
 - Dialect: JSON Schema Draft 2020-12
-- Python: `src/cwe_vuln/schema.py` (`jsonschema.Draft202012Validator`)
+- Python: `src/cwe_vuln/schema/` (`jsonschema.Draft202012Validator`)
 - `schema_version` const: `1.0`
 
 Required fields:
@@ -25,7 +25,7 @@ Required fields:
 
 Also allowed: `unit_id`, `confidence` (0–1), `evidence_ids`. `additionalProperties` is false.
 
-Internal model: `ReasoningResult` / `CWERef` / `SourceSpan` in `src/cwe_vuln/schema.py` (`to_dict` / `from_dict`). Agents must speak this contract, not ad-hoc dicts.
+Internal model: `ReasoningResult` / `CWERef` / `SourceSpan` in `src/cwe_vuln/models/reasoning.py` (`to_dict` / `from_dict`). Schema helpers live in `src/cwe_vuln/schema/`. Agents must speak this contract, not ad-hoc dicts.
 
 Shared knobs: `src/cwe_vuln/config.py` (`top_k`, `rrf_k`, LLM env var names). How packages compose: [`architecture.md`](architecture.md).
 
@@ -42,11 +42,11 @@ Invalid on purpose (tests only, not a model output):
 - `data/schema_samples/invalid_missing_fields.json` — missing required fields
 
 ```bash
-uv run pytest tests/test_schema.py
+uv run pytest tests/schema/test_schema.py
 uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/not_vulnerable.json data/schema_samples/uncertain.json
 # expected: VALID for those three; the invalid file is asserted in tests
 ```
 
-## Not in this PR
+## Later work (not Assignment 4 itself)
 
-Reasoning agent, SAST evidence product objects, validator agent, orchestrator, full framework.
+SAST evidence, template reasoner, validator, orchestrator, and `cwe-vuln-pipeline` landed in PRs #5–#9. Layout: [`architecture.md`](architecture.md).

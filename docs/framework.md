@@ -3,7 +3,7 @@
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
-Thin CLI over `Pipeline.run`. Agents and data flow: [`architecture.md`](architecture.md).
+Thin CLI over `Pipeline.run` (`src/cwe_vuln/framework/`). Agents and data flow: [`architecture.md`](architecture.md).
 
 ```text
 Java unit
