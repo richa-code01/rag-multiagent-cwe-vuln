@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "java_cwe502_json_parse",
+  "decision": "uncertain",
+  "cwe": {
+    "id": "CWE-502",
+    "name": "Deserialization of Untrusted Data"
+  },
+  "supporting_source_lines": {
+    "path": "data/seed/java/Cwe502JsonParseSafe.java",
+    "start_line": 17,
+    "end_line": 19,
+    "snippet": "BufferedReader reader =\n                new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));\n        return reader.readLine();"
+  },
+  "root_cause": "The unit reads a text line from an InputStream; whether that stream is trusted is not decided by the regex baseline.",
+  "explanation": "No ObjectInputStream/readObject pattern is present, so the SAST baseline does not label this vulnerable. Retrieval can still surface CWE-502 because the seed unit is the safe counterpart in that family. The decision is uncertain pending human review of the input source.",
+  "remediation": "Keep using a data-only reader; do not add Java deserialization of untrusted bytes.",
+  "confidence": 0.42,
+  "evidence_ids": []
+}

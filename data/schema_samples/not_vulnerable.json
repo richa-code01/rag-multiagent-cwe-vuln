@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "java_cwe89_sqli_prepared",
+  "decision": "not_vulnerable",
+  "cwe": {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+  },
+  "supporting_source_lines": {
+    "path": "data/seed/java/Cwe89SqlPreparedSafe.java",
+    "start_line": 16,
+    "end_line": 19,
+    "snippet": "String query = \"SELECT id, name FROM users WHERE name = ?\";\n        PreparedStatement statement = connection.prepareStatement(query);\n        statement.setString(1, userName);\n        return statement.executeQuery();"
+  },
+  "root_cause": "No string-concatenated SQL command is present; values are bound through a prepared statement.",
+  "explanation": "The unit is the safe counterpart for CWE-89 in the seed. Regex rules do not fire. The cited lines show a placeholder query rather than concatenation.",
+  "remediation": "Keep using parameterized queries; do not concatenate identifiers or values into SQL.",
+  "confidence": 0.8,
+  "evidence_ids": []
+}

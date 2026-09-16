@@ -1,7 +1,6 @@
 RAG-MULTIAGENT-CWE-VULN — CANONICAL PROJECT CONTEXT
 =====================================================
-Update this file after EVERY phase. Single agent/human context dump.
-Must agree with README.md and docs/.
+Update after EVERY phase. Must agree with README.md and docs/.
 
 Official topic (exact; do not rename):
   RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases
@@ -10,64 +9,54 @@ Student: Richa Verma (25MCSS02)
 Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
 Package: cwe-vuln (src/cwe_vuln), Python >=3.11, uv
-Cost-aware routing is later. It is NOT in the thesis title.
+Cost-aware routing is later. Not in the title.
 
 Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
-seed-only if scores are on the authored 12 units / 18 retrieval queries;
-Java seeds are teaching samples, not exploit PoCs.
+seed-only eval on authored units/queries; Java units are teaching samples, not exploits.
 
 ============================================================
 CURRENT STATUS
 ============================================================
-Last completed phase being landed: Assignment 3
-Branch that last updated this file: assignment-3
+Last phase in this file: Assignment 4
+Branch: assignment-4
 
-| Phase | Status | Branch | Doc | Results / command |
+| Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
-| A1 dataset+baseline | DONE PR #1 | assignment-1 | docs/assignment-1-dataset-baseline.md | results/assignment-1-baseline.json ; uv run cwe-vuln |
+| A1 dataset+baseline | DONE PR #1 | assignment-1 | docs/assignment-1-dataset-baseline.md | uv run cwe-vuln |
 | A2 CWE knowledge | DONE PR #2 | assignment-2 | docs/assignment-2-cwe-knowledge.md | uv run cwe-vuln-kb demo |
-| A3 hybrid retrieval | THIS PR | assignment-3 | docs/assignment-3-hybrid-retrieval.md | results/assignment-3-retrieval.json ; uv run cwe-vuln-retrieve |
-| A4 output schema | NOT STARTED | assignment-4 | — | — |
+| A3 hybrid retrieval | DONE PR #3 | assignment-3 | docs/assignment-3-hybrid-retrieval.md | uv run cwe-vuln-retrieve |
+| A4 output schema | THIS PR | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
 | SAST evidence | NOT STARTED | sast-evidence | — | — |
 | Reasoning agent | NOT STARTED | reasoning-agent | — | — |
 | Validator | NOT STARTED | validator | — | — |
-| Cost-aware orchestrator | NOT STARTED | orchestrator | — | — |
-| Complete framework | NOT STARTED | framework | — | — |
+| Orchestrator | NOT STARTED | orchestrator | — | — |
+| Framework | NOT STARTED | framework | — | — |
 
 ============================================================
 DATASET (stable)
 ============================================================
 12 Java units, data/seed/labels.jsonl, data/seed/java/
-Split source of truth: src/cwe_vuln/dataset.py
+Split: src/cwe_vuln/dataset.py TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
 
-Train (8):
-  java_cwe89_sqli_concat          CWE-89  vulnerable      Cwe89SqlConcatVulnerable.java
-  java_cwe89_sqli_prepared        CWE-89  not_vulnerable  Cwe89SqlPreparedSafe.java
-  java_cwe79_xss_unescaped        CWE-79  vulnerable      Cwe79XssUnescapedVulnerable.java
-  java_cwe79_xss_encoded          CWE-79  not_vulnerable  Cwe79XssEncodedSafe.java
-  java_cwe22_path_concat          CWE-22  vulnerable      Cwe22PathConcatVulnerable.java
-  java_cwe22_path_resolved        CWE-22  not_vulnerable  Cwe22PathResolvedSafe.java
-  java_cwe502_readobject          CWE-502 vulnerable      Cwe502ReadObjectVulnerable.java
-  java_cwe502_json_parse          CWE-502 not_vulnerable  Cwe502JsonParseSafe.java
-Test (4):
-  java_cwe798_hardcoded           CWE-798 vulnerable      Cwe798HardcodedVulnerable.java
-  java_cwe798_env_config          CWE-798 not_vulnerable  Cwe798EnvConfigSafe.java
-  java_cwe327_md5                 CWE-327 vulnerable      Cwe327Md5Vulnerable.java
-  java_cwe327_sha256              CWE-327 not_vulnerable  Cwe327Sha256Safe.java
+Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescaped,
+  java_cwe79_xss_encoded, java_cwe22_path_concat, java_cwe22_path_resolved,
+  java_cwe502_readobject, java_cwe502_json_parse
+Test: java_cwe798_hardcoded, java_cwe798_env_config, java_cwe327_md5, java_cwe327_sha256
+CWEs: 89, 79, 22, 502, 798, 327 (one vuln + one safe each)
 
 ============================================================
 METRICS ACTUALLY COMPUTED
 ============================================================
-A1 detection (12 units, regex baseline) seed-only — not a benchmark:
+A1 detection (12 units) seed-only — not a benchmark:
   overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
-  train   P=1.000 R=1.000 F1=1.000 tp=4 fp=0 tn=4 fn=0
-  test    P=1.000 R=1.000 F1=1.000 tp=2 fp=0 tn=2 fn=0
 
-A3 retrieval (18 queries: 12 unit notes + 6 NL) seed-only — not a benchmark:
-  lexical_tfidf  recall@1=0.778 recall@3=0.944 recall@5=0.944 mrr=0.868
-  sast           recall@1=0.333 recall@3=0.333 recall@5=0.333 mrr=0.333
-  hybrid_rrf     recall@1=0.778 recall@3=0.944 recall@5=1.000 mrr=0.872
-A3 is lexical TF-IDF, not neural embeddings. Hybrid is RRF(tfidf, sast, relationships).
+A3 retrieval (18 queries) seed-only — not a benchmark:
+  lexical_tfidf  R@1=0.778 R@3=0.944 R@5=0.944 MRR=0.868
+  sast           R@1=0.333 R@3=0.333 R@5=0.333 MRR=0.333
+  hybrid_rrf     R@1=0.778 R@3=0.944 R@5=1.000 MRR=0.872
+A3 is lexical TF-IDF + SAST + CWE relationships (RRF), not neural embeddings.
+
+A4 has no detection/retrieval metrics (schema validation only).
 
 ============================================================
 HOW TO RUN
@@ -76,9 +65,26 @@ uv sync
 uv run pytest
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
-uv run cwe-vuln-kb get CWE-89
 uv run cwe-vuln-retrieve
-uv run cwe-vuln-retrieve --query "string concatenated SQL command sent to a database statement"
+uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/not_vulnerable.json data/schema_samples/uncertain.json
+
+============================================================
+ARCHITECTURE (packages and data flow)
+============================================================
+See docs/architecture.md. Intended flow:
+
+  SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
+
+Implemented modules now:
+  dataset     load labels/split/source only
+  config      top_k, rrf_k, LLM env names
+  detector    regex rules + binary detect()
+  knowledge   CWE JSON store + query API
+  retrieval   TF-IDF + SAST signal + relationship RRF (no reasoner calls)
+  schema      Draft 2020-12 JSON Schema + ReasoningResult to_dict/from_dict
+  evaluate    A1 baseline metrics CLI
+
+Not implemented yet: evidence product objects, reasoner, validator, orchestrator, framework CLI.
 
 ============================================================
 KEY FILES
@@ -86,13 +92,17 @@ KEY FILES
 README.md
 rag-multiagent-context.txt
 docs/advisor-phase-plan.md
+docs/architecture.md
 docs/assignment-1-dataset-baseline.md
 docs/assignment-2-cwe-knowledge.md
 docs/assignment-3-hybrid-retrieval.md
+docs/assignment-4-output-schema.md
+schemas/reasoning_output.schema.json
+data/schema_samples/{vulnerable,not_vulnerable,uncertain,invalid_missing_fields}.json
 data/seed/labels.jsonl
 data/cwe/knowledge.json
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/{dataset,detector,knowledge,knowledge_cli,retrieval,retrieval_cli,evaluate,metrics}.py
+src/cwe_vuln/{dataset,config,detector,knowledge,retrieval,schema,evaluate,metrics}.py
 results/assignment-1-baseline.json
 results/assignment-3-retrieval.json
 
@@ -102,6 +112,6 @@ Do not commit: ApproachDoc.pdf, RAG_MultiAgent_Vulnerability_Thesis_Progress_Rep
 LIMITATIONS
 ============================================================
 - Seed-only evaluation.
-- No neural RAG, no reasoning agent, no validator, no orchestrator.
-- LLM paths skipped (no API key required).
+- No reasoning agent, validator, orchestrator, or wired framework yet.
+- LLM paths skipped (offline default). Cost policy will live only in the orchestrator.
 - CWE store is a curated subset, not a full MITRE dump.

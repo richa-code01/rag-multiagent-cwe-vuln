@@ -1,10 +1,4 @@
-"""Assignment 3: hybrid CWE retrieval (lexical TF-IDF + SAST + relationships).
-
-This is not neural embedding retrieval. TF-IDF cosine is a lexical vector-space
-ranker. The second independent signal is the Assignment 1 SAST-style detector
-(and optional CWE relationship expansion from Assignment 2). Hybrid combine uses
-Reciprocal Rank Fusion (RRF). Metrics are seed-only — not a benchmark.
-"""
+"""Hybrid CWE retrieval: lexical TF-IDF, SAST hits, relationship expansion, RRF fuse."""
 
 from __future__ import annotations
 
@@ -16,12 +10,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+from cwe_vuln.config import settings
 from cwe_vuln.dataset import SeedUnit, load_seed, repo_root
 from cwe_vuln.detector import match_rules
 from cwe_vuln.knowledge import CWEKnowledgeBase, CWEEntry
 
 TOKEN_RE = re.compile(r"[a-z0-9]+")
-RRF_K = 60
 
 
 @dataclass(frozen=True)
@@ -74,8 +68,9 @@ class TfidfIndex:
         return hits
 
 
-def rrf_combine(*rankings: list[str], k: int = RRF_K) -> list[tuple[str, float]]:
+def rrf_combine(*rankings: list[str], k: int | None = None) -> list[tuple[str, float]]:
     """Reciprocal Rank Fusion over one or more ordered id lists."""
+    fuse_k = settings.rrf_k if k is None else k
     scores: dict[str, float] = defaultdict(float)
     for ranking in rankings:
         seen: set[str] = set()
@@ -83,7 +78,7 @@ def rrf_combine(*rankings: list[str], k: int = RRF_K) -> list[tuple[str, float]]
             if doc_id in seen:
                 continue
             seen.add(doc_id)
-            scores[doc_id] += 1.0 / (k + rank)
+            scores[doc_id] += 1.0 / (fuse_k + rank)
     return sorted(scores.items(), key=lambda item: (-item[1], item[0]))
 
 
