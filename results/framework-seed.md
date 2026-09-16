@@ -5,8 +5,11 @@
 seed-only — not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).
 
 - Split: `test` (4 units)
+- Embedder: `minilm`
+- LLM configured: `False`
 - Validation pass: 4/4
 - Paths: `{'sast_first_skip_llm': 2, 'hybrid_retrieve_skip_llm': 2}`
+- Reasoners: `{'template': 4}`
 
 | Precision | Recall | F1 | TP | FP | TN | FN |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

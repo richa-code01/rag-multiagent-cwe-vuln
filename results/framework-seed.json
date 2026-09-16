@@ -1,14 +1,19 @@
 {
   "assignment": "framework",
-  "generated_at": "2026-09-16T19:03:14Z",
+  "generated_at": "2026-09-16T19:22:55Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",
   "split": "test",
   "n_units": 4,
+  "embedder": "minilm",
+  "llm_configured": false,
   "detector_path_counts": {
     "sast_first_skip_llm": 2,
     "hybrid_retrieve_skip_llm": 2
+  },
+  "reasoner_counts": {
+    "template": 4
   },
   "validation_pass": 4,
   "metrics": {
@@ -25,6 +30,8 @@
     {
       "unit_id": "java_cwe798_hardcoded",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe798_hardcoded:hardcoded_secret_literal:14",
@@ -50,17 +57,17 @@
         },
         {
           "cwe_id": "CWE-287",
-          "score": 0.03149801587301587,
+          "score": 0.031746031746031744,
           "name": "Improper Authentication"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.028782894736842105,
+          "score": 0.03055037313432836,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
           "cwe_id": "CWE-89",
-          "score": 0.015873015873015872,
+          "score": 0.015625,
           "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         }
       ],
@@ -116,32 +123,34 @@
     {
       "unit_id": "java_cwe798_env_config",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-259",
-          "score": 0.03278688524590164,
-          "name": "Use of Hard-coded Password"
-        },
-        {
           "cwe_id": "CWE-798",
-          "score": 0.03225806451612903,
+          "score": 0.03278688524590164,
           "name": "Use of Hard-coded Credentials"
         },
         {
-          "cwe_id": "CWE-943",
-          "score": 0.03149801587301587,
-          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+          "cwe_id": "CWE-259",
+          "score": 0.03225806451612903,
+          "name": "Use of Hard-coded Password"
+        },
+        {
+          "cwe_id": "CWE-89",
+          "score": 0.03125763125763126,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.030798389007344232,
+          "score": 0.03125,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.02904040404040404,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-287",
+          "score": 0.031024531024531024,
+          "name": "Improper Authentication"
         }
       ],
       "reasoning": {
@@ -149,8 +158,8 @@
         "unit_id": "java_cwe798_env_config",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-259",
-          "name": "Use of Hard-coded Password"
+          "id": "CWE-798",
+          "name": "Use of Hard-coded Credentials"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe798EnvConfigSafe.java",
@@ -159,8 +168,8 @@
           "snippet": "public class Cwe798EnvConfigSafe {"
         },
         "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-259) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Read passwords from a secret manager or environment; never commit real passwords.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-798) for explanation context; that is not a vulnerability decision.",
+        "remediation": "Do not ship passwords or API keys as string literals; inject them at deployment time.",
         "confidence": 0.7
       },
       "validation": {
@@ -175,7 +184,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-259"
+            "detail": "CWE-798"
           },
           {
             "name": "cited_lines",
@@ -193,6 +202,8 @@
     {
       "unit_id": "java_cwe327_md5",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe327_md5:weak_crypto_algorithm:14",
@@ -218,13 +229,13 @@
         },
         {
           "cwe_id": "CWE-326",
-          "score": 0.03128054740957967,
+          "score": 0.030621785881252923,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-798",
+          "cwe_id": "CWE-36",
           "score": 0.015873015873015872,
-          "name": "Use of Hard-coded Credentials"
+          "name": "Absolute Path Traversal"
         },
         {
           "cwe_id": "CWE-22",
@@ -284,6 +295,8 @@
     {
       "unit_id": "java_cwe327_sha256",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -297,19 +310,19 @@
           "name": "Use of Weak Hash"
         },
         {
-          "cwe_id": "CWE-20",
-          "score": 0.03149801587301587,
-          "name": "Improper Input Validation"
-        },
-        {
           "cwe_id": "CWE-326",
-          "score": 0.03036576949620428,
+          "score": 0.031746031746031744,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.0288981288981289,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-36",
+          "score": 0.015625,
+          "name": "Absolute Path Traversal"
+        },
+        {
+          "cwe_id": "CWE-502",
+          "score": 0.015384615384615385,
+          "name": "Deserialization of Untrusted Data"
         }
       ],
       "reasoning": {

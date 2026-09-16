@@ -20,6 +20,9 @@ htmlcov/
 .env.*
 !.env.example
 
+# Local model / Hugging Face caches (MiniLM)
+.cache/
+
 # OS / editor
 .DS_Store
 .idea/

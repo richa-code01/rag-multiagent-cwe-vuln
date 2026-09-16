@@ -1,14 +1,19 @@
 {
   "assignment": "framework",
-  "generated_at": "2026-09-16T19:03:14Z",
+  "generated_at": "2026-09-16T19:23:02Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",
   "split": "all",
   "n_units": 12,
+  "embedder": "minilm",
+  "llm_configured": false,
   "detector_path_counts": {
     "sast_first_skip_llm": 6,
     "hybrid_retrieve_skip_llm": 6
+  },
+  "reasoner_counts": {
+    "template": 12
   },
   "validation_pass": 12,
   "metrics": {
@@ -25,6 +30,8 @@
     {
       "unit_id": "java_cwe89_sqli_concat",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe89_sqli_concat:sql_string_concat:18",
@@ -60,7 +67,7 @@
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.03021353930031804,
+          "score": 0.0304147465437788,
           "name": "Improper Input Validation"
         }
       ],
@@ -116,32 +123,34 @@
     {
       "unit_id": "java_cwe89_sqli_prepared",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-564",
+          "cwe_id": "CWE-89",
           "score": 0.03278688524590164,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+        },
+        {
+          "cwe_id": "CWE-943",
+          "score": 0.03225806451612903,
+          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+        },
+        {
+          "cwe_id": "CWE-74",
+          "score": 0.03125763125763126,
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+        },
+        {
+          "cwe_id": "CWE-564",
+          "score": 0.03125,
           "name": "SQL Injection: Hibernate"
         },
         {
           "cwe_id": "CWE-79",
-          "score": 0.03225806451612903,
+          "score": 0.030536130536130537,
           "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-        },
-        {
-          "cwe_id": "CWE-23",
-          "score": 0.03149801587301587,
-          "name": "Relative Path Traversal"
-        },
-        {
-          "cwe_id": "CWE-20",
-          "score": 0.031009615384615385,
-          "name": "Improper Input Validation"
-        },
-        {
-          "cwe_id": "CWE-89",
-          "score": 0.03057889822595705,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         }
       ],
       "reasoning": {
@@ -149,8 +158,8 @@
         "unit_id": "java_cwe89_sqli_prepared",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-564",
-          "name": "SQL Injection: Hibernate"
+          "id": "CWE-89",
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe89SqlPreparedSafe.java",
@@ -159,8 +168,8 @@
           "snippet": "public class Cwe89SqlPreparedSafe {"
         },
         "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-564) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Bind values through the ORM API rather than concatenating HQL/SQL.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-89) for explanation context; that is not a vulnerability decision.",
+        "remediation": "Bind user values as parameters instead of concatenating them into the SQL string.",
         "confidence": 0.7
       },
       "validation": {
@@ -175,7 +184,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-564"
+            "detail": "CWE-89"
           },
           {
             "name": "cited_lines",
@@ -193,6 +202,8 @@
     {
       "unit_id": "java_cwe79_xss_unescaped",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe79_xss_unescaped:html_output_unencoded:15",
@@ -223,7 +234,7 @@
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.030834914611005692,
+          "score": 0.0315136476426799,
           "name": "Improper Input Validation"
         },
         {
@@ -284,32 +295,34 @@
     {
       "unit_id": "java_cwe79_xss_encoded",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-80",
-          "score": 0.03278688524590164,
-          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
-        },
-        {
           "cwe_id": "CWE-79",
-          "score": 0.03225806451612903,
+          "score": 0.03278688524590164,
           "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         {
-          "cwe_id": "CWE-326",
-          "score": 0.031746031746031744,
-          "name": "Inadequate Encryption Strength"
+          "cwe_id": "CWE-80",
+          "score": 0.03225806451612903,
+          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
         },
         {
           "cwe_id": "CWE-74",
-          "score": 0.029877369007803793,
+          "score": 0.03149801587301587,
           "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.029709507042253523,
+          "score": 0.03125763125763126,
           "name": "Improper Input Validation"
+        },
+        {
+          "cwe_id": "CWE-943",
+          "score": 0.030536130536130537,
+          "name": "Improper Neutralization of Special Elements in Data Query Logic"
         }
       ],
       "reasoning": {
@@ -317,8 +330,8 @@
         "unit_id": "java_cwe79_xss_encoded",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-80",
-          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
+          "id": "CWE-79",
+          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe79XssEncodedSafe.java",
@@ -327,8 +340,8 @@
           "snippet": "public class Cwe79XssEncodedSafe {"
         },
         "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-80) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Strip or encode script-related tags before reflecting input into HTML.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-79) for explanation context; that is not a vulnerability decision.",
+        "remediation": "HTML-encode (or JSON/attribute/URL-encode, depending on sink) untrusted data before writing it into a page.",
         "confidence": 0.7
       },
       "validation": {
@@ -343,7 +356,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-80"
+            "detail": "CWE-79"
           },
           {
             "name": "cited_lines",
@@ -361,6 +374,8 @@
     {
       "unit_id": "java_cwe22_path_concat",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe22_path_concat:file_path_concat:15",
@@ -381,23 +396,23 @@
         },
         {
           "cwe_id": "CWE-23",
-          "score": 0.03225806451612903,
+          "score": 0.03200204813108039,
           "name": "Relative Path Traversal"
         },
         {
           "cwe_id": "CWE-36",
-          "score": 0.03149801587301587,
+          "score": 0.03200204813108039,
           "name": "Absolute Path Traversal"
         },
         {
           "cwe_id": "CWE-706",
-          "score": 0.030776515151515152,
+          "score": 0.03125,
           "name": "Use of Incorrectly-Resolved Name or Reference"
         },
         {
-          "cwe_id": "CWE-564",
-          "score": 0.015873015873015872,
-          "name": "SQL Injection: Hibernate"
+          "cwe_id": "CWE-913",
+          "score": 0.015384615384615385,
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         }
       ],
       "reasoning": {
@@ -452,6 +467,8 @@
     {
       "unit_id": "java_cwe22_path_resolved",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -460,14 +477,14 @@
           "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
         },
         {
-          "cwe_id": "CWE-23",
+          "cwe_id": "CWE-36",
           "score": 0.03225806451612903,
-          "name": "Relative Path Traversal"
+          "name": "Absolute Path Traversal"
         },
         {
-          "cwe_id": "CWE-36",
+          "cwe_id": "CWE-23",
           "score": 0.031746031746031744,
-          "name": "Absolute Path Traversal"
+          "name": "Relative Path Traversal"
         },
         {
           "cwe_id": "CWE-706",
@@ -475,9 +492,9 @@
           "name": "Use of Incorrectly-Resolved Name or Reference"
         },
         {
-          "cwe_id": "CWE-89",
+          "cwe_id": "CWE-913",
           "score": 0.015384615384615385,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         }
       ],
       "reasoning": {
@@ -529,6 +546,8 @@
     {
       "unit_id": "java_cwe502_readobject",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe502_readobject:java_deserialization:4",
@@ -579,23 +598,23 @@
         },
         {
           "cwe_id": "CWE-913",
-          "score": 0.02878726010616578,
+          "score": 0.0315136476426799,
           "name": "Improper Control of Dynamically-Managed Code Resources"
         },
         {
-          "cwe_id": "CWE-79",
+          "cwe_id": "CWE-327",
           "score": 0.016129032258064516,
-          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
         },
         {
-          "cwe_id": "CWE-798",
+          "cwe_id": "CWE-22",
           "score": 0.015873015873015872,
-          "name": "Use of Hard-coded Credentials"
+          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
         },
         {
-          "cwe_id": "CWE-287",
+          "cwe_id": "CWE-74",
           "score": 0.015625,
-          "name": "Improper Authentication"
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
         }
       ],
       "reasoning": {
@@ -653,6 +672,8 @@
     {
       "unit_id": "java_cwe502_json_parse",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -661,24 +682,24 @@
           "name": "Deserialization of Untrusted Data"
         },
         {
-          "cwe_id": "CWE-22",
+          "cwe_id": "CWE-79",
           "score": 0.03225806451612903,
-          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         {
-          "cwe_id": "CWE-564",
+          "cwe_id": "CWE-80",
           "score": 0.03149801587301587,
-          "name": "SQL Injection: Hibernate"
+          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
         },
         {
-          "cwe_id": "CWE-89",
-          "score": 0.030090497737556562,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          "cwe_id": "CWE-913",
+          "score": 0.03149801587301587,
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         },
         {
-          "cwe_id": "CWE-706",
-          "score": 0.029211087420042643,
-          "name": "Use of Incorrectly-Resolved Name or Reference"
+          "cwe_id": "CWE-20",
+          "score": 0.02967032967032967,
+          "name": "Improper Input Validation"
         }
       ],
       "reasoning": {
@@ -730,6 +751,8 @@
     {
       "unit_id": "java_cwe798_hardcoded",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe798_hardcoded:hardcoded_secret_literal:14",
@@ -755,17 +778,17 @@
         },
         {
           "cwe_id": "CWE-287",
-          "score": 0.03149801587301587,
+          "score": 0.031746031746031744,
           "name": "Improper Authentication"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.028782894736842105,
+          "score": 0.03055037313432836,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
           "cwe_id": "CWE-89",
-          "score": 0.015873015873015872,
+          "score": 0.015625,
           "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         }
       ],
@@ -821,32 +844,34 @@
     {
       "unit_id": "java_cwe798_env_config",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-259",
-          "score": 0.03278688524590164,
-          "name": "Use of Hard-coded Password"
-        },
-        {
           "cwe_id": "CWE-798",
-          "score": 0.03225806451612903,
+          "score": 0.03278688524590164,
           "name": "Use of Hard-coded Credentials"
         },
         {
-          "cwe_id": "CWE-943",
-          "score": 0.03149801587301587,
-          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+          "cwe_id": "CWE-259",
+          "score": 0.03225806451612903,
+          "name": "Use of Hard-coded Password"
+        },
+        {
+          "cwe_id": "CWE-89",
+          "score": 0.03125763125763126,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.030798389007344232,
+          "score": 0.03125,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.02904040404040404,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-287",
+          "score": 0.031024531024531024,
+          "name": "Improper Authentication"
         }
       ],
       "reasoning": {
@@ -854,8 +879,8 @@
         "unit_id": "java_cwe798_env_config",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-259",
-          "name": "Use of Hard-coded Password"
+          "id": "CWE-798",
+          "name": "Use of Hard-coded Credentials"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe798EnvConfigSafe.java",
@@ -864,8 +889,8 @@
           "snippet": "public class Cwe798EnvConfigSafe {"
         },
         "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-259) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Read passwords from a secret manager or environment; never commit real passwords.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-798) for explanation context; that is not a vulnerability decision.",
+        "remediation": "Do not ship passwords or API keys as string literals; inject them at deployment time.",
         "confidence": 0.7
       },
       "validation": {
@@ -880,7 +905,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-259"
+            "detail": "CWE-798"
           },
           {
             "name": "cited_lines",
@@ -898,6 +923,8 @@
     {
       "unit_id": "java_cwe327_md5",
       "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe327_md5:weak_crypto_algorithm:14",
@@ -923,13 +950,13 @@
         },
         {
           "cwe_id": "CWE-326",
-          "score": 0.03128054740957967,
+          "score": 0.030621785881252923,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-798",
+          "cwe_id": "CWE-36",
           "score": 0.015873015873015872,
-          "name": "Use of Hard-coded Credentials"
+          "name": "Absolute Path Traversal"
         },
         {
           "cwe_id": "CWE-22",
@@ -989,6 +1016,8 @@
     {
       "unit_id": "java_cwe327_sha256",
       "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -1002,19 +1031,19 @@
           "name": "Use of Weak Hash"
         },
         {
-          "cwe_id": "CWE-20",
-          "score": 0.03149801587301587,
-          "name": "Improper Input Validation"
-        },
-        {
           "cwe_id": "CWE-326",
-          "score": 0.03036576949620428,
+          "score": 0.031746031746031744,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.0288981288981289,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-36",
+          "score": 0.015625,
+          "name": "Absolute Path Traversal"
+        },
+        {
+          "cwe_id": "CWE-502",
+          "score": 0.015384615384615385,
+          "name": "Deserialization of Untrusted Data"
         }
       ],
       "reasoning": {
