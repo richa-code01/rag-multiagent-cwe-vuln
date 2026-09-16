@@ -160,6 +160,16 @@ class HybridRetriever:
             for cwe_id, score in fused
         ]
 
+    def rank_for_unit(self, unit: SeedUnit) -> list[RankedHit]:
+        """Unit-level retrieve: notes as query, source as SAST signal, truncated to config.top_k."""
+        query = RetrievalQuery(
+            query_id=unit.unit_id,
+            query=unit.notes,
+            relevant_cwes=(),
+            unit_id=unit.unit_id,
+        )
+        return self.hybrid_rank(query)[: settings.top_k]
+
 
 def load_retrieval_queries(root: Path | None = None) -> list[RetrievalQuery]:
     path = (root or repo_root()) / "data" / "retrieval" / "labeled_queries.jsonl"

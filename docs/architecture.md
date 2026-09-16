@@ -49,7 +49,7 @@ flowchart LR
 | `schema` | JSON Schema + `ReasoningResult` dump/load | Implemented (A4) |
 | `reasoner` | Unit + evidence + hits → `ReasoningResult` | **This PR** |
 | `validator` | Schema + KB + cited lines + decision consistency | **This PR** |
-| `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | Not implemented |
+| `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | **This PR** |
 | `evaluate` / `framework` | Thin CLIs: A1 metrics vs full pipeline | A1 eval only |
 
 ## Rules

@@ -2,7 +2,7 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** reasoning-output validator (prior phases are on `main`)
+**Current milestone:** cost-aware orchestrator (prior phases are on `main`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 
@@ -10,7 +10,7 @@ Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 
 This thesis studies **explainable** vulnerability detection: map a code unit to a CWE and ground that mapping in a CWE knowledge base. The full multi-agent framework is **not** implemented yet.
 
-Implemented: Java seed, regex/SAST baseline, curated CWE knowledge, hybrid retrieval, Assignment 4 JSON Schema, SAST `Evidence`, template reasoner, and a **result validator**. Scores are **seed-only — not a benchmark**. Orchestrator and framework CLI are **not** implemented yet.
+Implemented: Java seed through validator, plus a **cost-aware orchestrator** (`Pipeline.run`). Scores are **seed-only — not a benchmark**. The seed-wide framework CLI is **not** implemented yet.
 
 ## Pipeline sketch
 
@@ -21,8 +21,9 @@ code unit
     → CWE knowledge lookup (A2)
     → hybrid retrieval (A3; lexical TF-IDF, not neural RAG)
     → structured JSON via template reasoner
-    → validator (this PR)
-    → (future) cost-aware orchestrator
+    → validator
+    → cost-aware orchestrator (this PR; skip LLM without a key)
+    → (future) framework CLI over the seed split
 ```
 
 See [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) (sequence) and [`docs/architecture.md`](docs/architecture.md) (how packages compose).
@@ -39,8 +40,9 @@ See [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) (sequence) and [`
 | Reasoning output JSON Schema | Done (A4, [PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4)) |
 | SAST evidence objects | Done ([PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5)) |
 | Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) |
-| Validator | **This PR** |
-| Orchestrator, framework | **Not implemented** |
+| Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)) |
+| Cost-aware orchestrator | **This PR** |
+| Framework CLI | **Not implemented** |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 
@@ -90,6 +92,10 @@ uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/n
 ## Validator (this PR)
 
 `ResultValidator.check(...)` — schema, CWE in KB, cited lines, decision vs evidence. [`docs/validator.md`](docs/validator.md)
+
+## Orchestrator (this PR)
+
+`Pipeline.run(unit)` — SAST first, skip LLM without a key. [`docs/orchestrator.md`](docs/orchestrator.md)
 
 ## Install
 

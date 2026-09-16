@@ -23,8 +23,8 @@ Cost-aware routing is later work. It is **not** in the thesis title.
 | --- | --- | --- | --- | --- |
 | SAST evidence extraction | **Done** [PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5) | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
 | Reasoning agent | **Done** [PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6) | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/test_reasoner.py` |
-| Validator | **This PR** | `validator` | [validator.md](validator.md) | `uv run pytest tests/test_validator.py` |
-| Cost-aware orchestrator | Not started | `orchestrator` | — | — |
+| Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/test_validator.py` |
+| Cost-aware orchestrator | **This PR** | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/test_orchestrator.py` |
 | Complete multi-agent framework | Not started | `framework` | — | — |
 
 ## Honesty
