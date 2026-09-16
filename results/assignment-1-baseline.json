@@ -1,6 +1,6 @@
 {
   "assignment": 1,
-  "generated_at": "2026-09-16T18:26:40Z",
+  "generated_at": "2026-09-16T19:03:14Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are computed only on this 12-unit authored pedagogical seed. Rules were written against the same seed. Do not treat these scores as Juliet, OWASP Benchmark, or Big-Vul results.",

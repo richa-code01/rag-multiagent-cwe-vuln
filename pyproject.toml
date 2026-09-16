@@ -12,12 +12,12 @@ dependencies = [
 ]
 
 [project.scripts]
-cwe-vuln = "cwe_vuln.evaluate:main"
-cwe-vuln-eval = "cwe_vuln.evaluate:main"
-cwe-vuln-kb = "cwe_vuln.knowledge_cli:main"
-cwe-vuln-retrieve = "cwe_vuln.retrieval_cli:main"
-cwe-vuln-schema = "cwe_vuln.schema:main"
-cwe-vuln-evidence = "cwe_vuln.evidence:main"
+cwe-vuln = "cwe_vuln.cli.baseline:main"
+cwe-vuln-eval = "cwe_vuln.cli.baseline:main"
+cwe-vuln-kb = "cwe_vuln.cli.knowledge:main"
+cwe-vuln-retrieve = "cwe_vuln.cli.retrieval:main"
+cwe-vuln-schema = "cwe_vuln.cli.schema:main"
+cwe-vuln-evidence = "cwe_vuln.cli.evidence:main"
 cwe-vuln-pipeline = "cwe_vuln.framework:main"
 
 [build-system]

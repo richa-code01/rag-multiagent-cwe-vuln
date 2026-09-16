@@ -11,7 +11,7 @@ This assignment does **not** implement a reasoning agent.
 
 No neural embedding model is installed (MiniLM / sentence-transformers was skipped to keep `uv sync` small and offline-friendly).
 
-- **Lexical vector space:** TF-IDF cosine over CWE name + description + mitigations + detection notes (`src/cwe_vuln/retrieval.py`, stdlib only).
+- **Lexical vector space:** TF-IDF cosine over CWE name + description + mitigations + detection notes (`src/cwe_vuln/retrieval/`, stdlib only).
 - **Second independent signal:** Assignment 1 SAST-style regex rules run on the linked Java unit source when `unit_id` is present (otherwise on the query text).
 - **Third signal:** one-hop CWE relationship expansion from Assignment 2 (`parents` / `children` / `peers`).
 - **Hybrid:** Reciprocal Rank Fusion (RRF, k=60) over the three rankings.

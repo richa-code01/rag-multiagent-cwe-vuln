@@ -1,6 +1,7 @@
 RAG-MULTIAGENT-CWE-VULN — CANONICAL PROJECT CONTEXT
 =====================================================
 Update after EVERY phase. Must agree with README.md and docs/.
+Future agents/humans: treat this file as the source of truth.
 
 Official topic (exact; do not rename):
   RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases
@@ -8,7 +9,7 @@ Official topic (exact; do not rename):
 Student: Richa Verma (25MCSS02)
 Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
-Package: cwe-vuln (src/cwe_vuln), Python >=3.11, uv
+Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
 
 Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
@@ -17,8 +18,8 @@ seed-only eval on authored units/queries; Java units are teaching samples, not e
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: framework
-Branch: framework
+Last phase in this file: modular-layout
+Branch: modular-layout
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -27,16 +28,36 @@ Branch: framework
 | A3 hybrid retrieval | DONE PR #3 | assignment-3 | docs/assignment-3-hybrid-retrieval.md | uv run cwe-vuln-retrieve |
 | A4 output schema | DONE PR #4 | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
 | SAST evidence | DONE PR #5 | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
-| Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/test_reasoner.py |
-| Validator | DONE PR #7 | validator | docs/validator.md | uv run pytest tests/test_validator.py |
-| Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/test_orchestrator.py |
-| Framework | THIS PR | framework | docs/framework.md | uv run cwe-vuln-pipeline |
+| Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/reasoner/test_reasoner.py |
+| Validator | DONE PR #7 | validator | docs/validator.md | uv run pytest tests/validator/test_validator.py |
+| Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
+| Framework | DONE PR #9 | framework | docs/framework.md | uv run cwe-vuln-pipeline |
+| Layered packages | THIS PR | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
+
+============================================================
+PACKAGE TREE
+============================================================
+src/cwe_vuln/
+  config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS
+  models/             Evidence, RankedHit, ReasoningResult, ValidationReport, PipelineResult, binary_metrics
+  dataset/            SeedUnit, load_seed, TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
+  knowledge/          CWEKnowledgeBase
+  sast/               regex RULES, detect(), extract_evidence()
+  retrieval/          TfidfIndex, HybridRetriever, RRF (lexical, not neural)
+  schema/             load/validate Assignment 4 JSON Schema
+  reasoner/           TemplateReasoner.compose (no LLM)
+  validator/          ResultValidator.check
+  orchestrator/       Pipeline.run; SAST-first skip-LLM; ports
+  framework/          cwe-vuln-pipeline CLI
+  cli/                baseline, knowledge, retrieval, schema, evidence
+
+tests/ mirrors those packages. data/ docs/ results/ schemas/ stay outside src/.
 
 ============================================================
 DATASET (stable)
 ============================================================
 12 Java units, data/seed/labels.jsonl, data/seed/java/
-Split: src/cwe_vuln/dataset.py TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
+Split: src/cwe_vuln/dataset/seed.py TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
 
 Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescaped,
   java_cwe79_xss_encoded, java_cwe22_path_concat, java_cwe22_path_resolved,
@@ -45,43 +66,39 @@ Test: java_cwe798_hardcoded, java_cwe798_env_config, java_cwe327_md5, java_cwe32
 CWEs: 89, 79, 22, 502, 798, 327 (one vuln + one safe each)
 
 ============================================================
-METRICS ACTUALLY COMPUTED
+DATA FLOW
 ============================================================
-A1 detection (12 units, regex only) seed-only — not a benchmark:
-  overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
-
-A3 retrieval (18 queries) seed-only — not a benchmark:
-  lexical_tfidf  R@1=0.778 R@3=0.944 R@5=0.944 MRR=0.868
-  sast           R@1=0.333 R@3=0.333 R@5=0.333 MRR=0.333
-  hybrid_rrf     R@1=0.778 R@3=0.944 R@5=1.000 MRR=0.872
-
-Framework pipeline (test split, 4 units) seed-only — not a benchmark:
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
-  paths: sast_first_skip_llm=2, hybrid_retrieve_skip_llm=2
-Framework pipeline (all 12) seed-only:
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  paths 6/6 sast vs hybrid skip_llm
-
-============================================================
-ARCHITECTURE
-============================================================
-docs/architecture.md
-
-  SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
+SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
 
   dataset      load labels/split/source only
-  config       top_k, rrf_k, LLM env names
-  detector     regex rules + binary detect()
-  evidence     Evidence from rule spans
-  ports        EvidenceExtractor, UnitRetriever, UnitReasoner, UnitValidator
+  sast         regex rules + binary detect() + Evidence spans (CWE hints, not encyclopedia)
   knowledge    CWE JSON store + query API
-  retrieval    TF-IDF + SAST + relationship RRF; rank_for_unit
-  schema       Draft 2020-12 + ReasoningResult models
+  retrieval    TF-IDF + SAST + relationship RRF; rank_for_unit; no reasoner
+  schema       Draft 2020-12 validate helpers
   reasoner     TemplateReasoner.compose (no I/O, no LLM)
   validator    schema + KB + cited lines + decision vs evidence
   orchestrator Pipeline.run; SAST-first; skip LLM without key / when evidence exists
   framework    cwe-vuln-pipeline CLI + seed metrics
-  evaluate     A1-only regex metrics CLI
-  metrics      shared binary P/R/F1
+  cli          thin A1 / KB / retrieve / schema / evidence
+  models       one Evidence, one ReasoningResult, one binary_metrics
+  config       paths, top_k, rrf_k, LLM env names
+
+============================================================
+METRICS ACTUALLY COMPUTED (seed-only — not a benchmark)
+============================================================
+A1 detection (12 units, regex only):
+  overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
+
+A3 retrieval (18 queries):
+  lexical_tfidf  R@1=0.7778 R@3=0.9444 R@5=0.9444 MRR=0.8681
+  sast           R@1=0.3333 R@3=0.3333 R@5=0.3333 MRR=0.3333
+  hybrid_rrf     R@1=0.7778 R@3=0.9444 R@5=1.0000 MRR=0.8722
+
+Framework pipeline (test split, 4 units):
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
+  paths: sast_first_skip_llm=2, hybrid_retrieve_skip_llm=2
+Framework pipeline (all 12):
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  paths 6/6 sast vs hybrid skip_llm
 
 ============================================================
 HOW TO RUN
@@ -101,6 +118,7 @@ KEY FILES
 ============================================================
 README.md
 rag-multiagent-context.txt
+docs/implementation-plan.md
 docs/advisor-phase-plan.md
 docs/architecture.md
 docs/framework.md
@@ -116,19 +134,21 @@ schemas/reasoning_output.schema.json
 data/seed/labels.jsonl
 data/cwe/knowledge.json
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/framework.py
-src/cwe_vuln/orchestrator.py
+src/cwe_vuln/framework/cli.py
+src/cwe_vuln/orchestrator/pipeline.py
 results/assignment-1-baseline.json
 results/assignment-3-retrieval.json
 results/framework-seed.json
 results/framework-seed-all.json
+Thesis Progress Report_RichaVerma_25MCSS02.docx
 
-Do not commit: ApproachDoc.pdf, RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx
+Do not commit: ApproachDoc.pdf, secrets, .env
 
 ============================================================
 LIMITATIONS
 ============================================================
 - Seed-only evaluation (12 authored Java units / 18 retrieval queries).
-- Retrieval is lexical TF-IDF, not neural embeddings.
-- Reasoner is a template composer; LLM path is skipped (no key / not implemented).
+- Retrieval is lexical TF-IDF, not neural embeddings. sentence-transformers was not added
+  (keeps uv sync small/offline; A3 already documented this choice).
+- Reasoner is a template composer; LLM path is skipped (no API key / not implemented).
 - CWE store is a curated subset, not a full MITRE dump.

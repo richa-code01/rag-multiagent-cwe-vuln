@@ -1,12 +1,11 @@
 """Java CWE seed, SAST baseline, CWE knowledge, hybrid retrieval, and output schema."""
 
 from cwe_vuln.dataset import SeedUnit, load_seed
-from cwe_vuln.detector import Detection, detect
-from cwe_vuln.evidence import Evidence, extract_evidence
 from cwe_vuln.knowledge import CWEEntry, CWEKnowledgeBase
-from cwe_vuln.metrics import BinaryMetrics, binary_metrics
-from cwe_vuln.retrieval import HybridRetriever, RankedHit
-from cwe_vuln.schema import ReasoningResult, is_valid, validate_output
+from cwe_vuln.models import BinaryMetrics, Evidence, RankedHit, ReasoningResult, binary_metrics
+from cwe_vuln.retrieval import HybridRetriever
+from cwe_vuln.sast import Detection, detect, extract_evidence
+from cwe_vuln.schema import is_valid, validate_output
 
 __version__ = "0.4.0"
 

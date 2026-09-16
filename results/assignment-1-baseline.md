@@ -4,7 +4,7 @@
 
 seed-only — not a benchmark. Metrics are computed only on this 12-unit authored pedagogical seed. Rules were written against the same seed. Do not treat these scores as Juliet, OWASP Benchmark, or Big-Vul results.
 
-- Generated at: `2026-09-16T18:26:40Z`
+- Generated at: `2026-09-16T19:03:14Z`
 - Detector: `regex_sast_style`
 - LLM detector: `skipped_no_api_key`
 - Units: 12 (train 8 / test 4)
