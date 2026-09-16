@@ -58,10 +58,10 @@ uv run cwe-vuln-pipeline
 
 | Env | Role |
 | --- | --- |
-| `CWE_VULN_LLM_API_KEY` | Checked first |
-| `OPENAI_API_KEY` | Fallback key |
-| `CWE_VULN_LLM_MODEL` | Default `llama-3.1-8b-instant` |
-| `CWE_VULN_LLM_BASE_URL` | Optional OpenAI-compatible endpoint |
+| `GROQ_API_KEY` | Primary key (tomorrow) |
+| `CWE_VULN_LLM_API_KEY` | Optional override |
+| `CWE_VULN_LLM_MODEL` | Default `llama-3.1-8b-instant` (optional `llama-3.3-70b-versatile`) |
+| `CWE_VULN_LLM_BASE_URL` | Default `https://api.groq.com/openai/v1` |
 
 With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_hits=False`), paths become `sast_then_llm` / `hybrid_retrieve_then_llm`. Invalid JSON is retried once, then the template reasoner is used (`reasoner=llm_fallback_template`). No exploit generation.
 

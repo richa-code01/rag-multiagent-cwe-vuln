@@ -14,4 +14,4 @@ Two implementations share the port:
 uv run pytest tests/reasoner/test_reasoner.py tests/reasoner/test_llm.py
 ```
 
-Tests mock the SDK client. They do not call a live API. Pipeline CLI is `uv run cwe-vuln-pipeline`.
+Tests mock the SDK client. They do not call Groq. Pipeline CLI is `uv run cwe-vuln-pipeline`. Tomorrow: `export GROQ_API_KEY=...`
