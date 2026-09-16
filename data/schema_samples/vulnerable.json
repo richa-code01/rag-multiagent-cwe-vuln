@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "java_cwe89_sqli_concat",
+  "decision": "vulnerable",
+  "cwe": {
+    "id": "CWE-89",
+    "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+  },
+  "supporting_source_lines": {
+    "path": "data/seed/java/Cwe89SqlConcatVulnerable.java",
+    "start_line": 18,
+    "end_line": 19,
+    "snippet": "String query = \"SELECT id, name FROM users WHERE name = '\" + userName + \"'\";\n        return statement.executeQuery(query);"
+  },
+  "root_cause": "The SQL command is built by concatenating a caller-supplied name into the query string.",
+  "explanation": "This teaching sample uses Statement.executeQuery on a string-built SELECT. The Assignment 1 regex rule sql_string_concat matches that pattern and maps it to CWE-89.",
+  "remediation": "Use a PreparedStatement with a placeholder and bind userName as a parameter.",
+  "confidence": 0.86,
+  "evidence_ids": ["sql_string_concat"]
+}

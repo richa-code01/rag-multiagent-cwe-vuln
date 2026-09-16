@@ -1,0 +1,5 @@
+{
+  "schema_version": "1.0",
+  "unit_id": "intentional_invalid_sample",
+  "decision": "vulnerable"
+}
