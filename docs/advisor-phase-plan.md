@@ -21,8 +21,8 @@ Cost-aware routing is later work. It is **not** in the thesis title.
 
 | Component | Status | Branch | Doc | How to run |
 | --- | --- | --- | --- | --- |
-| SAST evidence extraction | **This PR** | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
-| Reasoning agent | Not started | `reasoning-agent` | — | — |
+| SAST evidence extraction | **Done** [PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5) | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
+| Reasoning agent | **This PR** | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/test_reasoner.py` |
 | Validator | Not started | `validator` | — | — |
 | Cost-aware orchestrator | Not started | `orchestrator` | — | — |
 | Complete multi-agent framework | Not started | `framework` | — | — |
@@ -31,4 +31,4 @@ Cost-aware routing is later work. It is **not** in the thesis title.
 
 - A1 detection and A3 retrieval scores are **seed-only — not a benchmark**
 - A3 retrieval is lexical TF-IDF, not neural embeddings
-- A4 is schema + samples; the reasoning agent is not in this PR
+- Reasoner is a template composer on the seed, not an LLM agent
