@@ -48,7 +48,7 @@ flowchart LR
 | `retrieval` | Index, TF-IDF, SAST signal, relationship expand, RRF | Implemented |
 | `schema` | JSON Schema + `ReasoningResult` dump/load | Implemented (A4) |
 | `reasoner` | Unit + evidence + hits → `ReasoningResult` | **This PR** |
-| `validator` | Schema + KB + cited lines + decision consistency | Not implemented |
+| `validator` | Schema + KB + cited lines + decision consistency | **This PR** |
 | `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | Not implemented |
 | `evaluate` / `framework` | Thin CLIs: A1 metrics vs full pipeline | A1 eval only |
 

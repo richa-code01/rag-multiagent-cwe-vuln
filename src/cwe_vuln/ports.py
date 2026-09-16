@@ -8,6 +8,16 @@ from cwe_vuln.dataset import SeedUnit
 from cwe_vuln.evidence import Evidence
 from cwe_vuln.retrieval import RankedHit
 from cwe_vuln.schema import ReasoningResult
+from cwe_vuln.validator import ValidationReport
+
+
+class UnitValidator(Protocol):
+    def check(
+        self,
+        result: ReasoningResult,
+        unit: SeedUnit,
+        evidence: list[Evidence],
+    ) -> ValidationReport: ...
 
 
 class EvidenceExtractor(Protocol):
