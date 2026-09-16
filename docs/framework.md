@@ -23,4 +23,4 @@ uv run cwe-vuln-pipeline --split all
 
 Writes `results/framework-seed.json` (and `.md`). Recorded test-split run (no API key, embedder=`minilm`): P=1.000 R=1.000 F1=1.000 FP=0 FN=0, 4/4 validator pass, paths `sast_first_skip_llm=2` / `hybrid_retrieve_skip_llm=2`, reasoner `template`.
 
-Still not a public benchmark. MiniLM is local. Live LLM waits on `OPENAI_API_KEY`; without a key the pipeline stays offline.
+Still not a public benchmark. MiniLM is local. Live Groq waits on `GROQ_API_KEY`; without a key the pipeline stays offline.

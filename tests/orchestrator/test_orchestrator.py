@@ -29,7 +29,7 @@ def test_pipeline_skips_llm_on_safe_unit() -> None:
 
 
 def test_pipeline_routes_to_llm_when_key_present(monkeypatch) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("GROQ_API_KEY", "gsk-test")
     unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_concat")
     template = TemplateReasoner()
     calls = {"n": 0}
@@ -57,7 +57,7 @@ def test_pipeline_routes_to_llm_when_key_present(monkeypatch) -> None:
 
 
 def test_pipeline_can_skip_llm_when_sast_hits(monkeypatch) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    monkeypatch.setenv("GROQ_API_KEY", "gsk-test")
     monkeypatch.setattr(
         "cwe_vuln.orchestrator.pipeline.settings",
         Settings(use_llm_if_available=True, skip_llm_when_sast_hits=True),

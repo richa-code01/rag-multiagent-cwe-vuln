@@ -81,7 +81,7 @@ With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_h
 | Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8); LLM routing in this PR) |
 | Framework CLI on the seed | Done ([PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9)) |
 | Layered packages (`models`, `dataset`, `sast`, …) | Done ([PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10)) |
-| Live LLM reasoner | **This PR** — `LLMReasoner`; skipped without `OPENAI_API_KEY` |
+| Live LLM reasoner | **This PR** — Groq `LLMReasoner`; skipped without `GROQ_API_KEY` |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 

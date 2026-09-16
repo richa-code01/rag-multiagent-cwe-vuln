@@ -34,4 +34,4 @@ Cost-aware routing is an orchestrator component. It is **not** in the thesis tit
 
 - All detection/retrieval/framework scores are **seed-only — not a benchmark**
 - A3 retrieval now has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
-- `TemplateReasoner` is the default offline composer; `LLMReasoner` runs only when `CWE_VULN_LLM_API_KEY` or `OPENAI_API_KEY` is set
+- `TemplateReasoner` is the default offline composer; `LLMReasoner` runs only when `GROQ_API_KEY` is set

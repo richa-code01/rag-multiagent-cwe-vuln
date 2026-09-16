@@ -70,7 +70,7 @@ Results: results/assignment-3-retrieval.json (seed-only — not a benchmark)
 ============================================================
 LLM (no OpenAI account)
 ============================================================
-Primary key: OPENAI_API_KEY
+Primary key: GROQ_API_KEY
 Override: CWE_VULN_LLM_API_KEY
 Do not tell Richa to create an OpenAI account.
 
@@ -79,7 +79,7 @@ Optional model: CWE_VULN_LLM_MODEL=llama-3.3-70b-versatile
 Default base URL: https://api.groq.com/openai/v1
 Override: CWE_VULN_LLM_BASE_URL
 
-Client: openai.OpenAI(api_key=..., base_url=...) pointed at Groq.
+Client: openai.OpenAI(api_key=..., base_url=...) OpenAI-compatible.
 Load repo-root .env via python-dotenv. Never commit .env.
 
 No key → orchestrator does not construct LLMReasoner; TemplateReasoner; paths
@@ -192,6 +192,6 @@ LIMITATIONS
 ============================================================
 - Seed-only evaluation (12 authored Java units / 18 retrieval queries).
 - MiniLM may be tfidf_fallback if the model is not cached / download failed.
-- Live LLM waits on OPENAI_API_KEY; default offline path is TemplateReasoner.
+- Live Groq waits on GROQ_API_KEY; default offline path is TemplateReasoner.
 - CWE store is a curated subset, not a full MITRE dump.
 - No Juliet / OWASP Benchmark / Big-Vul numbers.

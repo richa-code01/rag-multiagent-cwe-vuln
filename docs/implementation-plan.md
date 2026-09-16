@@ -103,7 +103,7 @@ Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key;
 | Gap | This overnight pass |
 | --- | --- |
 | Dense MiniLM embeddings | Probe `sentence-transformers`. If install/download is heavy or flaky, **skip** and keep TF-IDF documented as lexical vector space, not neural RAG. |
-| Live LLM reasoner | Structure is implemented (`OPENAI_API_KEY` / `CWE_VULN_LLM_API_KEY`). Without a key, `TemplateReasoner` + skip-LLM. |
+| Live LLM reasoner | Structure is implemented (`GROQ_API_KEY`). Without a key, `TemplateReasoner` + skip-LLM. |
 | Public benchmarks | Out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
 | Full MITRE CWE dump | Out of scope. Curated store stays. |
 
@@ -187,7 +187,7 @@ No `cursor/` branch prefix. No force-push.
 - `uv run pytest`: 35 passed.
 - `uv run cwe-vuln-pipeline` and `--split all` match recorded seed-only metrics (test P/R/F1=1.0, paths 2/2 skip-LLM; all-12 paths 6/6).
 - Neural embeddings: **skipped** (no `sentence-transformers`; TF-IDF remains lexical).
-- Live LLM: **skipped in that PR** (no key). This `embeddings-llm` slice adds `LLMReasoner` gated on `OPENAI_API_KEY` / `CWE_VULN_LLM_API_KEY`.
+- Live LLM: **skipped in that PR** (no key). This `embeddings-llm` slice adds `LLMReasoner` gated on `GROQ_API_KEY` / `CWE_VULN_LLM_API_KEY`.
 - Second PR `thesis-completion` **not opened** — nothing extra to add without lying.
 - Docs, `rag-multiagent-context.txt`, and progress-report DOCX updated to this tree.
 
@@ -206,7 +206,7 @@ Layered tree is already on `main` (PR #10). This slice adds capability **without
 ### Live LLM reasoner (`reasoner/`)
 
 - Shared port: `Reasoner.reason(unit, evidence, hits) -> ReasoningResult`. `TemplateReasoner` stays the offline default. `LLMReasoner` is the same port.
-- Key from env only: `GROQ_API_KEY` (primary) or `CWE_VULN_LLM_API_KEY` (override). Default model `llama-3.1-8b-instant`, default base URL `https://api.groq.com/openai/v1`. Optional `CWE_VULN_LLM_MODEL` (e.g. `llama-3.3-70b-versatile`). Uses the OpenAI Python SDK pointed at Groq. Load project `.env` via python-dotenv; never commit it. `OPENAI_API_KEY` is not used.
+- Key from env only: `GROQ_API_KEY` (primary) or `CWE_VULN_LLM_API_KEY` (override). Default model `llama-3.1-8b-instant`, default base URL `https://api.groq.com/openai/v1`. Optional `CWE_VULN_LLM_MODEL` (e.g. `llama-3.3-70b-versatile`). Uses the OpenAI Python SDK OpenAI-compatible. Load project `.env` via python-dotenv; never commit it. `OPENAI_API_KEY` is not used.
 - No key → orchestrator **does not construct** `LLMReasoner`; template path. Never raise at import for a missing key.
 - Prompt asks for A4 JSON only (detection/explanation; no exploit generation). Parse, schema-validate; retry once; else template and `reasoner=llm_fallback_template`.
 - Tests mock the SDK client. No live API in CI.
@@ -227,6 +227,6 @@ README, architecture, advisor plan, retrieval/reasoner/orchestrator/framework, c
 ## Executed (`embeddings-llm`, 2026-09-17)
 
 - MiniLM `all-MiniLM-L6-v2` downloaded and used (`embedder=minilm`). Seed-only A3: neural R@1=0.9444 R@3=1.0 R@5=1.0 MRR=0.9722 vs lexical TF-IDF R@1=0.7778 R@3=0.9444 R@5=0.9444 MRR=0.8681. Hybrid RRF matches neural on this seed.
-- `LLMReasoner` behind `Reasoner.reason`; no key today so orchestrator uses `TemplateReasoner`. Env: `CWE_VULN_LLM_API_KEY`, `OPENAI_API_KEY`, optional `CWE_VULN_LLM_MODEL` / `CWE_VULN_LLM_BASE_URL`.
+- `LLMReasoner` behind `Reasoner.reason`; no key today so orchestrator uses `TemplateReasoner`. Env: `GROQ_API_KEY`, optional `CWE_VULN_LLM_API_KEY`, optional `CWE_VULN_LLM_MODEL` / `CWE_VULN_LLM_BASE_URL`.
 - `uv run pytest`: 48 passed with MiniLM cached (47 passed + 1 skipped when the model is absent).
 - `uv run cwe-vuln-pipeline` offline: test split P=R=F1=1.0, paths 2/2 skip-LLM, reasoner=template, embedder=minilm.
