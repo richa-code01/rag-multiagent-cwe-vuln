@@ -1,7 +1,7 @@
 RAG-MULTIAGENT-CWE-VULN — CANONICAL PROJECT CONTEXT
 =====================================================
-Update this file after EVERY phase. It is the single agent/human context dump.
-Do not treat README, docs/, and this file as independent stories — they must agree.
+Update this file after EVERY phase. Single agent/human context dump.
+Must agree with README.md and docs/.
 
 Official topic (exact; do not rename):
   RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases
@@ -9,127 +9,99 @@ Official topic (exact; do not rename):
 Student: Richa Verma (25MCSS02)
 Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
-Package: cwe-vuln (src/cwe_vuln), Python >=3.11, managed with uv
+Package: cwe-vuln (src/cwe_vuln), Python >=3.11, uv
+Cost-aware routing is later. It is NOT in the thesis title.
 
-Cost-aware routing is a later component. It is NOT part of the thesis title.
-
-Honesty rules:
-  - No invented citations
-  - No Juliet / OWASP Benchmark / Big-Vul (or other public-benchmark) numbers
-  - If scores are perfect on the 12-unit seed, label them seed-only — not a benchmark
-  - Pedagogical Java seeds and CWE knowledge are for detection teaching samples, not exploit PoCs
+Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
+seed-only if scores are on the authored 12 units / 18 retrieval queries;
+Java seeds are teaching samples, not exploit PoCs.
 
 ============================================================
-CURRENT STATUS (update every PR)
+CURRENT STATUS
 ============================================================
-Last completed phase: Assignment 2 (this file written for the assignment-2 PR)
-Branch that last updated this file: assignment-2
+Last completed phase being landed: Assignment 3
+Branch that last updated this file: assignment-3
 
-| Phase | Status | Branch | Docs | Results |
+| Phase | Status | Branch | Doc | Results / command |
 | --- | --- | --- | --- | --- |
-| Assignment 1 dataset+baseline | DONE (merged PR #1) | assignment-1 | docs/assignment-1-dataset-baseline.md | results/assignment-1-baseline.json |
-| Assignment 2 CWE knowledge | THIS PR | assignment-2 | docs/assignment-2-cwe-knowledge.md | (query interface; no metric file) |
-| Assignment 3 hybrid retrieval | NOT STARTED | assignment-3 | — | — |
-| Assignment 4 output schema | NOT STARTED | assignment-4 | — | — |
-| SAST evidence extraction | NOT STARTED | sast-evidence | — | — |
+| A1 dataset+baseline | DONE PR #1 | assignment-1 | docs/assignment-1-dataset-baseline.md | results/assignment-1-baseline.json ; uv run cwe-vuln |
+| A2 CWE knowledge | DONE PR #2 | assignment-2 | docs/assignment-2-cwe-knowledge.md | uv run cwe-vuln-kb demo |
+| A3 hybrid retrieval | THIS PR | assignment-3 | docs/assignment-3-hybrid-retrieval.md | results/assignment-3-retrieval.json ; uv run cwe-vuln-retrieve |
+| A4 output schema | NOT STARTED | assignment-4 | — | — |
+| SAST evidence | NOT STARTED | sast-evidence | — | — |
 | Reasoning agent | NOT STARTED | reasoning-agent | — | — |
 | Validator | NOT STARTED | validator | — | — |
 | Cost-aware orchestrator | NOT STARTED | orchestrator | — | — |
 | Complete framework | NOT STARTED | framework | — | — |
 
 ============================================================
-DATASET INVENTORY (Assignment 1; stable)
+DATASET (stable)
 ============================================================
-12 authored Java teaching units. Labels: data/seed/labels.jsonl
-Sources: data/seed/java/
-Split is deterministic (src/cwe_vuln/dataset.py TRAIN_UNIT_IDS / TEST_UNIT_IDS). 8 train / 4 test.
+12 Java units, data/seed/labels.jsonl, data/seed/java/
+Split source of truth: src/cwe_vuln/dataset.py
 
 Train (8):
-  java_cwe89_sqli_concat          CWE-89  vulnerable      data/seed/java/Cwe89SqlConcatVulnerable.java
-  java_cwe89_sqli_prepared        CWE-89  not_vulnerable  data/seed/java/Cwe89SqlPreparedSafe.java
-  java_cwe79_xss_unescaped        CWE-79  vulnerable      data/seed/java/Cwe79XssUnescapedVulnerable.java
-  java_cwe79_xss_encoded          CWE-79  not_vulnerable  data/seed/java/Cwe79XssEncodedSafe.java
-  java_cwe22_path_concat          CWE-22  vulnerable      data/seed/java/Cwe22PathConcatVulnerable.java
-  java_cwe22_path_resolved        CWE-22  not_vulnerable  data/seed/java/Cwe22PathResolvedSafe.java
-  java_cwe502_readobject          CWE-502 vulnerable      data/seed/java/Cwe502ReadObjectVulnerable.java
-  java_cwe502_json_parse          CWE-502 not_vulnerable  data/seed/java/Cwe502JsonParseSafe.java
-
+  java_cwe89_sqli_concat          CWE-89  vulnerable      Cwe89SqlConcatVulnerable.java
+  java_cwe89_sqli_prepared        CWE-89  not_vulnerable  Cwe89SqlPreparedSafe.java
+  java_cwe79_xss_unescaped        CWE-79  vulnerable      Cwe79XssUnescapedVulnerable.java
+  java_cwe79_xss_encoded          CWE-79  not_vulnerable  Cwe79XssEncodedSafe.java
+  java_cwe22_path_concat          CWE-22  vulnerable      Cwe22PathConcatVulnerable.java
+  java_cwe22_path_resolved        CWE-22  not_vulnerable  Cwe22PathResolvedSafe.java
+  java_cwe502_readobject          CWE-502 vulnerable      Cwe502ReadObjectVulnerable.java
+  java_cwe502_json_parse          CWE-502 not_vulnerable  Cwe502JsonParseSafe.java
 Test (4):
-  java_cwe798_hardcoded           CWE-798 vulnerable      data/seed/java/Cwe798HardcodedVulnerable.java
-  java_cwe798_env_config          CWE-798 not_vulnerable  data/seed/java/Cwe798EnvConfigSafe.java
-  java_cwe327_md5                 CWE-327 vulnerable      data/seed/java/Cwe327Md5Vulnerable.java
-  java_cwe327_sha256              CWE-327 not_vulnerable  data/seed/java/Cwe327Sha256Safe.java
-
-Seed CWEs: CWE-89, CWE-79, CWE-22, CWE-502, CWE-798, CWE-327
-Each CWE has one vulnerable unit and one not_vulnerable unit.
+  java_cwe798_hardcoded           CWE-798 vulnerable      Cwe798HardcodedVulnerable.java
+  java_cwe798_env_config          CWE-798 not_vulnerable  Cwe798EnvConfigSafe.java
+  java_cwe327_md5                 CWE-327 vulnerable      Cwe327Md5Vulnerable.java
+  java_cwe327_sha256              CWE-327 not_vulnerable  Cwe327Sha256Safe.java
 
 ============================================================
-ASSIGNMENT 1 — what landed
+METRICS ACTUALLY COMPUTED
 ============================================================
-Regex / SAST-style detector: src/cwe_vuln/detector.py
-Eval: uv run python -m cwe_vuln   OR   uv run cwe-vuln
-Tests: uv run pytest
+A1 detection (12 units, regex baseline) seed-only — not a benchmark:
+  overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
+  train   P=1.000 R=1.000 F1=1.000 tp=4 fp=0 tn=4 fn=0
+  test    P=1.000 R=1.000 F1=1.000 tp=2 fp=0 tn=2 fn=0
 
-Recorded binary metrics on the 12-unit seed (seed-only — not a benchmark):
-  overall: precision=1.000 recall=1.000 f1=1.000 tp=6 fp=0 tn=6 fn=0
-  train:   precision=1.000 recall=1.000 f1=1.000 tp=4 fp=0 tn=4 fn=0
-  test:    precision=1.000 recall=1.000 f1=1.000 tp=2 fp=0 tn=2 fn=0
-LLM detector stub: skipped_no_api_key (not implemented)
-
-============================================================
-ASSIGNMENT 2 — what landed (this PR)
-============================================================
-Curated JSON store: data/cwe/knowledge.json
-  Six seed CWEs plus related parents/children/peers (real CWE ids only).
-  Not an official MITRE dump.
-
-Python API (src/cwe_vuln/knowledge.py):
-  CWEKnowledgeBase.load()
-  get(cwe_id) / search(text) / relationships(cwe_id) / mitigations(cwe_id) / neighbors(cwe_id)
-
-CLI:
-  uv run cwe-vuln-kb get CWE-89
-  uv run cwe-vuln-kb search "sql injection"
-  uv run cwe-vuln-kb relationships CWE-798
-  uv run cwe-vuln-kb mitigations CWE-22
-  uv run cwe-vuln-kb demo
-
-search() is lexical token-overlap. Hybrid retrieval is Assignment 3 (not this PR).
+A3 retrieval (18 queries: 12 unit notes + 6 NL) seed-only — not a benchmark:
+  lexical_tfidf  recall@1=0.778 recall@3=0.944 recall@5=0.944 mrr=0.868
+  sast           recall@1=0.333 recall@3=0.333 recall@5=0.333 mrr=0.333
+  hybrid_rrf     recall@1=0.778 recall@3=0.944 recall@5=1.000 mrr=0.872
+A3 is lexical TF-IDF, not neural embeddings. Hybrid is RRF(tfidf, sast, relationships).
 
 ============================================================
-HOW TO RUN (current tree)
+HOW TO RUN
 ============================================================
 uv sync
 uv run pytest
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
+uv run cwe-vuln-kb get CWE-89
+uv run cwe-vuln-retrieve
+uv run cwe-vuln-retrieve --query "string concatenated SQL command sent to a database statement"
 
 ============================================================
-KEY FILE POINTERS
+KEY FILES
 ============================================================
 README.md
-rag-multiagent-context.txt          (this file; canonical context)
+rag-multiagent-context.txt
 docs/advisor-phase-plan.md
 docs/assignment-1-dataset-baseline.md
 docs/assignment-2-cwe-knowledge.md
+docs/assignment-3-hybrid-retrieval.md
 data/seed/labels.jsonl
-data/seed/java/
 data/cwe/knowledge.json
-src/cwe_vuln/dataset.py
-src/cwe_vuln/detector.py
-src/cwe_vuln/knowledge.py
-src/cwe_vuln/knowledge_cli.py
-src/cwe_vuln/evaluate.py
+data/retrieval/labeled_queries.jsonl
+src/cwe_vuln/{dataset,detector,knowledge,knowledge_cli,retrieval,retrieval_cli,evaluate,metrics}.py
 results/assignment-1-baseline.json
-tests/test_dataset.py tests/test_detector.py tests/test_metrics.py tests/test_knowledge.py
+results/assignment-3-retrieval.json
 
 Do not commit: ApproachDoc.pdf, RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx
-(local drafts; not tracked repo deliverables)
 
 ============================================================
-LIMITATIONS (still true)
+LIMITATIONS
 ============================================================
-- Evaluation is on 12 authored units only (seed-only).
-- No neural embeddings, no hybrid retrieval, no reasoning agent, no validator, no orchestrator.
-- No API key required; LLM paths are skipped.
-- CWE store is a curated subset, not cwe.mitre.org in full.
+- Seed-only evaluation.
+- No neural RAG, no reasoning agent, no validator, no orchestrator.
+- LLM paths skipped (no API key required).
+- CWE store is a curated subset, not a full MITRE dump.

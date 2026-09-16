@@ -1,7 +1,7 @@
 [project]
 name = "cwe-vuln"
-version = "0.2.0"
-description = "Thesis repo: Java CWE seed, SAST-style baseline, and a curated CWE knowledge layer (Assignments 1–2)."
+version = "0.3.0"
+description = "Thesis repo: Java CWE seed, SAST-style baseline, CWE knowledge layer, and hybrid retrieval (Assignments 1–3)."
 readme = "README.md"
 authors = [
     { name = "Richa Verma" },
@@ -13,6 +13,7 @@ dependencies = []
 cwe-vuln = "cwe_vuln.evaluate:main"
 cwe-vuln-eval = "cwe_vuln.evaluate:main"
 cwe-vuln-kb = "cwe_vuln.knowledge_cli:main"
+cwe-vuln-retrieve = "cwe_vuln.retrieval_cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]

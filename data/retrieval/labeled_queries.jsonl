@@ -1,0 +1,18 @@
+{"query_id": "note_java_cwe89_sqli_concat", "unit_id": "java_cwe89_sqli_concat", "query": "SQL query built with string concatenation into Statement.executeQuery.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe89_sqli_prepared", "unit_id": "java_cwe89_sqli_prepared", "query": "Parameterized PreparedStatement with a placeholder.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe79_xss_unescaped", "unit_id": "java_cwe79_xss_unescaped", "query": "HTML markup concatenated with unsanitized comment text.", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe79_xss_encoded", "unit_id": "java_cwe79_xss_encoded", "query": "Same HTML shape, but the value is passed through htmlEncode().", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe22_path_concat", "unit_id": "java_cwe22_path_concat", "query": "java.io.File built by concatenating a caller-supplied relative path.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe22_path_resolved", "unit_id": "java_cwe22_path_resolved", "query": "Path.resolve + normalize, rejected if the result escapes the base directory.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe502_readobject", "unit_id": "java_cwe502_readobject", "query": "ObjectInputStream.readObject on an InputStream teaching sample.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe502_json_parse", "unit_id": "java_cwe502_json_parse", "query": "Reads a UTF-8 text line; no Java deserialization APIs.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe798_hardcoded", "unit_id": "java_cwe798_hardcoded", "query": "Fake teaching credentials assigned as string literals (admin/password).", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe798_env_config", "unit_id": "java_cwe798_env_config", "query": "Username and password read from environment variables.", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe327_md5", "unit_id": "java_cwe327_md5", "query": "MessageDigest.getInstance MD5 as a broken-algorithm teaching pattern.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "note_java_cwe327_sha256", "unit_id": "java_cwe327_sha256", "query": "MessageDigest.getInstance SHA-256.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "nl_sql_concat", "unit_id": null, "query": "string concatenated SQL command sent to a database statement", "relevant_cwes": ["CWE-89"]}
+{"query_id": "nl_xss_html", "unit_id": null, "query": "unsanitized user comment written into HTML markup", "relevant_cwes": ["CWE-79"]}
+{"query_id": "nl_path_join", "unit_id": null, "query": "user-supplied relative file path joined without a directory sandbox", "relevant_cwes": ["CWE-22"]}
+{"query_id": "nl_deserialize", "unit_id": null, "query": "Java object deserialization from an untrusted input stream", "relevant_cwes": ["CWE-502"]}
+{"query_id": "nl_hardcoded_password", "unit_id": null, "query": "password stored as a string literal in application source", "relevant_cwes": ["CWE-798"]}
+{"query_id": "nl_md5_hash", "unit_id": null, "query": "MD5 used as a cryptographic message digest", "relevant_cwes": ["CWE-327"]}
