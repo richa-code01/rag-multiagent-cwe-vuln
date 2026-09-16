@@ -1,5 +1,8 @@
 # Assignment 1: Java CWE seed dataset and SAST-style baseline
 
+Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
+Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
+
 **seed-only — not a benchmark.** All units were authored for this thesis milestone. Metrics are from running the regex detector on those 12 files. They are not Juliet, OWASP Benchmark, or Big-Vul numbers, and they do not mean the thesis framework has been evaluated.
 
 ## Dataset

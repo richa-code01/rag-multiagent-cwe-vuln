@@ -1,6 +1,6 @@
 # System Overview
 
-The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). **Assignment 1 (dataset + baseline) is the only implemented milestone.** The notes below are a high-level product sketch, not a claim that RAG, agents, or evaluation are done.
+The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt). **Assignments 1–2 are implemented** (seed + regex baseline + curated CWE knowledge queries). Hybrid retrieval, reasoning agents, and evaluation of the full thesis system are **not** done. The notes below are a high-level product sketch.
 
 This project proposes a multi-agent AI system for detecting security bugs in code. The goal is not only to identify vulnerabilities, but also to explain why a code pattern is risky using domain knowledge from security standards.
 

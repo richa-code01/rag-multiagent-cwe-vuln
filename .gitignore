@@ -28,3 +28,7 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Local thesis drafts (do not commit)
+ApproachDoc.pdf
+RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx

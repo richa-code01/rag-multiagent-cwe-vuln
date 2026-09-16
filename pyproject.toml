@@ -1,7 +1,7 @@
 [project]
 name = "cwe-vuln"
-version = "0.1.0"
-description = "Assignment 1: authored Java CWE seed dataset and SAST-style regex baseline for explainable vulnerability detection research."
+version = "0.2.0"
+description = "Thesis repo: Java CWE seed, SAST-style baseline, and a curated CWE knowledge layer (Assignments 1–2)."
 readme = "README.md"
 authors = [
     { name = "Richa Verma" },
@@ -12,6 +12,7 @@ dependencies = []
 [project.scripts]
 cwe-vuln = "cwe_vuln.evaluate:main"
 cwe-vuln-eval = "cwe_vuln.evaluate:main"
+cwe-vuln-kb = "cwe_vuln.knowledge_cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]
