@@ -2,25 +2,23 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** Assignment 2 — curated CWE knowledge layer (Assignment 1 seed + baseline is already on `main`)
+**Current milestone:** Assignment 3 — hybrid CWE retrieval (Assignments 1–2 are on `main`)
 
 Canonical session context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt) (keep this file in sync with README and `docs/`).
 
 ## Problem statement
 
-Software vulnerability detectors that only emit a yes/no flag are hard to trust in review. This thesis studies **explainable** detection: given a code unit, identify whether it is vulnerable, map it to a **CWE** (Common Weakness Enumeration) weakness, and (in later assignments) ground that explanation in a CWE knowledge base via retrieval.
+Software vulnerability detectors that only emit a yes/no flag are hard to trust in review. This thesis studies **explainable** detection: given a code unit, identify whether it is vulnerable, map it to a **CWE** (Common Weakness Enumeration) weakness, and ground that mapping in a CWE knowledge base via retrieval.
 
-This repository **does not yet implement** the full multi-agent framework. Implemented so far: an authored **Java seed** (12 units, 6 CWEs, explicit 8/4 train/test split), a **regex / SAST-style baseline** (no API key), and a **curated CWE knowledge store** with a query API. Detection scores are **seed-only — not a benchmark**.
+This repository **does not yet implement** the full multi-agent framework. Implemented: authored Java seed, regex/SAST-style baseline, curated CWE knowledge queries, and hybrid retrieval (lexical TF-IDF + SAST rules + CWE relationships). Scores are **seed-only — not a benchmark**.
 
-## Eventual framework (not implemented here)
-
-High-level pipeline. Only the seed, regex baseline, and CWE knowledge *store/query* exist in this PR.
+## Pipeline sketch
 
 ```text
 code unit
     → regex / SAST-style baseline (Assignment 1)
     → CWE knowledge lookup (Assignment 2)
-    → (future) hybrid retrieval over the CWE knowledge layer
+    → hybrid retrieval over the CWE store (Assignment 3; lexical TF-IDF, not neural RAG)
     → (future) SAST evidence extraction
     → (future) reasoning agent (structured explanation)
     → (future) validator agent
@@ -28,14 +26,12 @@ code unit
     → explainable finding (CWE + evidence + natural-language rationale)
 ```
 
-Advisor sequence:
+Advisor sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md).
 
-1. **Dataset + baseline** — done (PR #1)
-2. **CWE knowledge layer** — this PR
-3. Hybrid retrieval — not started
+1. Dataset + baseline — done ([PR #1](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/1))
+2. CWE knowledge layer — done ([PR #2](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/2))
+3. Hybrid retrieval — **this PR**
 4. Structured reasoning output schema — not started
-
-After those four: SAST evidence extraction, reasoning agent, validator, cost-aware orchestrator, then the full framework. See [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md).
 
 ## Honest status
 
@@ -43,40 +39,49 @@ After those four: SAST evidence extraction, reasoning agent, validator, cost-awa
 | --- | --- |
 | Authored Java seed (6 CWEs, 12 units, 8/4 split) | Done (Assignment 1) |
 | Regex / SAST-style baseline + precision/recall/F1 | Done (Assignment 1) |
-| CWE knowledge store + query interface (Assignment 2) | **This PR** |
-| Hybrid retrieval / RAG (Assignment 3) | **Not implemented** |
+| CWE knowledge store + query interface | Done (Assignment 2) |
+| Hybrid retrieval (TF-IDF + SAST + relationships, RRF) | **This PR** (Assignment 3) |
+| Neural embeddings / full RAG | **Not implemented** (A3 is lexical TF-IDF) |
 | Structured reasoning schema (Assignment 4) | **Not implemented** |
-| Multi-agent orchestration, SAST evidence product pipeline, cost-aware routing | **Not implemented** |
+| SAST evidence objects, reasoning agent, validator, cost-aware orchestrator, full framework | **Not implemented** |
 
-There are **no public-benchmark numbers** in this repo (no Juliet / OWASP Benchmark / Big-Vul results) and **no claim that evaluation of the thesis system is done**.
+No Juliet / OWASP Benchmark / Big-Vul numbers. Thesis-system evaluation is **not** done.
 
 ## Seed dataset (Assignment 1)
 
-Twelve small Java teaching units under `data/seed/java/`, labels in `data/seed/labels.jsonl`.
+Twelve Java teaching units: `data/seed/java/` + `data/seed/labels.jsonl`. Deterministic 8/4 split in `src/cwe_vuln/dataset.py`.
 
-| Split | Units | CWEs (this split) | Labels |
+| Split | Units | CWEs | Labels |
 | --- | --- | --- | --- |
-| train | 8 | CWE-89, CWE-79, CWE-22, CWE-502 (vulnerable + not_vulnerable each) | 4 vuln / 4 safe |
-| test | 4 | CWE-798, CWE-327 (vulnerable + not_vulnerable each) | 2 vuln / 2 safe |
+| train | 8 | CWE-89, CWE-79, CWE-22, CWE-502 (vuln+safe each) | 4 vuln / 4 safe |
+| test | 4 | CWE-798, CWE-327 (vuln+safe each) | 2 vuln / 2 safe |
 
-The split is **deterministic**: explicit `unit_id` lists in `src/cwe_vuln/dataset.py`, mirrored by the `split` field on each label. Details: [`docs/assignment-1-dataset-baseline.md`](docs/assignment-1-dataset-baseline.md).
+Details: [`docs/assignment-1-dataset-baseline.md`](docs/assignment-1-dataset-baseline.md). Pedagogical samples, not exploit PoCs.
 
-These are pedagogical detector samples, not exploit PoCs.
+Recorded detection metrics (**seed-only — not a benchmark**): overall P=1.000 R=1.000 F1=1.000 FP=0 FN=0. Reproduce: `uv run cwe-vuln`.
 
-## Baseline
+## CWE knowledge (Assignment 2)
 
-A regex detector (`src/cwe_vuln/detector.py`) looks for SAST-style patterns:
+`data/cwe/knowledge.json` + `CWEKnowledgeBase`. Run `uv run cwe-vuln-kb demo`. Doc: [`docs/assignment-2-cwe-knowledge.md`](docs/assignment-2-cwe-knowledge.md).
 
-- CWE-89: SQL keyword string concatenated with `+`
-- CWE-79: HTML markup concatenated without `htmlEncode(...)`
-- CWE-22: `new File(...)` with string concatenation
-- CWE-502: `ObjectInputStream` / `readObject`
-- CWE-798: `password` / `apiKey` / `secret` assigned a string literal
-- CWE-327: `getInstance("MD5"|"DES"|...)`
+## Hybrid retrieval (Assignment 3)
 
-An optional LLM detector stub is **skipped** unless/until later assignments implement it (no key required for Assignment 1).
+Lexical TF-IDF cosine + SAST rule hits + one-hop CWE relationships, fused with RRF. **Not** MiniLM/sentence-transformers.
 
-If recorded scores are perfect, that is because the seed is tiny and the rules were written against it. They are **seed-only — not a benchmark**.
+```bash
+uv run cwe-vuln-retrieve
+uv run cwe-vuln-retrieve --query "string concatenated SQL command sent to a database statement"
+```
+
+Recorded on 18 authored queries (**seed-only — not a benchmark**):
+
+| System | Recall@1 | Recall@3 | Recall@5 | MRR |
+| --- | ---: | ---: | ---: | ---: |
+| lexical_tfidf | 0.778 | 0.944 | 0.944 | 0.868 |
+| sast | 0.333 | 0.333 | 0.333 | 0.333 |
+| hybrid_rrf | 0.778 | 0.944 | 1.000 | 0.872 |
+
+Doc: [`docs/assignment-3-hybrid-retrieval.md`](docs/assignment-3-hybrid-retrieval.md). Results: `results/assignment-3-retrieval.json`.
 
 ## Install and reproduce
 
@@ -85,32 +90,19 @@ Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 ```bash
 uv sync
 uv run pytest
-uv run python -m cwe_vuln
-# equivalent:
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
-uv run cwe-vuln-kb get CWE-89
-uv run cwe-vuln-kb relationships CWE-798
-uv run cwe-vuln-kb mitigations CWE-22
+uv run cwe-vuln-retrieve
 ```
-
-The eval writes:
-
-- `results/assignment-1-baseline.json`
-- `results/assignment-1-baseline.md`
-
-Recorded metrics (re-run the command above to regenerate) are also copied into [`docs/assignment-1-dataset-baseline.md`](docs/assignment-1-dataset-baseline.md).
 
 ## Layout
 
 ```text
-src/cwe_vuln/     Python package (dataset, detector, knowledge, metrics, eval)
-data/seed/        labels.jsonl + java/ teaching units
-data/cwe/         curated CWE JSON knowledge store
-tests/            split + metrics + detector + knowledge plumbing
-docs/             advisor plan + assignment write-ups
-results/          generated baseline metrics
+src/cwe_vuln/          dataset, detector, knowledge, retrieval, metrics, eval
+data/seed/             labels.jsonl + java/ teaching units
+data/cwe/              curated CWE JSON store
+data/retrieval/        labeled retrieval queries
+docs/                  advisor plan + assignment write-ups
+results/               recorded seed metrics
+rag-multiagent-context.txt
 ```
-
-CWE knowledge details: [`docs/assignment-2-cwe-knowledge.md`](docs/assignment-2-cwe-knowledge.md).
-Advisor sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md).
