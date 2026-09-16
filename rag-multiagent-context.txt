@@ -17,8 +17,8 @@ seed-only eval on authored units/queries; Java units are teaching samples, not e
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: reasoning agent
-Branch: reasoning-agent
+Last phase in this file: validator
+Branch: validator
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -27,8 +27,8 @@ Branch: reasoning-agent
 | A3 hybrid retrieval | DONE PR #3 | assignment-3 | docs/assignment-3-hybrid-retrieval.md | uv run cwe-vuln-retrieve |
 | A4 output schema | DONE PR #4 | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
 | SAST evidence | DONE PR #5 | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
-| Reasoning agent | THIS PR | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/test_reasoner.py |
-| Validator | NOT STARTED | validator | — | — |
+| Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/test_reasoner.py |
+| Validator | THIS PR | validator | docs/validator.md | uv run pytest tests/test_validator.py |
 | Orchestrator | NOT STARTED | orchestrator | — | — |
 | Framework | NOT STARTED | framework | — | — |
 
@@ -85,10 +85,11 @@ Implemented modules now:
   knowledge   CWE JSON store + query API
   retrieval   TF-IDF + SAST signal + relationship RRF (no reasoner calls)
   reasoner    TemplateReasoner.compose → ReasoningResult (no I/O, no LLM)
+  validator   schema + KB + cited lines + decision vs evidence
   schema      Draft 2020-12 JSON Schema + ReasoningResult to_dict/from_dict
   evaluate    A1 baseline metrics CLI
 
-Not implemented yet: validator, orchestrator, framework CLI.
+Not implemented yet: orchestrator, framework CLI.
 
 ============================================================
 KEY FILES
@@ -106,7 +107,7 @@ data/schema_samples/{vulnerable,not_vulnerable,uncertain,invalid_missing_fields}
 data/seed/labels.jsonl
 data/cwe/knowledge.json
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/{dataset,config,detector,evidence,ports,knowledge,retrieval,schema,reasoner,evaluate,metrics}.py
+src/cwe_vuln/{dataset,config,detector,evidence,ports,knowledge,retrieval,schema,reasoner,validator,evaluate,metrics}.py
 results/assignment-1-baseline.json
 results/assignment-3-retrieval.json
 
@@ -116,6 +117,6 @@ Do not commit: ApproachDoc.pdf, RAG_MultiAgent_Vulnerability_Thesis_Progress_Rep
 LIMITATIONS
 ============================================================
 - Seed-only evaluation.
-- No validator, orchestrator, or wired framework yet.
+- No orchestrator or wired framework CLI yet.
 - LLM paths skipped (offline default). Cost policy will live only in the orchestrator.
 - CWE store is a curated subset, not a full MITRE dump.
