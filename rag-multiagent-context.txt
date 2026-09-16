@@ -9,7 +9,7 @@ Student: Richa Verma (25MCSS02)
 Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
 Package: cwe-vuln (src/cwe_vuln), Python >=3.11, uv
-Cost-aware routing is later. Not in the title.
+Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
 
 Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
 seed-only eval on authored units/queries; Java units are teaching samples, not exploits.
@@ -17,8 +17,8 @@ seed-only eval on authored units/queries; Java units are teaching samples, not e
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: orchestrator
-Branch: orchestrator
+Last phase in this file: framework
+Branch: framework
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -29,8 +29,8 @@ Branch: orchestrator
 | SAST evidence | DONE PR #5 | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
 | Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/test_reasoner.py |
 | Validator | DONE PR #7 | validator | docs/validator.md | uv run pytest tests/test_validator.py |
-| Orchestrator | THIS PR | orchestrator | docs/orchestrator.md | uv run pytest tests/test_orchestrator.py |
-| Framework | NOT STARTED | framework | — | — |
+| Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/test_orchestrator.py |
+| Framework | THIS PR | framework | docs/framework.md | uv run cwe-vuln-pipeline |
 
 ============================================================
 DATASET (stable)
@@ -47,50 +47,54 @@ CWEs: 89, 79, 22, 502, 798, 327 (one vuln + one safe each)
 ============================================================
 METRICS ACTUALLY COMPUTED
 ============================================================
-A1 detection (12 units) seed-only — not a benchmark:
+A1 detection (12 units, regex only) seed-only — not a benchmark:
   overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
 
 A3 retrieval (18 queries) seed-only — not a benchmark:
   lexical_tfidf  R@1=0.778 R@3=0.944 R@5=0.944 MRR=0.868
   sast           R@1=0.333 R@3=0.333 R@5=0.333 MRR=0.333
   hybrid_rrf     R@1=0.778 R@3=0.944 R@5=1.000 MRR=0.872
-A3 is lexical TF-IDF + SAST + CWE relationships (RRF), not neural embeddings.
 
-A4 has no detection/retrieval metrics (schema validation only).
+Framework pipeline (test split, 4 units) seed-only — not a benchmark:
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
+  paths: sast_first_skip_llm=2, hybrid_retrieve_skip_llm=2
+Framework pipeline (all 12) seed-only:
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  paths 6/6 sast vs hybrid skip_llm
+
+============================================================
+ARCHITECTURE
+============================================================
+docs/architecture.md
+
+  SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
+
+  dataset      load labels/split/source only
+  config       top_k, rrf_k, LLM env names
+  detector     regex rules + binary detect()
+  evidence     Evidence from rule spans
+  ports        EvidenceExtractor, UnitRetriever, UnitReasoner, UnitValidator
+  knowledge    CWE JSON store + query API
+  retrieval    TF-IDF + SAST + relationship RRF; rank_for_unit
+  schema       Draft 2020-12 + ReasoningResult models
+  reasoner     TemplateReasoner.compose (no I/O, no LLM)
+  validator    schema + KB + cited lines + decision vs evidence
+  orchestrator Pipeline.run; SAST-first; skip LLM without key / when evidence exists
+  framework    cwe-vuln-pipeline CLI + seed metrics
+  evaluate     A1-only regex metrics CLI
+  metrics      shared binary P/R/F1
 
 ============================================================
 HOW TO RUN
 ============================================================
 uv sync
 uv run pytest
+uv run cwe-vuln-pipeline
+uv run cwe-vuln-pipeline --split all
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve
-uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/not_vulnerable.json data/schema_samples/uncertain.json
+uv run cwe-vuln-schema data/schema_samples/vulnerable.json
 uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat
-
-============================================================
-ARCHITECTURE (packages and data flow)
-============================================================
-See docs/architecture.md. Intended flow:
-
-  SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
-
-Implemented modules now:
-  dataset     load labels/split/source only
-  config      top_k, rrf_k, LLM env names
-  detector    regex rules + binary detect()
-  evidence    Evidence dataclasses from rule spans
-  ports       EvidenceExtractor protocol
-  knowledge   CWE JSON store + query API
-  retrieval   TF-IDF + SAST signal + relationship RRF (no reasoner calls)
-  reasoner    TemplateReasoner.compose → ReasoningResult (no I/O, no LLM)
-  orchestrator SAST-first Pipeline.run; skip LLM without key or when evidence exists
-  validator   schema + KB + cited lines + decision vs evidence
-  schema      Draft 2020-12 JSON Schema + ReasoningResult to_dict/from_dict
-  evaluate    A1 baseline metrics CLI
-
-Not implemented yet: framework CLI.
 
 ============================================================
 KEY FILES
@@ -99,25 +103,32 @@ README.md
 rag-multiagent-context.txt
 docs/advisor-phase-plan.md
 docs/architecture.md
+docs/framework.md
 docs/assignment-1-dataset-baseline.md
 docs/assignment-2-cwe-knowledge.md
 docs/assignment-3-hybrid-retrieval.md
 docs/assignment-4-output-schema.md
+docs/sast-evidence.md
+docs/reasoning-agent.md
+docs/validator.md
+docs/orchestrator.md
 schemas/reasoning_output.schema.json
-data/schema_samples/{vulnerable,not_vulnerable,uncertain,invalid_missing_fields}.json
 data/seed/labels.jsonl
 data/cwe/knowledge.json
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/{dataset,config,detector,evidence,ports,knowledge,retrieval,schema,reasoner,validator,orchestrator,evaluate,metrics}.py
+src/cwe_vuln/framework.py
+src/cwe_vuln/orchestrator.py
 results/assignment-1-baseline.json
 results/assignment-3-retrieval.json
+results/framework-seed.json
+results/framework-seed-all.json
 
 Do not commit: ApproachDoc.pdf, RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx
 
 ============================================================
 LIMITATIONS
 ============================================================
-- Seed-only evaluation.
-- No seed-wide framework CLI yet (`cwe-vuln-pipeline` is the next phase).
-- LLM paths skipped (offline default). Cost policy will live only in the orchestrator.
+- Seed-only evaluation (12 authored Java units / 18 retrieval queries).
+- Retrieval is lexical TF-IDF, not neural embeddings.
+- Reasoner is a template composer; LLM path is skipped (no key / not implemented).
 - CWE store is a curated subset, not a full MITRE dump.

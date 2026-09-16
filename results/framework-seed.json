@@ -1,0 +1,362 @@
+{
+  "assignment": "framework",
+  "generated_at": "2026-09-16T18:49:45Z",
+  "evaluation_scope": "authored_seed_only",
+  "seed_only_not_a_benchmark": true,
+  "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",
+  "split": "test",
+  "n_units": 4,
+  "detector_path_counts": {
+    "sast_first_skip_llm": 2,
+    "hybrid_retrieve_skip_llm": 2
+  },
+  "validation_pass": 4,
+  "metrics": {
+    "tp": 2,
+    "fp": 0,
+    "tn": 2,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 4
+  },
+  "units": [
+    {
+      "unit_id": "java_cwe798_hardcoded",
+      "path": "sast_first_skip_llm",
+      "evidence": [
+        {
+          "evidence_id": "java_cwe798_hardcoded:hardcoded_secret_literal:14",
+          "rule_id": "hardcoded_secret_literal",
+          "cwe_id": "CWE-798",
+          "path": "data/seed/java/Cwe798HardcodedVulnerable.java",
+          "start_line": 14,
+          "end_line": 14,
+          "snippet": "        String password = \"password\";",
+          "rationale": "password / apiKey / secret assigned a string literal."
+        }
+      ],
+      "hits": [
+        {
+          "cwe_id": "CWE-798",
+          "score": 0.04918032786885246,
+          "name": "Use of Hard-coded Credentials"
+        },
+        {
+          "cwe_id": "CWE-259",
+          "score": 0.03225806451612903,
+          "name": "Use of Hard-coded Password"
+        },
+        {
+          "cwe_id": "CWE-287",
+          "score": 0.03149801587301587,
+          "name": "Improper Authentication"
+        },
+        {
+          "cwe_id": "CWE-321",
+          "score": 0.028782894736842105,
+          "name": "Use of Hard-coded Cryptographic Key"
+        },
+        {
+          "cwe_id": "CWE-89",
+          "score": 0.015873015873015872,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+        }
+      ],
+      "reasoning": {
+        "schema_version": "1.0",
+        "unit_id": "java_cwe798_hardcoded",
+        "decision": "vulnerable",
+        "cwe": {
+          "id": "CWE-798",
+          "name": "Use of Hard-coded Credentials"
+        },
+        "supporting_source_lines": {
+          "path": "data/seed/java/Cwe798HardcodedVulnerable.java",
+          "start_line": 14,
+          "end_line": 14,
+          "snippet": "        String password = \"password\";"
+        },
+        "root_cause": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data.",
+        "explanation": "SAST rule hardcoded_secret_literal matched this seed unit. password / apiKey / secret assigned a string literal.",
+        "remediation": "Do not ship passwords or API keys as string literals; inject them at deployment time.",
+        "confidence": 0.85,
+        "evidence_ids": [
+          "java_cwe798_hardcoded:hardcoded_secret_literal:14"
+        ]
+      },
+      "validation": {
+        "unit_id": "java_cwe798_hardcoded",
+        "passed": true,
+        "checks": [
+          {
+            "name": "schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "cwe_in_knowledge",
+            "passed": true,
+            "detail": "CWE-798"
+          },
+          {
+            "name": "cited_lines",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "decision_consistency",
+            "passed": true,
+            "detail": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "unit_id": "java_cwe798_env_config",
+      "path": "hybrid_retrieve_skip_llm",
+      "evidence": [],
+      "hits": [
+        {
+          "cwe_id": "CWE-259",
+          "score": 0.03278688524590164,
+          "name": "Use of Hard-coded Password"
+        },
+        {
+          "cwe_id": "CWE-798",
+          "score": 0.03225806451612903,
+          "name": "Use of Hard-coded Credentials"
+        },
+        {
+          "cwe_id": "CWE-943",
+          "score": 0.03149801587301587,
+          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+        },
+        {
+          "cwe_id": "CWE-321",
+          "score": 0.030798389007344232,
+          "name": "Use of Hard-coded Cryptographic Key"
+        },
+        {
+          "cwe_id": "CWE-74",
+          "score": 0.02904040404040404,
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+        }
+      ],
+      "reasoning": {
+        "schema_version": "1.0",
+        "unit_id": "java_cwe798_env_config",
+        "decision": "not_vulnerable",
+        "cwe": {
+          "id": "CWE-259",
+          "name": "Use of Hard-coded Password"
+        },
+        "supporting_source_lines": {
+          "path": "data/seed/java/Cwe798EnvConfigSafe.java",
+          "start_line": 10,
+          "end_line": 10,
+          "snippet": "public class Cwe798EnvConfigSafe {"
+        },
+        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-259) for explanation context; that is not a vulnerability decision.",
+        "remediation": "Read passwords from a secret manager or environment; never commit real passwords.",
+        "confidence": 0.7
+      },
+      "validation": {
+        "unit_id": "java_cwe798_env_config",
+        "passed": true,
+        "checks": [
+          {
+            "name": "schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "cwe_in_knowledge",
+            "passed": true,
+            "detail": "CWE-259"
+          },
+          {
+            "name": "cited_lines",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "decision_consistency",
+            "passed": true,
+            "detail": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "unit_id": "java_cwe327_md5",
+      "path": "sast_first_skip_llm",
+      "evidence": [
+        {
+          "evidence_id": "java_cwe327_md5:weak_crypto_algorithm:14",
+          "rule_id": "weak_crypto_algorithm",
+          "cwe_id": "CWE-327",
+          "path": "data/seed/java/Cwe327Md5Vulnerable.java",
+          "start_line": 14,
+          "end_line": 14,
+          "snippet": "        MessageDigest digest = MessageDigest.getInstance(\"MD5\");",
+          "rationale": "MessageDigest/Cipher getInstance using MD5, DES, RC4, or SHA-1."
+        }
+      ],
+      "hits": [
+        {
+          "cwe_id": "CWE-327",
+          "score": 0.04918032786885246,
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        },
+        {
+          "cwe_id": "CWE-328",
+          "score": 0.03200204813108039,
+          "name": "Use of Weak Hash"
+        },
+        {
+          "cwe_id": "CWE-326",
+          "score": 0.03128054740957967,
+          "name": "Inadequate Encryption Strength"
+        },
+        {
+          "cwe_id": "CWE-798",
+          "score": 0.015873015873015872,
+          "name": "Use of Hard-coded Credentials"
+        },
+        {
+          "cwe_id": "CWE-22",
+          "score": 0.015625,
+          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+        }
+      ],
+      "reasoning": {
+        "schema_version": "1.0",
+        "unit_id": "java_cwe327_md5",
+        "decision": "vulnerable",
+        "cwe": {
+          "id": "CWE-327",
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        },
+        "supporting_source_lines": {
+          "path": "data/seed/java/Cwe327Md5Vulnerable.java",
+          "start_line": 14,
+          "end_line": 14,
+          "snippet": "        MessageDigest digest = MessageDigest.getInstance(\"MD5\");"
+        },
+        "root_cause": "The software stores or transmits sensitive data using a cryptographic algorithm that is known to be weak, obsolete, or otherwise inappropriate for the protection needed.",
+        "explanation": "SAST rule weak_crypto_algorithm matched this seed unit. MessageDigest/Cipher getInstance using MD5, DES, RC4, or SHA-1.",
+        "remediation": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security.",
+        "confidence": 0.85,
+        "evidence_ids": [
+          "java_cwe327_md5:weak_crypto_algorithm:14"
+        ]
+      },
+      "validation": {
+        "unit_id": "java_cwe327_md5",
+        "passed": true,
+        "checks": [
+          {
+            "name": "schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "cwe_in_knowledge",
+            "passed": true,
+            "detail": "CWE-327"
+          },
+          {
+            "name": "cited_lines",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "decision_consistency",
+            "passed": true,
+            "detail": "ok"
+          }
+        ]
+      }
+    },
+    {
+      "unit_id": "java_cwe327_sha256",
+      "path": "hybrid_retrieve_skip_llm",
+      "evidence": [],
+      "hits": [
+        {
+          "cwe_id": "CWE-327",
+          "score": 0.03278688524590164,
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        },
+        {
+          "cwe_id": "CWE-328",
+          "score": 0.03225806451612903,
+          "name": "Use of Weak Hash"
+        },
+        {
+          "cwe_id": "CWE-20",
+          "score": 0.03149801587301587,
+          "name": "Improper Input Validation"
+        },
+        {
+          "cwe_id": "CWE-326",
+          "score": 0.03036576949620428,
+          "name": "Inadequate Encryption Strength"
+        },
+        {
+          "cwe_id": "CWE-74",
+          "score": 0.0288981288981289,
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+        }
+      ],
+      "reasoning": {
+        "schema_version": "1.0",
+        "unit_id": "java_cwe327_sha256",
+        "decision": "not_vulnerable",
+        "cwe": {
+          "id": "CWE-327",
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
+        },
+        "supporting_source_lines": {
+          "path": "data/seed/java/Cwe327Sha256Safe.java",
+          "start_line": 12,
+          "end_line": 12,
+          "snippet": "public class Cwe327Sha256Safe {"
+        },
+        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
+        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-327) for explanation context; that is not a vulnerability decision.",
+        "remediation": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security.",
+        "confidence": 0.7
+      },
+      "validation": {
+        "unit_id": "java_cwe327_sha256",
+        "passed": true,
+        "checks": [
+          {
+            "name": "schema",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "cwe_in_knowledge",
+            "passed": true,
+            "detail": "CWE-327"
+          },
+          {
+            "name": "cited_lines",
+            "passed": true,
+            "detail": "ok"
+          },
+          {
+            "name": "decision_consistency",
+            "passed": true,
+            "detail": "ok"
+          }
+        ]
+      }
+    }
+  ]
+}
