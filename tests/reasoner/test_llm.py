@@ -1,6 +1,6 @@
 import json
 
-from cwe_vuln.config import settings
+from cwe_vuln.config import DEFAULT_LLM_BASE_URL, DEFAULT_LLM_MODEL, settings
 from cwe_vuln.dataset import load_seed
 from cwe_vuln.reasoner import LLMReasoner, TemplateReasoner
 from cwe_vuln.sast import extract_evidence
@@ -28,26 +28,32 @@ def _valid_payload(unit_id: str = "java_cwe89_sqli_concat") -> dict:
 
 
 def test_from_env_without_key_returns_none(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("CWE_VULN_LLM_API_KEY", raising=False)
     assert LLMReasoner.from_env() is None
 
 
-def test_openai_api_key_is_used(monkeypatch) -> None:
+def test_openai_api_key_is_ignored(monkeypatch) -> None:
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("CWE_VULN_LLM_API_KEY", raising=False)
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
-    assert settings.llm_api_key() == "sk-test"
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-should-not-count")
+    assert settings.llm_api_key() is None
+    assert LLMReasoner.from_env() is None
+
+
+def test_groq_defaults_and_override_key(monkeypatch) -> None:
+    monkeypatch.delenv("CWE_VULN_LLM_MODEL", raising=False)
+    monkeypatch.delenv("CWE_VULN_LLM_BASE_URL", raising=False)
+    monkeypatch.setenv("GROQ_API_KEY", "gsk-primary")
+    monkeypatch.setenv("CWE_VULN_LLM_API_KEY", "gsk-override")
+    assert DEFAULT_LLM_MODEL == "llama-3.1-8b-instant"
+    assert DEFAULT_LLM_BASE_URL == "https://api.groq.com/openai/v1"
+    assert settings.llm_api_key() == "gsk-override"
     reasoner = LLMReasoner.from_env()
     assert reasoner is not None
-    assert reasoner.api_key == "sk-test"
-    assert reasoner.model == "gpt-4o-mini"
-    assert reasoner.base_url is None
-
-
-def test_project_key_overrides_openai_key(monkeypatch) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-openai")
-    monkeypatch.setenv("CWE_VULN_LLM_API_KEY", "sk-project")
-    assert settings.llm_api_key() == "sk-project"
+    assert reasoner.model == "llama-3.1-8b-instant"
+    assert reasoner.base_url == "https://api.groq.com/openai/v1"
+    assert reasoner.api_key == "gsk-override"
 
 
 def test_llm_reasoner_with_mocked_client_is_schema_valid() -> None:
@@ -57,7 +63,7 @@ def test_llm_reasoner_with_mocked_client_is_schema_valid() -> None:
     def complete(_messages: list[dict[str, str]]) -> str:
         return json.dumps(payload)
 
-    reasoner = LLMReasoner(api_key="sk-test", complete=complete)
+    reasoner = LLMReasoner(api_key="gsk-test", complete=complete)
     result = reasoner.reason(unit, extract_evidence(unit), [])
     assert result.decision == "vulnerable"
     assert result.cwe.id == "CWE-89"
@@ -73,7 +79,7 @@ def test_invalid_json_retries_then_falls_back_to_template() -> None:
         calls["n"] += 1
         return "not json at all"
 
-    reasoner = LLMReasoner(api_key="sk-test", complete=complete)
+    reasoner = LLMReasoner(api_key="gsk-test", complete=complete)
     result = reasoner.reason(unit, extract_evidence(unit), [])
     assert calls["n"] == 2
     assert reasoner.last_backend == "llm_fallback_template"
@@ -95,7 +101,7 @@ def test_invalid_then_valid_json_uses_retry() -> None:
             return "```text\nstill not json\n```"
         return "```json\n" + json.dumps(payload) + "\n```"
 
-    reasoner = LLMReasoner(api_key="sk-test", complete=complete)
+    reasoner = LLMReasoner(api_key="gsk-test", complete=complete)
     result = reasoner.reason(unit, extract_evidence(unit), [])
     assert calls["n"] == 2
     assert reasoner.last_backend == "llm"
