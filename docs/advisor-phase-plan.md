@@ -6,7 +6,7 @@ Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 Canonical context: [`rag-multiagent-context.txt`](../rag-multiagent-context.txt)
 How packages compose: [`architecture.md`](architecture.md)
 
-Cost-aware routing is later work. It is **not** in the thesis title.
+Cost-aware routing is an orchestrator component. It is **not** in the thesis title.
 
 ## Assignments 1–4
 
@@ -24,11 +24,11 @@ Cost-aware routing is later work. It is **not** in the thesis title.
 | SAST evidence extraction | **Done** [PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5) | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
 | Reasoning agent | **Done** [PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6) | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/test_reasoner.py` |
 | Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/test_validator.py` |
-| Cost-aware orchestrator | **This PR** | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/test_orchestrator.py` |
-| Complete multi-agent framework | Not started | `framework` | — | — |
+| Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/test_orchestrator.py` |
+| Complete multi-agent framework | **This PR** | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
 
 ## Honesty
 
-- A1 detection and A3 retrieval scores are **seed-only — not a benchmark**
+- All detection/retrieval/framework scores are **seed-only — not a benchmark**
 - A3 retrieval is lexical TF-IDF, not neural embeddings
-- Reasoner is a template composer on the seed, not an LLM agent
+- Reasoner is a template composer; LLM is skipped without a key and is not implemented

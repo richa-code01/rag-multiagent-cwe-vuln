@@ -37,20 +37,20 @@ flowchart LR
   config --> orch
 ```
 
-| Package | Responsibility | Status in this PR |
+| Package | Responsibility | Status |
 | --- | --- | --- |
 | `dataset` | Load labels/split/source. No detection. | Implemented |
 | `config` | Top-K, RRF k, LLM env names. No CWE facts. | Implemented |
-| `detector` | Regex rules + binary `detect()`. | Implemented (A1) |
-| `evidence` | `Evidence` with file/lines/snippet/rationale | **This PR** |
-| `ports` | `EvidenceExtractor` protocol | **This PR** |
+| `detector` | Regex rules + binary `detect()`. | Implemented |
+| `evidence` | `Evidence` with file/lines/snippet/rationale | Implemented |
+| `ports` | Extractor / retriever / reasoner / validator protocols | Implemented |
 | `knowledge` | CWE store + get/search/relationships/mitigations | Implemented |
 | `retrieval` | Index, TF-IDF, SAST signal, relationship expand, RRF | Implemented |
-| `schema` | JSON Schema + `ReasoningResult` dump/load | Implemented (A4) |
-| `reasoner` | Unit + evidence + hits → `ReasoningResult` | **This PR** |
-| `validator` | Schema + KB + cited lines + decision consistency | **This PR** |
-| `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | **This PR** |
-| `evaluate` / `framework` | Thin CLIs: A1 metrics vs full pipeline | A1 eval only |
+| `schema` | JSON Schema + `ReasoningResult` dump/load | Implemented |
+| `reasoner` | Unit + evidence + hits → `ReasoningResult` | Implemented |
+| `validator` | Schema + KB + cited lines + decision consistency | Implemented |
+| `orchestrator` | Wire steps, SAST-first, skip LLM if no key / evidence enough | Implemented |
+| `evaluate` / `framework` | Thin CLIs: A1 metrics vs full pipeline | **This PR** (`cwe-vuln-pipeline`) |
 
 ## Rules
 
