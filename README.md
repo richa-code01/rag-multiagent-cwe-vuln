@@ -2,22 +2,26 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** Assignment 1 — Java CWE seed dataset + SAST-style baseline (**this repository state**)
+**Current milestone:** Assignment 2 — curated CWE knowledge layer (Assignment 1 seed + baseline is already on `main`)
+
+Canonical session context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt) (keep this file in sync with README and `docs/`).
 
 ## Problem statement
 
 Software vulnerability detectors that only emit a yes/no flag are hard to trust in review. This thesis studies **explainable** detection: given a code unit, identify whether it is vulnerable, map it to a **CWE** (Common Weakness Enumeration) weakness, and (in later assignments) ground that explanation in a CWE knowledge base via retrieval.
 
-This repository **does not yet implement** that framework. Assignment 1 only ships an authored **Java seed** (12 units, 6 CWEs, explicit 8/4 train/test split) and a **regex / SAST-style baseline** with no API key. Scores below are **seed-only — not a benchmark**.
+This repository **does not yet implement** the full multi-agent framework. Implemented so far: an authored **Java seed** (12 units, 6 CWEs, explicit 8/4 train/test split), a **regex / SAST-style baseline** (no API key), and a **curated CWE knowledge store** with a query API. Detection scores are **seed-only — not a benchmark**.
 
 ## Eventual framework (not implemented here)
 
-High-level pipeline for later work. None of these stages except the seed + regex baseline exist in this PR.
+High-level pipeline. Only the seed, regex baseline, and CWE knowledge *store/query* exist in this PR.
 
 ```text
 code unit
+    → regex / SAST-style baseline (Assignment 1)
+    → CWE knowledge lookup (Assignment 2)
+    → (future) hybrid retrieval over the CWE knowledge layer
     → (future) SAST evidence extraction
-    → (future) hybrid retrieval over a CWE knowledge layer
     → (future) reasoning agent (structured explanation)
     → (future) validator agent
     → (future) cost-aware orchestrator
@@ -26,8 +30,8 @@ code unit
 
 Advisor sequence:
 
-1. **Dataset + baseline** — this PR
-2. CWE knowledge layer — not started
+1. **Dataset + baseline** — done (PR #1)
+2. **CWE knowledge layer** — this PR
 3. Hybrid retrieval — not started
 4. Structured reasoning output schema — not started
 
@@ -37,9 +41,9 @@ After those four: SAST evidence extraction, reasoning agent, validator, cost-awa
 
 | Piece | Status |
 | --- | --- |
-| Authored Java seed (6 CWEs, 12 units, 8/4 split) | In this PR |
-| Regex / SAST-style baseline + precision/recall/F1 | In this PR |
-| CWE knowledge-base ingestion (Assignment 2) | **Not implemented** |
+| Authored Java seed (6 CWEs, 12 units, 8/4 split) | Done (Assignment 1) |
+| Regex / SAST-style baseline + precision/recall/F1 | Done (Assignment 1) |
+| CWE knowledge store + query interface (Assignment 2) | **This PR** |
 | Hybrid retrieval / RAG (Assignment 3) | **Not implemented** |
 | Structured reasoning schema (Assignment 4) | **Not implemented** |
 | Multi-agent orchestration, SAST evidence product pipeline, cost-aware routing | **Not implemented** |
@@ -84,6 +88,10 @@ uv run pytest
 uv run python -m cwe_vuln
 # equivalent:
 uv run cwe-vuln
+uv run cwe-vuln-kb demo
+uv run cwe-vuln-kb get CWE-89
+uv run cwe-vuln-kb relationships CWE-798
+uv run cwe-vuln-kb mitigations CWE-22
 ```
 
 The eval writes:
@@ -96,9 +104,13 @@ Recorded metrics (re-run the command above to regenerate) are also copied into [
 ## Layout
 
 ```text
-src/cwe_vuln/     Python package (dataset, detector, metrics, eval)
+src/cwe_vuln/     Python package (dataset, detector, knowledge, metrics, eval)
 data/seed/        labels.jsonl + java/ teaching units
-tests/            split + metrics + detector plumbing
-docs/             advisor plan + Assignment 1 write-up
+data/cwe/         curated CWE JSON knowledge store
+tests/            split + metrics + detector + knowledge plumbing
+docs/             advisor plan + assignment write-ups
 results/          generated baseline metrics
 ```
+
+CWE knowledge details: [`docs/assignment-2-cwe-knowledge.md`](docs/assignment-2-cwe-knowledge.md).
+Advisor sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md).
