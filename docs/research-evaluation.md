@@ -3,7 +3,8 @@
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
-**This evaluation is on an authored corpus — not a public benchmark.**
+**This evaluation is on an authored corpus — not Juliet.**
+Juliet Java v1.3 mapped-subset numbers live in [`docs/benchmark-results.md`](benchmark-results.md) (SAST n=20728; LLM sample n=72). Do not copy those figures into this table.
 It is not Juliet, OWASP Benchmark, or Big-Vul. Numbers below were computed from
 units under `data/seed/java/` and `data/research/java/` with labels in the
 manifests. Related-work names, if mentioned, are papers already in

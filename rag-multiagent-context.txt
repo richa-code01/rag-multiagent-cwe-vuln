@@ -12,10 +12,12 @@ Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
 Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
 
-Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
+Honesty: no invented citations; no invented Juliet/OWASP/Big-Vul numbers;
 no “100% novel” / “first ever RAG-CWE detector”; seed-only eval on the
 original 12 units / 18 queries; research eval on an authored 36-unit corpus
-(24 held-out traps). Java units are teaching samples, not exploits.
+(24 held-out traps); Juliet Java v1.3 mapped-subset numbers only as measured
+in docs/benchmark-results.md (SAST n=20728, LLM sample n=72). Java units are
+teaching samples, not exploits.
 
 Defendable contribution: a RAG-augmented multi-agent detector for six Java
 CWEs in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM +
@@ -27,8 +29,8 @@ LLM recovers most cases.
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: live-research
-Branch: live-research
+Last phase in this file: benchmark-eval
+Branch: benchmark-eval
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -44,7 +46,8 @@ Branch: live-research
 | Layered packages | DONE PR #10 | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
 | Neural embeddings + LLM reasoner | DONE | embeddings-llm | docs/architecture.md | MiniLM local; Groq required on default path |
 | Research evaluation | DONE | research-eval | docs/research-evaluation.md | uv run cwe-vuln-eval --suite research |
-| Live research default | THIS PR | live-research | docs/research-evaluation.md | GROQ_API_KEY required; --ablation template for F1=0 contrast |
+| Live research default | DONE | live-research | docs/research-evaluation.md | GROQ_API_KEY required; --ablation template for F1=0 contrast |
+| Juliet Java mapped eval | THIS PR | benchmark-eval | docs/benchmark-plan.md · docs/benchmark-results.md | uv run cwe-vuln-eval --suite juliet-sast |
 
 ============================================================
 PACKAGE TREE
@@ -52,7 +55,7 @@ PACKAGE TREE
 src/cwe_vuln/
   config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS, require_llm_api_key
   models/             Evidence, RankedHit, ReasoningResult, ValidationReport, PipelineResult, binary_metrics
-  dataset/            SeedUnit, load_seed (8/4), load_research_corpus (36), RESEARCH_TEST_UNIT_IDS (24)
+  dataset/            SeedUnit, load_seed (8/4), load_research_corpus (36), load_juliet_units
   knowledge/          CWEKnowledgeBase
   sast/               regex RULES, detect(), extract_evidence()  — evidence only, not the decision
   retrieval/          Embedder, MiniLMEmbedder, TfidfEmbedder, DenseIndex, HybridRetriever, RRF
@@ -216,10 +219,12 @@ This repo is Richa Verma CWE/RAG work only. Do not add UAV/compiler code.
 ============================================================
 LIMITATIONS
 ============================================================
-- Seed-only 12-unit scores are distinct from research-split 24-unit scores.
+- Seed-only 12-unit scores, authored 36-unit scores, and Juliet subset scores are three tables.
 - Research corpus is authored, small N, traps written against our regex.
 - MiniLM may be tfidf_fallback if the model is not cached / download failed.
 - Default live path requires GROQ_API_KEY; missing key fails clearly.
 - CWE store is a curated subset, not a full MITRE dump.
-- No Juliet / OWASP Benchmark / Big-Vul numbers.
+- Juliet Java v1.3: NIST zip 403; GitHub mirror used. Missing CWE-79/22/502/798 folders.
+- Juliet SAST n=20728 mapped/nearby folders only; LLM n=72 stratified sample (seed 13, 12/CWE × 6 ids).
+- Not the full 28,881-case Juliet suite. No OWASP Benchmark run. No retrieval@Juliet.
 - Not a claim of 100% novelty or SOTA.

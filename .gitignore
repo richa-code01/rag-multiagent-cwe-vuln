@@ -32,6 +32,11 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
+# Juliet / public benchmark binaries (adapter + manifests are committed)
+data/benchmarks/juliet-java/
+data/benchmarks/downloads/
+*.zip
+
 # Local thesis drafts (do not commit)
 ApproachDoc.pdf
 RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx

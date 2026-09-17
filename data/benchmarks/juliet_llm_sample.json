@@ -1,0 +1,643 @@
+{
+  "seed": 13,
+  "per_cwe_target": 12,
+  "n_units": 72,
+  "juliet_version": "1.3",
+  "mapping": {
+    "thesis_cwes": [
+      "CWE-89",
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798",
+      "CWE-327"
+    ],
+    "primary_present": [
+      "CWE-89",
+      "CWE-327"
+    ],
+    "primary_missing_in_juliet_java_1_3": [
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798"
+    ],
+    "ingest_folders": [
+      {
+        "cwe_id": "CWE-89",
+        "folder": "CWE89_SQL_Injection",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-80",
+        "folder": "CWE80_XSS",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-81",
+        "folder": "CWE81_XSS_Error_Message",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-83",
+        "folder": "CWE83_XSS_Attribute",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-23",
+        "folder": "CWE23_Relative_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-36",
+        "folder": "CWE36_Absolute_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-327",
+        "folder": "CWE327_Use_Broken_Crypto",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-328",
+        "folder": "CWE328_Reversible_One_Way_Hash",
+        "role": "nearby_CWE327_not_relabeled"
+      },
+      {
+        "cwe_id": "CWE-259",
+        "folder": "CWE259_Hard_Coded_Password",
+        "role": "nearby_missing_CWE798"
+      },
+      {
+        "cwe_id": "CWE-321",
+        "folder": "CWE321_Hard_Coded_Cryptographic_Key",
+        "role": "nearby_missing_CWE798"
+      }
+    ],
+    "llm_sample_cwes": [
+      "CWE-89",
+      "CWE-80",
+      "CWE-23",
+      "CWE-327",
+      "CWE-328",
+      "CWE-259"
+    ],
+    "sast_only_ingested_cwes": [
+      "CWE-81",
+      "CWE-83",
+      "CWE-36",
+      "CWE-321"
+    ],
+    "cwe502": "no Juliet Java 1.3 folder; not evaluated",
+    "retrieval_at_juliet": "skipped \u2014 nearby gold ids are not in the curated CWE store"
+  },
+  "provenance": {
+    "juliet_version": "1.3",
+    "source_url": "https://github.com/find-sec-bugs/juliet-test-suite.git",
+    "downloaded_at": "2026-09-17T13:21:18Z",
+    "method": "github_sparse_clone",
+    "sha256_or_commit": "b2c6df3733e2176fe7097e4784895c6891632b4c",
+    "nist_suite_page": "https://samate.nist.gov/SARD/test-suites/111",
+    "notes": "NIST zip failed or was blocked; used find-sec-bugs Juliet Java 1.3 mirror. Prior NIST attempt: nist_zip_failed: HTTP Error 403: Forbidden"
+  },
+  "per_cwe_counts": {
+    "CWE-23": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    },
+    "CWE-259": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    },
+    "CWE-327": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    },
+    "CWE-328": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    },
+    "CWE-80": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    },
+    "CWE-89": {
+      "vulnerable": 6,
+      "not_vulnerable": 6,
+      "n": 12
+    }
+  },
+  "unit_ids": [
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__Environment_41__method_bad",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_15__method_goodG2B2",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_03__method_bad",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_71a__method_goodG2B",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_04__method_bad",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_06__method_goodG2B1",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_07__method_bad",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_10__method_goodG2B1",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getQueryString_Servlet_04__method_goodG2B2",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_08__method_goodG2B2",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_12__method_bad",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_22a__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_03__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_14__method_goodG2B2",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_22a__method_goodG2B2",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_52a__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_81_goodG2B__file_good",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_13__method_goodG2B1",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_81a__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_01__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_08__method_bad",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_13__method_goodG2B1",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_15__method_goodG2B1",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_67a__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_01__method_good1",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_02__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_05__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_09__method_good1",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_10__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_11__method_good1",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_12__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_17__method_good1",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_bad",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_good1",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_14__method_good2",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_16__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_good1",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_11__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_13__method_good1",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_03__method_good2",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_10__method_good2",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_15__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_01__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_04__method_good1",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_08__method_bad",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_16__method_good1",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_File_61a__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_PropertiesFile_05__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_connect_tcp_81a__method_goodG2B",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_database_66a__method_goodG2B",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_database_72a__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_12__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_71a__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_getQueryString_Servlet_41__method_bad",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_listen_tcp_75a__method_goodG2B",
+    "juliet_s01_CWE80_XSS__Servlet_File_53a__method_goodG2B",
+    "juliet_s01_CWE80_XSS__Servlet_database_71b__method_goodG2BSink",
+    "juliet_s01_CWE80_XSS__Servlet_listen_tcp_21__method_goodG2B1",
+    "juliet_s01_CWE89_SQL_Injection__console_readLine_prepareStatement_11__method_goodG2B2",
+    "juliet_s01_CWE89_SQL_Injection__database_executeBatch_02__method_bad",
+    "juliet_s01_CWE89_SQL_Injection__database_execute_72a__method_goodG2B",
+    "juliet_s01_CWE89_SQL_Injection__database_execute_73a__method_bad",
+    "juliet_s02_CWE89_SQL_Injection__File_prepareStatement_07__method_goodB2G2",
+    "juliet_s03_CWE89_SQL_Injection__listen_tcp_executeUpdate_21__method_goodB2G2Sink",
+    "juliet_s04_CWE89_SQL_Injection__PropertiesFile_execute_51a__method_bad",
+    "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_08__method_goodB2G1",
+    "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_67a__method_bad",
+    "juliet_s04_CWE89_SQL_Injection__Property_execute_42__method_bad",
+    "juliet_s04_CWE89_SQL_Injection__Property_prepareStatement_10__method_goodB2G2",
+    "juliet_s04_CWE89_SQL_Injection__URLConnection_executeUpdate_81a__method_bad"
+  ],
+  "units": [
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__Environment_41__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__Environment_41.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_15__method_goodG2B2",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__File_15.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_03__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__database_03.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_71a__method_goodG2B",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__database_71a.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_04__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__getCookies_Servlet_04.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_06__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__getCookies_Servlet_06.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_07__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__getParameter_Servlet_07.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_10__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__getParameter_Servlet_10.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getQueryString_Servlet_04__method_goodG2B2",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__getQueryString_Servlet_04.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_08__method_goodG2B2",
+      "cwe_id": "CWE-23",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__listen_tcp_08.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_12__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__listen_tcp_12.java"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_22a__method_bad",
+      "cwe_id": "CWE-23",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE23_Relative_Path_Traversal/CWE23_Relative_Path_Traversal__listen_tcp_22a.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_03__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__driverManager_03.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_14__method_goodG2B2",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__driverManager_14.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_22a__method_goodG2B2",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__driverManager_22a.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_52a__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__driverManager_52a.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_81_goodG2B__file_good",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__driverManager_81_goodG2B.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_13__method_goodG2B1",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__kerberosKey_13.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_81a__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__kerberosKey_81a.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_01__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__passwordAuth_01.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_08__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__passwordAuth_08.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_13__method_goodG2B1",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__passwordAuth_13.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_15__method_goodG2B1",
+      "cwe_id": "CWE-259",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__passwordAuth_15.java"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_67a__method_bad",
+      "cwe_id": "CWE-259",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE259_Hard_Coded_Password/CWE259_Hard_Coded_Password__passwordAuth_67a.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_01__method_good1",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_01.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_02__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_02.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_05__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_05.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_09__method_good1",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_09.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_10__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_10.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_11__method_good1",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_11.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_12__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_12.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_17__method_good1",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__3DES_17.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__DES_07.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_good1",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__DES_07.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_14__method_good2",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__DES_14.java"
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_16__method_bad",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE327_Use_Broken_Crypto/CWE327_Use_Broken_Crypto__DES_16.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD2_03.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD2_09.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_good1",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD2_09.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_11__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD2_11.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_13__method_good1",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD2_13.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_03__method_good2",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD5_03.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_10__method_good2",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD5_10.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_15__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__MD5_15.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_01__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__SHA1_01.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_04__method_good1",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__SHA1_04.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_08__method_bad",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__SHA1_08.java"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_16__method_good1",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE328_Reversible_One_Way_Hash/CWE328_Reversible_One_Way_Hash__SHA1_16.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_File_61a__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_File_61a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_PropertiesFile_05__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_PropertiesFile_05.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_connect_tcp_81a__method_goodG2B",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_connect_tcp_81a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_database_66a__method_goodG2B",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_database_66a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_database_72a__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_database_72a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_12__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_getParameter_Servlet_12.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_71a__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_getParameter_Servlet_71a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getQueryString_Servlet_41__method_bad",
+      "cwe_id": "CWE-80",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_getQueryString_Servlet_41.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_listen_tcp_75a__method_goodG2B",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__CWE182_Servlet_listen_tcp_75a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_File_53a__method_goodG2B",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__Servlet_File_53a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_database_71b__method_goodG2BSink",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__Servlet_database_71b.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_listen_tcp_21__method_goodG2B1",
+      "cwe_id": "CWE-80",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE80_XSS/s01/CWE80_XSS__Servlet_listen_tcp_21.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_prepareStatement_11__method_goodG2B2",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s01/CWE89_SQL_Injection__console_readLine_prepareStatement_11.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_executeBatch_02__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s01/CWE89_SQL_Injection__database_executeBatch_02.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_execute_72a__method_goodG2B",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s01/CWE89_SQL_Injection__database_execute_72a.java"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_execute_73a__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s01/CWE89_SQL_Injection__database_execute_73a.java"
+    },
+    {
+      "unit_id": "juliet_s02_CWE89_SQL_Injection__File_prepareStatement_07__method_goodB2G2",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s02/CWE89_SQL_Injection__File_prepareStatement_07.java"
+    },
+    {
+      "unit_id": "juliet_s03_CWE89_SQL_Injection__listen_tcp_executeUpdate_21__method_goodB2G2Sink",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s03/CWE89_SQL_Injection__listen_tcp_executeUpdate_21.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__PropertiesFile_execute_51a__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__PropertiesFile_execute_51a.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_08__method_goodB2G1",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__Property_executeQuery_08.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_67a__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__Property_executeQuery_67a.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_execute_42__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__Property_execute_42.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_prepareStatement_10__method_goodB2G2",
+      "cwe_id": "CWE-89",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__Property_prepareStatement_10.java"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__URLConnection_executeUpdate_81a__method_bad",
+      "cwe_id": "CWE-89",
+      "label": "vulnerable",
+      "path": "data/benchmarks/juliet-java/src/testcases/CWE89_SQL_Injection/s04/CWE89_SQL_Injection__URLConnection_executeUpdate_81a.java"
+    }
+  ]
+}

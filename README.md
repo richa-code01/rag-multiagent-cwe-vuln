@@ -2,10 +2,12 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** live Groq research path (`live-research`)
+**Current milestone:** Juliet Java public-benchmark subset (`benchmark-eval`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
+
+Authored 36-unit scores and Juliet scores are **different tables**. Do not mix them.
 
 ## Contribution (what this thesis actually claims)
 
@@ -17,7 +19,7 @@ A RAG-augmented multi-agent detector for **six Java CWEs** in which:
 4. A validator checks schema, CWE-in-KB, cited lines, and JSON consistency — **not** SAST agreement
 5. On an authored 24-unit FP/FN trap split, regex SAST and TemplateReasoner fail (F1=0) and the live LLM recovers most cases
 
-This is **not** a claim of SOTA, Juliet/OWASP numbers, 100% novelty, or a public benchmark. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition and the honest trap-split contrast.
+This is **not** a claim of SOTA, 100% novelty, or that the authored 36-unit trap split is Juliet. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition, the honest trap-split contrast, and a **mapped Juliet Java v1.3 subset** evaluation (not the full 28,881-case suite).
 
 ## Problem statement
 
@@ -54,7 +56,9 @@ uv run cwe-vuln-pipeline --offline
 uv run cwe-vuln-eval --suite research --ablation template
 ```
 
-**Research split** (24 held-out authored traps, **authored corpus — not a public benchmark**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), validator **24/24** (was 2/24 under the old SAST-iff-vulnerable rule). Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
+**Research split** (24 held-out authored traps, **authored corpus — not Juliet**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), validator **24/24**. Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
+
+**Juliet Java v1.3** (mapped/nearby CWE folders, **n=20728 SAST**; live Groq on stratified sample **n=72**): regex SAST P=0.300 R=0.334 F1=0.316; sample template F1=0.552; sample live Groq F1=0.733. NIST zip returned HTTP 403; GitHub mirror commit `b2c6df3`. CWE-79/22/502/798 folders are missing; nearby ids were not relabeled. Details: [`docs/benchmark-results.md`](docs/benchmark-results.md).
 
 ## MiniLM embeddings
 
@@ -107,9 +111,10 @@ Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`. Pat
 | Layered packages (`models`, `dataset`, `sast`, …) | Done ([PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10)) |
 | Live LLM reasoner | Done — Groq `LLMReasoner`; default path **fails** without `GROQ_API_KEY` |
 | Research evaluation (authored 36-unit corpus) | Done — `uv run cwe-vuln-eval --suite research` |
-| Live research default (this PR) | Groq required; validator no longer tied to SAST |
+| Live research default | Groq required; validator no longer tied to SAST |
+| Juliet Java v1.3 mapped eval | Done — `uv run cwe-vuln-eval --suite juliet-sast` / `--suite juliet-llm-sample` |
 
-No Juliet / OWASP Benchmark / Big-Vul numbers.
+Authored 36-unit metrics live in [`docs/research-evaluation.md`](docs/research-evaluation.md). Juliet metrics live in [`docs/benchmark-results.md`](docs/benchmark-results.md). Those tables are not interchangeable.
 
 ## Seed (Assignment 1)
 
@@ -133,6 +138,17 @@ A1 regex-only overall (**seed-only**): P=1.000 R=1.000 F1=1.000 FP=0 FN=0.
 | authored total | 36 | **not a public benchmark** |
 
 `uv run cwe-vuln-eval --suite research` writes `results/experiments/` and `results/research-eval-summary.json`.
+
+## Juliet (public benchmark subset)
+
+Protocol: [`docs/benchmark-plan.md`](docs/benchmark-plan.md). Measured results: [`docs/benchmark-results.md`](docs/benchmark-results.md).
+
+```bash
+uv run cwe-vuln-eval --suite juliet-sast
+uv run cwe-vuln-eval --suite juliet-llm-sample --per-cwe 12
+```
+
+Do not mix these numbers with the 36-unit authored table.
 
 ## Knowledge / retrieval / schema
 

@@ -27,3 +27,5 @@ Writes `results/framework-seed.json` (and `.md`). Missing Groq key → exit 1 wi
 Still not a public benchmark. MiniLM is local. Live Groq uses `GROQ_API_KEY`. Template/SAST are ablations (`--offline`, `cwe-vuln-eval --ablation template`); they scored F1=0 on the 24-unit research split.
 
 Research evaluation (authored 24-unit held-out split) is `uv run cwe-vuln-eval --suite research` → [`research-evaluation.md`](research-evaluation.md).
+
+Juliet Java v1.3 mapped subset is `uv run cwe-vuln-eval --suite juliet-sast` / `--suite juliet-llm-sample` → [`benchmark-results.md`](benchmark-results.md). That table is not the 36-unit authored table.

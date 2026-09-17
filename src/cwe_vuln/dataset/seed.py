@@ -9,7 +9,7 @@ from typing import Literal
 
 from cwe_vuln.config import SEED_CWE_IDS, repo_root
 
-Split = Literal["train", "test", "research_test"]
+Split = Literal["train", "test", "research_test", "juliet"]
 Label = Literal["vulnerable", "not_vulnerable"]
 
 # Explicit 8/4 split. Order is stable and is the source of truth (not shuffled).

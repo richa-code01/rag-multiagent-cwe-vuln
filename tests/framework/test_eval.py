@@ -1,3 +1,6 @@
+from pathlib import Path
+import json
+
 from cwe_vuln.dataset import load_research_corpus
 from cwe_vuln.framework.eval import main as eval_main
 from cwe_vuln.framework.eval import trial_sast, write_summary
@@ -37,3 +40,23 @@ def test_eval_template_ablation_does_not_require_key(tmp_path) -> None:
     assert (tmp_path / "sast_regex_research_test.json").is_file()
     assert (tmp_path / "template_skip_llm_research_test.json").is_file()
     assert not (tmp_path / "llm_then_research_test.json").is_file()
+
+
+def test_juliet_sast_cli_on_fixture(tmp_path) -> None:
+    fixture = Path(__file__).resolve().parents[1] / "fixtures" / "juliet"
+    code = eval_main(
+        [
+            "--suite",
+            "juliet-sast",
+            "--juliet-tree",
+            str(fixture),
+            "--output-dir",
+            str(tmp_path),
+        ]
+    )
+    assert code == 0
+    payload = json.loads((tmp_path / "sast_regex_juliet.json").read_text(encoding="utf-8"))
+    assert payload["trial_id"] == "sast_regex_juliet"
+    assert payload["n_units"] >= 4
+    assert payload["evaluation_scope"] == "juliet_java_v1_3_mapped_subset"
+    assert payload["metrics"]["support"] == payload["n_units"]

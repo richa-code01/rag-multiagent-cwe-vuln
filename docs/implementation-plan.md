@@ -254,3 +254,14 @@ Live Groq is the default research path. Template/SAST remain ablations.
 - `uv run pytest`: 62 passed (Groq mocked; default CLI tests fail clearly without a key).
 - Live re-run: `uv run cwe-vuln-eval --suite research` + seed test n=4. then_llm P=0.857 R=1.000 F1=0.923, validator **24/24** (was 2/24). Seed test P=R=F1=1.000, validator 4/4. Metrics in `results/research-eval-summary.md`.
 - No UAV/compiler code. No `.env` / `gsk_` in git.
+
+## Executed (`benchmark-eval`, 2026-09-17)
+
+Public Juliet Java v1.3 mapped-subset evaluation. Numbers from `cwe-vuln-eval`, not invented.
+
+- NIST SARD zip HTTP 403; sparse-cloned `find-sec-bugs/juliet-test-suite` commit `b2c6df3733e2176fe7097e4784895c6891632b4c`.
+- Ingested 20728 good/bad units from mapped/nearby folders. Missing Juliet folders: CWE-79, 22, 502, 798. Nearby ids not relabeled.
+- Full regex SAST n=20728: P=0.300 R=0.334 F1=0.316.
+- Stratified Groq sample n=72 (seed 13, 12 units × 6 CWE ids, `--per-cwe 12`): template F1=0.552; live `openai/gpt-oss-20b` F1=0.733 (P=0.917 R=0.611). No 429. 42/72 `llm_fallback_template`.
+- Retrieval@Juliet skipped. OWASP Benchmark not run.
+- `uv run pytest`: 66 passed. No `.env` / `gsk_` / Juliet tarball in git.

@@ -36,12 +36,15 @@ Do **not** tell the advisor this is SOTA, Juliet/OWASP numbers, 100% novel, or t
 | Layered package layout | **Done** [PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10) | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
 | Neural embeddings + LLM reasoner | **Done** | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; Groq required on default path |
 | Research evaluation (authored corpus) | **Done** | `research-eval` | [research-evaluation.md](research-evaluation.md) | `uv run cwe-vuln-eval --suite research` |
-| Live research default | **This PR** | `live-research` | [research-evaluation.md](research-evaluation.md) | Requires `GROQ_API_KEY`; `--ablation template` for F1=0 contrast |
+| Live research default | **Done** | `live-research` | [research-evaluation.md](research-evaluation.md) | Requires `GROQ_API_KEY`; `--ablation template` for F1=0 contrast |
+| Juliet Java v1.3 mapped eval | **This PR** | `benchmark-eval` | [benchmark-plan.md](benchmark-plan.md) · [benchmark-results.md](benchmark-results.md) | `uv run cwe-vuln-eval --suite juliet-sast` |
 
 ## Honesty
 
 - Assignment 1–4 and seed pipeline scores remain **seed-only — not a benchmark** (12 units / 18 queries)
-- Research evaluation is on an **authored expanded corpus** (36 units, 24 held-out traps, 48 queries) — **not** Juliet / OWASP Benchmark / Big-Vul
+- Research evaluation is on an **authored expanded corpus** (36 units, 24 held-out traps, 48 queries) — **not** the Juliet table
+- Juliet Java v1.3 mapped subset is measured separately: SAST n=20728 F1=0.316; Groq sample n=72 F1=0.733 ([benchmark-results.md](benchmark-results.md))
+- A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
 - A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
 - `LLMReasoner` is the default live composer; `TemplateReasoner` is `--offline` / `--ablation template` only
 - SAST and template F1=0 on research_test is the **contrast**, not the deployed system

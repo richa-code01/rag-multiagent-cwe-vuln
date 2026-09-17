@@ -1,0 +1,414 @@
+{
+  "generated_at": "2026-09-17T13:34:15Z",
+  "evaluation_scope": "juliet_java_v1_3_mapped_subset",
+  "disclaimer": "Juliet Java public-benchmark subset. Not the authored 36-unit research table. LLM scores are on a stratified sample only unless n equals the ingested SAST set. Nearby CWE folders keep their Juliet ids (no silent relabel to 79/22/798/327).",
+  "juliet_version": "1.3",
+  "cwe_mapping": {
+    "thesis_cwes": [
+      "CWE-89",
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798",
+      "CWE-327"
+    ],
+    "primary_present": [
+      "CWE-89",
+      "CWE-327"
+    ],
+    "primary_missing_in_juliet_java_1_3": [
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798"
+    ],
+    "ingest_folders": [
+      {
+        "cwe_id": "CWE-89",
+        "folder": "CWE89_SQL_Injection",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-80",
+        "folder": "CWE80_XSS",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-81",
+        "folder": "CWE81_XSS_Error_Message",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-83",
+        "folder": "CWE83_XSS_Attribute",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-23",
+        "folder": "CWE23_Relative_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-36",
+        "folder": "CWE36_Absolute_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-327",
+        "folder": "CWE327_Use_Broken_Crypto",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-328",
+        "folder": "CWE328_Reversible_One_Way_Hash",
+        "role": "nearby_CWE327_not_relabeled"
+      },
+      {
+        "cwe_id": "CWE-259",
+        "folder": "CWE259_Hard_Coded_Password",
+        "role": "nearby_missing_CWE798"
+      },
+      {
+        "cwe_id": "CWE-321",
+        "folder": "CWE321_Hard_Coded_Cryptographic_Key",
+        "role": "nearby_missing_CWE798"
+      }
+    ],
+    "llm_sample_cwes": [
+      "CWE-89",
+      "CWE-80",
+      "CWE-23",
+      "CWE-327",
+      "CWE-328",
+      "CWE-259"
+    ],
+    "sast_only_ingested_cwes": [
+      "CWE-81",
+      "CWE-83",
+      "CWE-36",
+      "CWE-321"
+    ],
+    "cwe502": "no Juliet Java 1.3 folder; not evaluated",
+    "retrieval_at_juliet": "skipped \u2014 nearby gold ids are not in the curated CWE store"
+  },
+  "trials": [
+    {
+      "trial_id": "template_juliet_sample",
+      "status": "ok",
+      "n_units": 72,
+      "n_scored": 72,
+      "metrics": {
+        "tp": 16,
+        "fp": 6,
+        "tn": 30,
+        "fn": 20,
+        "precision": 0.7272727272727273,
+        "recall": 0.4444444444444444,
+        "f1": 0.5517241379310345,
+        "support": 72
+      },
+      "per_cwe": {
+        "CWE-23": {
+          "tp": 5,
+          "fp": 5,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.5,
+          "recall": 0.8333333333333334,
+          "f1": 0.625,
+          "support": 12
+        },
+        "CWE-259": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-327": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 6,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "CWE-328": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 6,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "support": 12
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-89": {
+          "tp": 2,
+          "fp": 1,
+          "tn": 5,
+          "fn": 4,
+          "precision": 0.6666666666666666,
+          "recall": 0.3333333333333333,
+          "f1": 0.4444444444444444,
+          "support": 12
+        }
+      },
+      "rate_limited": false,
+      "notes": "Template ablation. Sample n=72 seed=13 per_cwe=12. Ablation: TemplateReasoner on the Juliet LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_juliet_sample",
+      "status": "ok",
+      "n_units": 72,
+      "n_scored": 72,
+      "metrics": {
+        "tp": 22,
+        "fp": 2,
+        "tn": 34,
+        "fn": 14,
+        "precision": 0.9166666666666666,
+        "recall": 0.6111111111111112,
+        "f1": 0.7333333333333334,
+        "support": 72
+      },
+      "per_cwe": {
+        "CWE-23": {
+          "tp": 5,
+          "fp": 0,
+          "tn": 6,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8333333333333334,
+          "f1": 0.9090909090909091,
+          "support": 12
+        },
+        "CWE-259": {
+          "tp": 6,
+          "fp": 1,
+          "tn": 5,
+          "fn": 0,
+          "precision": 0.8571428571428571,
+          "recall": 1.0,
+          "f1": 0.923076923076923,
+          "support": 12
+        },
+        "CWE-327": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 6,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "CWE-328": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 6,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "support": 12
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-89": {
+          "tp": 2,
+          "fp": 1,
+          "tn": 5,
+          "fn": 4,
+          "precision": 0.6666666666666666,
+          "recall": 0.3333333333333333,
+          "f1": 0.4444444444444444,
+          "support": 12
+        }
+      },
+      "rate_limited": false,
+      "notes": "System of record on sample n=72 (not the full ingested set). Live Groq on the stratified Juliet sample. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_juliet",
+      "status": "ok",
+      "n_units": 20728,
+      "n_scored": null,
+      "metrics": {
+        "tp": 1604,
+        "fp": 3736,
+        "tn": 12195,
+        "fn": 3193,
+        "precision": 0.300374531835206,
+        "recall": 0.3343756514488222,
+        "f1": 0.31646443721022,
+        "support": 20728
+      },
+      "per_cwe": {
+        "CWE-89": {
+          "tp": 1260,
+          "fp": 3060,
+          "tn": 6495,
+          "fn": 1020,
+          "precision": 0.2916666666666667,
+          "recall": 0.5526315789473685,
+          "f1": 0.3818181818181819,
+          "support": 11835
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 18,
+          "tn": 1962,
+          "fn": 684,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2664
+        },
+        "CWE-81": {
+          "tp": 0,
+          "fp": 9,
+          "tn": 981,
+          "fn": 342,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1332
+        },
+        "CWE-83": {
+          "tp": 0,
+          "fp": 9,
+          "tn": 981,
+          "fn": 342,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1332
+        },
+        "CWE-23": {
+          "tp": 276,
+          "fp": 624,
+          "tn": 363,
+          "fn": 180,
+          "precision": 0.30666666666666664,
+          "recall": 0.6052631578947368,
+          "f1": 0.4070796460176991,
+          "support": 1443
+        },
+        "CWE-36": {
+          "tp": 0,
+          "fp": 12,
+          "tn": 975,
+          "fn": 456,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1443
+        },
+        "CWE-327": {
+          "tp": 34,
+          "fp": 0,
+          "tn": 60,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 94
+        },
+        "CWE-328": {
+          "tp": 34,
+          "fp": 0,
+          "tn": 90,
+          "fn": 17,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8,
+          "support": 141
+        },
+        "CWE-259": {
+          "tp": 0,
+          "fp": 3,
+          "tn": 216,
+          "fn": 114,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 333
+        },
+        "CWE-321": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 72,
+          "fn": 38,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 111
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested Juliet Java v1.3 mapped folders. n=20728. CWE-502 has no Juliet Java folder. Retrieval@Juliet skipped. Regex SAST only. On research_test this should be imperfect by construction.",
+      "error": null
+    }
+  ],
+  "detection_table": [
+    {
+      "system": "template_juliet_sample",
+      "status": "ok",
+      "precision": 0.7272727272727273,
+      "recall": 0.4444444444444444,
+      "f1": 0.5517241379310345,
+      "fp": 6,
+      "fn": 20,
+      "n": 72,
+      "validation_pass": 72
+    },
+    {
+      "system": "llm_then_juliet_sample",
+      "status": "ok",
+      "precision": 0.9166666666666666,
+      "recall": 0.6111111111111112,
+      "f1": 0.7333333333333334,
+      "fp": 2,
+      "fn": 14,
+      "n": 72,
+      "validation_pass": 72
+    },
+    {
+      "system": "sast_regex_juliet",
+      "status": "ok",
+      "precision": 0.300374531835206,
+      "recall": 0.3343756514488222,
+      "f1": 0.31646443721022,
+      "fp": 3736,
+      "fn": 3193,
+      "n": 20728,
+      "validation_pass": null
+    }
+  ]
+}

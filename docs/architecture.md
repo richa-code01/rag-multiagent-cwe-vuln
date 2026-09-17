@@ -5,7 +5,7 @@ Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
 Advisor sequence: [`advisor-phase-plan.md`](advisor-phase-plan.md). Cost-aware routing lives only in the orchestrator, not in the title.
 
-**Contribution this tree defends:** a RAG-augmented multi-agent detector for six Java CWEs where SAST emits evidence, hybrid MiniLM + relationship/RRF retrieves CWE knowledge, Groq produces A4-schema explanations, and a validator checks schema/lines/KB rather than SAST agreement. On an authored 24-unit FP/FN trap split, regex/template fail and the live LLM recovers most cases. Not SOTA; not a public benchmark; not “first ever RAG-CWE detector.”
+**Contribution this tree defends:** a RAG-augmented multi-agent detector for six Java CWEs where SAST emits evidence, hybrid MiniLM + relationship/RRF retrieves CWE knowledge, Groq produces A4-schema explanations, and a validator checks schema/lines/KB rather than SAST agreement. On an authored 24-unit FP/FN trap split, regex/template fail and the live LLM recovers most cases. Juliet Java v1.3 mapped-subset scores are a **separate** table (SAST n=20728, LLM sample n=72). Not SOTA; not “first ever RAG-CWE detector.”
 
 ## Package tree
 
@@ -13,7 +13,7 @@ Advisor sequence: [`advisor-phase-plan.md`](advisor-phase-plan.md). Cost-aware r
 src/cwe_vuln/
   config.py              shared knobs (repo_root, Top-K, RRF k, LLM env names, seed CWE ids)
   models/                DTOs only — Evidence, RankedHit, ReasoningResult, ValidationReport, metrics
-  dataset/               load seed units, labels, 8/4 split; research corpus 36 units
+  dataset/               load seed units, labels, 8/4 split; research corpus 36 units; Juliet adapter
   knowledge/             CWE store + get/search/relationships/mitigations
   sast/                  regex detector + evidence extraction → Evidence[]
   retrieval/             Embedder port, MiniLM / TF-IDF, DenseIndex, SAST ids, relationship expand, RRF
@@ -83,7 +83,7 @@ flowchart LR
 | `reasoner` | `Reasoner.reason`. `LLMReasoner` is the live default; `TemplateReasoner` is `--offline` / `--ablation template`. | Implemented |
 | `validator` | Schema + KB + cited lines + JSON consistency. `sast_disagreement` is a warning. | Implemented |
 | `orchestrator` | `Pipeline.default()` requires Groq; `Pipeline.offline()` is the ablation. Log `path`. | Implemented |
-| `framework` | `cwe-vuln-pipeline` CLI + seed metrics; `cwe-vuln-eval` research trials. | Implemented |
+| `framework` | `cwe-vuln-pipeline` CLI + seed metrics; `cwe-vuln-eval` research and Juliet suites. | Implemented |
 | `cli` | Thin A1 / KB / retrieve / schema / evidence entrypoints. | Implemented |
 
 ## Ports and fallbacks
