@@ -1,7 +1,7 @@
 [project]
 name = "cwe-vuln"
-version = "0.8.0"
-description = "Thesis repo: RAG-style multi-agent CWE vulnerability detection with authored-corpus and Juliet Java subset evaluation."
+version = "0.9.0"
+description = "Thesis repo: RAG-style multi-agent CWE vulnerability detection with six public Java suite evaluations."
 readme = "README.md"
 authors = [
     { name = "Richa Verma" },

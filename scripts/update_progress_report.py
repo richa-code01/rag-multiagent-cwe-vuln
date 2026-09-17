@@ -49,9 +49,13 @@ def main() -> None:
         "Assignments 1–4 and the wired seed pipeline are implemented (PRs #1–#10), "
         "then MiniLM embeddings and a Groq LLM reasoner (embeddings-llm). Research "
         "evaluation is complete on an authored expanded Java corpus (36 units: original "
-        "12 plus 24 held-out FP/FN traps) — that table is not Juliet. A Juliet Java v1.3 "
-        "mapped-subset eval was run: NIST zip HTTP 403, GitHub mirror used; regex SAST "
-        "n=20728 P=0.300 R=0.334 F1=0.316; live Groq sample n=72 F1=0.733. "
+        "12 plus 24 held-out FP/FN traps) — that table is not a public benchmark. Six "
+        "named Java suites were measured: Juliet SAST n=20728 F1=0.316 / Groq sample n=72 "
+        "F1=0.733; OWASP n=2740 F1=0.395 / Groq n=12 F1=0.286; Securibench n=119 F1=0.072 "
+        "/ Groq n=12 F1=0.500; find-sec-bugs n=79 F1=0.435 / Groq n=12 F1=0.364; Vul4J "
+        "n=62 F1=0.244 / Groq n=12 F1=0.000; CVEfixes-Java-slice n=92 F1=0.207 / Groq "
+        "n=12 F1=0.000. No HTTP 429. LLM samples are not full suites; regex is not CodeQL. "
+        "Six suites do not prove 100% novelty. "
         "The system of record is live Groq openai/gpt-oss-20b. "
         "GROQ_API_KEY is required. No OpenAI account is required.",
     )
@@ -127,7 +131,10 @@ def main() -> None:
         "rule). Retrieval on 48 authored queries: hybrid "
         "R@1=0.854 MRR=0.917 vs MiniLM 0.812 / 0.894 vs TF-IDF 0.646 / 0.794. "
         "Juliet Java v1.3 mapped subset (measured): SAST n=20728 P=0.300 R=0.334 F1=0.316; "
-        "Groq stratified sample n=72 P=0.917 R=0.611 F1=0.733. NIST zip 403; GitHub mirror.",
+        "Groq stratified sample n=72 P=0.917 R=0.611 F1=0.733. Six-suite table: OWASP "
+        "n=2740 F1=0.395; Securibench n=119 F1=0.072; find-sec-bugs n=79 F1=0.435; Vul4J "
+        "n=62 F1=0.244; CVEfixes-Java-slice n=92 F1=0.207. LLM n=12 on those five "
+        "(F1 0.286 / 0.500 / 0.364 / 0.000 / 0.000). No 429. NIST zip 403; GitHub mirror.",
     )
 
     # Section 12 next steps: remaining honest gaps
@@ -139,7 +146,7 @@ def main() -> None:
     set_para(doc, 62, "Live LLM reasoner is the system of record; research trials used Groq openai/gpt-oss-20b (llama-3.1-8b-instant retired).")
     set_para(doc, 63, "Validator checks schema, CWE id, cited lines, and JSON consistency. SAST disagreement is a warning, not a fail.")
     set_para(doc, 64, "Optional later: richer confidence fusion beyond template confidence fields.")
-    set_para(doc, 65, "Juliet Java v1.3 mapped-subset evaluation is measured (SAST n=20728; LLM sample n=72). Authored 36-unit scores stay a separate table.")
+    set_para(doc, 65, "Six public Java suites measured (Juliet SAST n=20728; others exact n in six-benchmark-results.md). LLM samples are not full suites. Authored 36-unit scores stay a separate table.")
 
     set_para(
         doc,
@@ -155,9 +162,10 @@ def main() -> None:
         doc,
         71,
         "Current work establishes the problem, layered architecture, MiniLM embeddings, "
-        "an LLM reasoner, authored-corpus research evaluation, and a measured Juliet Java "
-        "v1.3 mapped-subset run (NIST zip 403; SAST n=20728; Groq sample n=72). "
-        "Do not mix the 36-unit authored table with the Juliet table.",
+        "an LLM reasoner, authored-corpus research evaluation, Juliet Java v1.3 mapped "
+        "subset, and five additional public Java suites (OWASP Benchmark, Securibench Micro, "
+        "find-sec-bugs, Vul4J, CVEfixes-Java-slice). Do not mix the 36-unit authored table "
+        "with the six-suite table.",
     )
 
     # Table 4 — area / status / progress
@@ -173,7 +181,7 @@ def main() -> None:
         ("Hybrid retrieval", "Implemented", "MiniLM cosine + SAST + CWE relationships, RRF. TF-IDF fallback if MiniLM missing."),
         ("Cost-aware routing", "Implemented", "Orchestrator SAST-as-evidence then Groq; GROQ_API_KEY required (CWE_VULN_LLM_API_KEY override)."),
         ("Multi-agent workflow", "Implemented", "Groq LLMReasoner default; template ablation; validator (schema/lines/KB)."),
-        ("Implementation / evaluation", "Juliet subset", "Authored 36-unit corpus plus measured Juliet Java v1.3 mapped SAST n=20728 / LLM n=72. Not the full 28881 suite."),
+        ("Implementation / evaluation", "Six suites measured", "Authored 36-unit corpus plus six public Java suites (Juliet n=20728 SAST; others in six-benchmark-results.md). Not 100% novelty."),
     ]
     for i, (a, b, c) in enumerate(rows):
         set_cell(t4.rows[i].cells[0], a)
@@ -184,7 +192,7 @@ def main() -> None:
         "src/cwe_vuln/\n"
         "  config.py\n"
         "  models/          Evidence, RankedHit, ReasoningResult, ValidationReport, metrics\n"
-        "  dataset/         SeedUnit, load_seed 8/4, load_research_corpus 36, Juliet adapter\n"
+        "  dataset/         SeedUnit, load_seed 8/4, load_research_corpus 36, six suite adapters\n"
         "  knowledge/       CWEKnowledgeBase\n"
         "  sast/            regex detect + extract_evidence\n"
         "  retrieval/       MiniLM Embedder + TF-IDF fallback + SAST + RRF\n"
@@ -211,7 +219,7 @@ def main() -> None:
         ("Validator agent", "Implemented", "Schema, CWE id, cited lines, JSON consistency. SAST disagreement is a warning."),
         ("Layered packages", "Implemented", "models, dataset, knowledge, sast, retrieval, schema, reasoner, validator, orchestrator, framework, cli."),
         ("Reporting", "Implemented", "Assignment 4 JSON Schema + framework results JSON/MD."),
-        ("Evaluation", "Juliet subset measured", "SAST n=20728 F1=0.316; Groq sample n=72 F1=0.733. Authored 36-unit table is separate."),
+        ("Evaluation", "Six suites measured", "Juliet SAST n=20728 F1=0.316 Groq n=72 F1=0.733; five more suites with exact n. Authored 36-unit table is separate."),
     ]
     for i, (a, b, c) in enumerate(rows8):
         set_cell(t8.rows[i].cells[0], a)
@@ -225,7 +233,8 @@ def main() -> None:
         "orchestrator → framework CLI → layered packages → MiniLM embeddings + LLM "
         "reasoner → research evaluation on an authored expanded corpus → live Groq default "
         "with validator uncoupled from SAST → Juliet Java v1.3 mapped-subset eval "
-        "(SAST n=20728, Groq sample n=72).",
+        "(SAST n=20728, Groq sample n=72) → six public Java suites (OWASP, Securibench, "
+        "find-sec-bugs, Vul4J, CVEfixes-Java-slice).",
     )
 
     set_cell(

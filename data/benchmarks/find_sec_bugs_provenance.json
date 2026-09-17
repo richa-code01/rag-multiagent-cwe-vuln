@@ -1,0 +1,8 @@
+{
+  "suite": "find-sec-bugs",
+  "source_url": "https://github.com/find-sec-bugs/find-sec-bugs.git",
+  "downloaded_at": "2026-09-17T14:05:05Z",
+  "method": "cached",
+  "sha256_or_commit": "90447f7e39e529c31cf098ebade0a755b944dd91",
+  "license_note": "Find Security Bugs plugin samples (LGPL-style SpotBugs plugin project). Test-code is for detector tests, not a scored AST benchmark CSV."
+}

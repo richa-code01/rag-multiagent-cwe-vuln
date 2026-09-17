@@ -14,6 +14,13 @@ from typing import Any
 
 from cwe_vuln.config import MissingLLMKeyError, MISSING_LLM_KEY_MESSAGE, repo_root, settings
 from cwe_vuln.dataset import SeedUnit, load_research_corpus, load_seed
+from cwe_vuln.dataset.common import (
+    DEFAULT_SUITE_SAMPLE_N,
+    SuiteError,
+    load_sample_units as load_suite_sample_units,
+    stratified_suite_sample,
+    write_sample_manifest as write_suite_sample_manifest,
+)
 from cwe_vuln.dataset.juliet import (
     DEFAULT_PER_CWE,
     JULIET_VERSION,
@@ -28,6 +35,12 @@ from cwe_vuln.dataset.juliet import (
     sample_manifest_path,
     stratified_sample,
     write_sample_manifest,
+)
+from cwe_vuln.dataset.registry import (
+    LLM_SUITE_NAMES,
+    SAST_SUITE_NAMES,
+    SUITES,
+    resolve_suite,
 )
 from cwe_vuln.models.metrics import binary_metrics
 from cwe_vuln.orchestrator import Pipeline
@@ -203,18 +216,27 @@ def trial_pipeline(
         except Exception as exc:
             text = redact(f"{unit.unit_id}: {exc}")
             if stop_on_rate_limit and _is_rate_limit(text):
-                time.sleep(12)
-                try:
-                    row = pipeline.run(unit)
-                    rows.append(row)
-                    y_pred.append(row.result.decision == "vulnerable")
-                    used.append(unit)
+                retried = False
+                for wait in (12, 30, 60):
+                    time.sleep(wait)
+                    try:
+                        row = pipeline.run(unit)
+                        rows.append(row)
+                        y_pred.append(row.result.decision == "vulnerable")
+                        used.append(unit)
+                        retried = True
+                        break
+                    except Exception as retry_exc:
+                        text = redact(f"{unit.unit_id}: {retry_exc}")
+                        if not _is_rate_limit(text):
+                            errors.append(text)
+                            break
+                if retried:
                     continue
-                except Exception as retry_exc:
-                    rate_limited = True
-                    errors.append(redact(f"{unit.unit_id}: {retry_exc}"))
-                    skipped = len(units) - index
-                    break
+                rate_limited = True
+                errors.append(text)
+                skipped = len(units) - index
+                break
             errors.append(text)
             y_pred.append(False)
             rows.append(None)
@@ -685,6 +707,235 @@ def run_juliet_llm_suite(
     return trials
 
 
+def _load_public_units(name: str, tree: Path | None, require_download: bool) -> tuple[list[SeedUnit], dict[str, Any]]:
+    spec = SUITES[name]
+    provenance: dict[str, Any] = {}
+    kwargs: dict[str, Any] = {"tree": tree, "require_download": require_download}
+    if name in {"vul4j", "cvefixes-java-slice"}:
+        kwargs["fetch_patches"] = tree is None
+    if tree is None:
+        try:
+            ensured = spec.ensure()
+            if isinstance(ensured, dict):
+                provenance = ensured
+            elif hasattr(ensured, "as_dict"):
+                provenance = ensured.as_dict()
+        except Exception as exc:
+            raise SuiteError(str(exc)) from exc
+    units = spec.loader(**kwargs)
+    path = spec.provenance()
+    if not provenance and path.is_file():
+        provenance = json.loads(path.read_text(encoding="utf-8"))
+    return units, provenance
+
+
+def run_public_sast_suite(name: str, tree: Path | None = None) -> list[dict[str, Any]]:
+    spec = SUITES[name]
+    try:
+        units, provenance = _load_public_units(name, tree, require_download=tree is None)
+    except (SuiteError, JulietError) as exc:
+        return [
+            _failed_trial(
+                f"sast_regex_{name.replace('-', '_')}",
+                f"{name}_mapped",
+                name,
+                f"{name} download or parse failed.",
+                str(exc),
+                {"suite": name, "backend": "regex"},
+            )
+        ]
+    trial = trial_sast(units, f"{name}_mapped", name)
+    trial["trial_id"] = f"sast_regex_{name.replace('-', '_')}"
+    trial["evaluation_scope"] = spec.evaluation_scope
+    trial["disclaimer"] = spec.disclaimer
+    trial["cwe_mapping"] = spec.notes(units)
+    trial["config"] = {
+        **(trial.get("config") or {}),
+        "provenance": provenance,
+        "per_cwe_n": _cwe_label_counts(units),
+    }
+    trial["notes"] = (
+        f"Full regex SAST on ingested {name} units n={len(units)}. "
+        "Missing thesis CWEs are 'not present', not relabeled."
+    )
+    return [trial]
+
+
+def run_public_llm_suite(
+    name: str,
+    ablation: str,
+    tree: Path | None = None,
+    sample_n: int = DEFAULT_SUITE_SAMPLE_N,
+    sample_seed: int = SAMPLE_SEED,
+    manifest_path: Path | None = None,
+) -> list[dict[str, Any]]:
+    spec = SUITES[name]
+    try:
+        units, provenance = _load_public_units(name, tree, require_download=tree is None)
+    except (SuiteError, JulietError) as exc:
+        return [
+            _failed_trial(
+                f"llm_then_{name.replace('-', '_')}_sample",
+                f"{name}_llm_sample",
+                f"{name}-llm-sample",
+                f"{name} download or parse failed.",
+                str(exc),
+                {"suite": f"{name}-llm-sample"},
+            )
+        ]
+    dest_manifest = manifest_path or spec.sample_manifest()
+    if dest_manifest.is_file() and tree is None:
+        try:
+            sample = load_suite_sample_units(units, dest_manifest)
+        except SuiteError:
+            sample = stratified_suite_sample(units, n=sample_n, seed=sample_seed)
+            write_suite_sample_manifest(
+                name, sample, dest_manifest, n_target=sample_n, seed=sample_seed, provenance=provenance
+            )
+    else:
+        sample = stratified_suite_sample(units, n=sample_n, seed=sample_seed)
+        write_suite_sample_manifest(
+            name, sample, dest_manifest, n_target=sample_n, seed=sample_seed, provenance=provenance
+        )
+    retriever = HybridRetriever.load(allow_download=True)
+    trials: list[dict[str, Any]] = []
+    template = trial_pipeline(
+        f"template_{name.replace('-', '_')}_sample",
+        sample,
+        f"{name}_llm_sample",
+        f"{name}-llm-sample",
+        _make_pipeline(retriever, None, skip_llm_when_sast_hits=True, use_llm=False),
+        notes=f"Ablation: TemplateReasoner on the {name} LLM sample. Not the system of record.",
+        evaluation_scope=spec.evaluation_scope + "_stratified_sample",
+        disclaimer=spec.disclaimer,
+    )
+    template["cwe_mapping"] = spec.notes(sample)
+    template["config"] = {**(template.get("config") or {}), "provenance": provenance, "sample_manifest": str(dest_manifest)}
+    trials.append(template)
+    if ablation == "template":
+        return trials
+    if not settings.llm_api_key():
+        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+    llm, model_notes = _llm_with_fallback()
+    if llm is None:
+        trials.append(
+            _failed_trial(
+                f"llm_then_{name.replace('-', '_')}_sample",
+                f"{name}_llm_sample",
+                f"{name}-llm-sample",
+                model_notes,
+                model_notes,
+                {"reasoner": "llm", "candidates": _candidate_models()},
+            )
+        )
+        return trials
+    then_pipe = _make_pipeline(retriever, llm, skip_llm_when_sast_hits=False, use_llm=True)
+    live = trial_pipeline(
+        f"llm_then_{name.replace('-', '_')}_sample",
+        sample,
+        f"{name}_llm_sample",
+        f"{name}-llm-sample",
+        then_pipe,
+        notes=f"Live Groq on the stratified {name} sample. " + model_notes,
+        delay_seconds=2.0,
+        stop_on_rate_limit=True,
+        evaluation_scope=spec.evaluation_scope + "_stratified_sample",
+        disclaimer=spec.disclaimer,
+    )
+    live["cwe_mapping"] = spec.notes(sample)
+    live["config"] = {**(live.get("config") or {}), "provenance": provenance, "sample_manifest": str(dest_manifest)}
+    trials.append(live)
+    return trials
+
+
+def write_six_summary(results_dir: Path) -> tuple[Path, Path]:
+    trials: list[dict[str, Any]] = []
+    known: set[str] = set()
+    for path in sorted(results_dir.glob("*.json")):
+        if path.name in {"summary.json", "juliet-eval-summary.json"} or path.name.endswith("-eval-summary.json"):
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        trial_id = payload.get("trial_id")
+        if not trial_id or trial_id in known:
+            continue
+        known.add(trial_id)
+        trials.append(payload)
+    detection = [
+        item
+        for item in trials
+        if isinstance(item.get("metrics"), dict) and "precision" in (item.get("metrics") or {})
+    ]
+    summary = {
+        "generated_at": utc_now(),
+        "evaluation_scope": "six_public_java_suites",
+        "disclaimer": SUITES["owasp-benchmark"].disclaimer,
+        "novelty": (
+            "Novelty claim is the method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) "
+            "versus these corpora and regex/template baselines — not 'first system ever' or 100% novelty."
+        ),
+        "trials": [
+            {
+                "trial_id": item["trial_id"],
+                "suite": item.get("suite") or (item.get("config") or {}).get("suite"),
+                "status": item.get("status"),
+                "n_units": item.get("n_units"),
+                "n_scored": item.get("n_scored"),
+                "metrics": item.get("metrics"),
+                "per_cwe": item.get("per_cwe"),
+                "rate_limited": item.get("rate_limited"),
+                "notes": item.get("notes"),
+                "error": item.get("error"),
+            }
+            for item in trials
+        ],
+        "detection_table": [
+            {
+                "system": item["trial_id"],
+                "suite": item.get("suite") or (item.get("config") or {}).get("suite"),
+                "status": item.get("status"),
+                "precision": item["metrics"]["precision"],
+                "recall": item["metrics"]["recall"],
+                "f1": item["metrics"]["f1"],
+                "fp": item["metrics"]["fp"],
+                "fn": item["metrics"]["fn"],
+                "n": item["metrics"]["support"],
+                "validation_pass": item.get("validation_pass"),
+                "rate_limited": item.get("rate_limited"),
+            }
+            for item in detection
+        ],
+    }
+    json_path = results_dir / "summary.json"
+    json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    lines = [
+        "# Six-suite evaluation summary",
+        "",
+        summary["disclaimer"],
+        "",
+        f"- Generated: `{summary['generated_at']}`",
+        "",
+        "| System | Suite | Status | Precision | Recall | F1 | FP | FN | n |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for row in summary["detection_table"]:
+        lines.append(
+            f"| {row['system']} | {row.get('suite')} | {row.get('status')} | "
+            f"{row['precision']:.3f} | {row['recall']:.3f} | {row['f1']:.3f} | "
+            f"{row['fp']} | {row['fn']} | {row['n']} |"
+        )
+    lines.extend(["", "## Trial log", ""])
+    for item in summary["trials"]:
+        err = f" error={item['error']}" if item.get("error") else ""
+        lines.append(f"- `{item['trial_id']}` suite={item.get('suite')} status={item['status']} n={item.get('n_units')}{err}")
+    lines.append("")
+    md_path = results_dir / "summary.md"
+    md_path.write_text("\n".join(lines), encoding="utf-8")
+    return json_path, md_path
+
+
 def _cwe_label_counts(units: list[SeedUnit]) -> dict[str, dict[str, int]]:
     out: dict[str, dict[str, int]] = {}
     for unit in units:
@@ -893,10 +1144,13 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run authored-corpus or Juliet benchmark evaluation trials.")
+    public_names = sorted(set(list(SAST_SUITE_NAMES) + list(LLM_SUITE_NAMES) + ["juliet-sast", "all-sast"]))
+    parser = argparse.ArgumentParser(
+        description="Run authored-corpus or public-suite evaluation trials (SAST or Groq sample)."
+    )
     parser.add_argument(
         "--suite",
-        choices=["research", "seed", "all", "juliet-sast", "juliet-llm-sample"],
+        choices=["research", "seed", "all", *public_names],
         default="research",
     )
     parser.add_argument(
@@ -917,34 +1171,71 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--juliet-tree", type=Path, default=None, help="Local Juliet testcases tree (tests/fixtures).")
+    parser.add_argument("--suite-tree", type=Path, default=None, help="Local suite tree for mapper tests.")
     parser.add_argument("--per-cwe", type=int, default=DEFAULT_PER_CWE)
+    parser.add_argument("--sample-n", type=int, default=DEFAULT_SUITE_SAMPLE_N)
     parser.add_argument("--sample-seed", type=int, default=SAMPLE_SEED)
     args = parser.parse_args(argv)
     ablation = args.ablation
     if args.offline or args.skip_llm:
         ablation = "template"
 
-    juliet = args.suite.startswith("juliet")
-    out = args.output_dir or (benchmarks_results_dir() if juliet else experiments_dir())
+    public = args.suite not in {"research", "seed", "all"}
+    out = args.output_dir or (benchmarks_results_dir() if public else experiments_dir())
     out.mkdir(parents=True, exist_ok=True)
+    tree = args.suite_tree or args.juliet_tree
     trials: list[dict[str, Any]] = []
     try:
-        if args.suite == "juliet-sast":
-            trials.extend(run_juliet_sast_suite(tree=args.juliet_tree))
+        if args.suite == "all-sast":
+            for name in SAST_SUITE_NAMES:
+                if name == "juliet":
+                    trials.extend(run_juliet_sast_suite(tree=tree if tree else None))
+                else:
+                    trials.extend(run_public_sast_suite(name, tree=None))
+        elif args.suite in {"juliet-sast", "juliet"}:
+            trials.extend(run_juliet_sast_suite(tree=tree))
         elif args.suite == "juliet-llm-sample":
             trials.extend(
                 run_juliet_llm_suite(
                     ablation=ablation,
-                    tree=args.juliet_tree,
+                    tree=tree,
                     per_cwe=args.per_cwe,
                     sample_seed=args.sample_seed,
                     manifest_path=(
                         sample_manifest_path()
-                        if args.juliet_tree is None
+                        if tree is None
                         else (out / "juliet_llm_sample.json")
                     ),
                 )
             )
+        elif public:
+            name, llm = resolve_suite(args.suite)
+            if llm:
+                if name == "juliet":
+                    trials.extend(
+                        run_juliet_llm_suite(
+                            ablation=ablation,
+                            tree=tree,
+                            per_cwe=args.per_cwe,
+                            sample_seed=args.sample_seed,
+                        )
+                    )
+                else:
+                    trials.extend(
+                        run_public_llm_suite(
+                            name,
+                            ablation=ablation,
+                            tree=tree,
+                            sample_n=args.sample_n,
+                            sample_seed=args.sample_seed,
+                            manifest_path=(out / f"{name}_llm_sample.json") if tree is not None else None,
+                        )
+                    )
+            else:
+                if name == "juliet":
+                    trials.extend(run_juliet_sast_suite(tree=tree))
+                else:
+                    trials.extend(run_public_sast_suite(name, tree=tree))
         else:
             if args.suite in {"research", "all"}:
                 trials.extend(run_research_suite(ablation=ablation))
@@ -953,28 +1244,34 @@ def main(argv: list[str] | None = None) -> int:
     except MissingLLMKeyError as exc:
         print(str(exc), file=sys.stderr)
         return 1
-    except JulietError as exc:
+    except (JulietError, SuiteError, KeyError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
 
     for trial in trials:
         path = write_trial(trial, out)
         print(f"wrote {path} status={trial.get('status')}")
-    if juliet:
+    if public:
         known = {item["trial_id"] for item in trials}
         extras: list[dict[str, Any]] = []
         for path in sorted(out.glob("*.json")):
-            if path.name.startswith("juliet-eval-summary") or path.name == "juliet_llm_sample.json":
+            if path.name in {"summary.json", "juliet-eval-summary.json"} or "llm_sample" in path.name:
                 continue
-            payload = json.loads(path.read_text(encoding="utf-8"))
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
             trial_id = payload.get("trial_id")
             if trial_id and trial_id not in known:
                 extras.append(payload)
                 known.add(trial_id)
-        json_path, md_path = write_benchmark_summary(trials + extras, out)
+        if args.suite.startswith("juliet"):
+            json_path, md_path = write_benchmark_summary(trials + extras, out)
+            print(JULIET_DISCLAIMER)
+        else:
+            json_path, md_path = write_six_summary(out)
         print(f"wrote {json_path}")
         print(f"wrote {md_path}")
-        print(JULIET_DISCLAIMER)
         failed = [item for item in trials if item.get("status") == "failed"]
         return 1 if failed else 0
 

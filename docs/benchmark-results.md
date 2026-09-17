@@ -106,7 +106,7 @@ CWE-80 XSS stays F1=0 (regex does not match Juliet XSS; LLM did not recover the 
 
 - Not the full Juliet 28,881 cases.
 - Not CWE-79 / 22 / 502 / 798 file folders (missing in Juliet Java 1.3; nearby ids kept).
-- Not OWASP Benchmark / Big-Vul.
+- Not OWASP Benchmark / Big-Vul **in this Juliet-only note**. Those suites (plus Securibench Micro, find-sec-bugs, Vul4J, CVEfixes-Java-slice) are in [`six-benchmark-results.md`](six-benchmark-results.md).
 - Not retrieval@Juliet.
 - LLM table is **n=72**, not n=20728.
 - Authored 36-unit F1=0.923 is a **different** corpus ([`research-evaluation.md`](research-evaluation.md)).

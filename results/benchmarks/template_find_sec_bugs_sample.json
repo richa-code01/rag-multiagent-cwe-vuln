@@ -1,0 +1,345 @@
+{
+  "trial_id": "template_find_sec_bugs_sample",
+  "date": "2026-09-17T14:05:10Z",
+  "suite": "find-sec-bugs-llm-sample",
+  "split": "find-sec-bugs_llm_sample",
+  "n_units": 12,
+  "evaluation_scope": "find_sec_bugs_testcode_stratified_sample",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "find-sec-bugs-llm-sample",
+    "reasoner": "template",
+    "skip_llm_when_sast_hits": true,
+    "use_llm_if_available": false,
+    "model": null,
+    "provenance": {
+      "suite": "find-sec-bugs",
+      "source_url": "https://github.com/find-sec-bugs/find-sec-bugs.git",
+      "downloaded_at": "2026-09-17T14:05:05Z",
+      "method": "cached",
+      "sha256_or_commit": "90447f7e39e529c31cf098ebade0a755b944dd91",
+      "license_note": "Find Security Bugs plugin samples (LGPL-style SpotBugs plugin project). Test-code is for detector tests, not a scored AST benchmark CSV."
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/find-sec-bugs_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 2,
+    "fp": 2,
+    "tn": 3,
+    "fn": 5,
+    "precision": 0.5,
+    "recall": 0.2857142857142857,
+    "f1": 0.36363636363636365,
+    "support": 12
+  },
+  "per_cwe": {
+    "CWE-327": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 1
+    },
+    "CWE-22": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    },
+    "CWE-798": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-502": {
+      "tp": 0,
+      "fp": 1,
+      "tn": 0,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-89": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 0,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "support": 2
+    },
+    "CWE-79": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "fsb_file_FileDisclosure",
+      "cwe_id": "CWE-22",
+      "trap_type": "find-sec-bugs",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "fsb_file_permissions_CommandExecChmod",
+      "cwe_id": "CWE-22",
+      "trap_type": "find-sec-bugs",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "fsb_password_customapi_HardCodeSample",
+      "cwe_id": "CWE-798",
+      "trap_type": "find-sec-bugs",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "fsb_serial_ObjectDeserializationFalsePositive2",
+      "cwe_id": "CWE-502",
+      "trap_type": "find-sec-bugs",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "fsb_serial_spring_TypeProvider",
+      "cwe_id": "CWE-502",
+      "trap_type": "find-sec-bugs",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "fsb_sqli_stringbuilder_StringBuilderFalsePositive",
+      "cwe_id": "CWE-89",
+      "trap_type": "find-sec-bugs",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "fsb_xss_servlets_XssServlet1",
+      "cwe_id": "CWE-79",
+      "trap_type": "find-sec-bugs",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Ablation: TemplateReasoner on the find-sec-bugs LLM sample. Not the system of record.",
+  "error": null,
+  "validation_pass": 12,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 12,
+  "cited_lines_n": 12,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "sast_first_skip_llm": 4,
+    "hybrid_retrieve_skip_llm": 8
+  },
+  "reasoner_counts": {
+    "template": 12
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "fsb_crypto_DesKeyGeneration",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_file_FileDisclosure",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_file_permissions_CommandExecChmod",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_password_UnsafeCompareHash",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_password_customapi_HardCodeSample",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_pathtraversal_PathTraversalSeparatorFalsePositive",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_serial_ObjectDeserializationFalsePositive2",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_serial_spring_TypeProvider",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_sqli_CustomInjection",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_sqli_stringbuilder_StringBuilderFalsePositive",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_xss_FalsePositiveRequestWrapper",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "fsb_xss_servlets_XssServlet1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 12,
+  "n_scored": 12,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "cwe_mapping": {
+    "gold": "File-level: plugin samples under testcode/. Safe/FalsePositive/Ok filenames \u2192 not_vulnerable; other mapped files \u2192 vulnerable. Mixed methods in one class are not split.",
+    "folders": {
+      "sqli/": "CWE-89",
+      "xss/": "CWE-79",
+      "wicket/": "CWE-79",
+      "pathtraversal/": "CWE-22",
+      "file/": "CWE-22",
+      "serial/": "CWE-502",
+      "password/": "CWE-798",
+      "potential/": "CWE-798"
+    },
+    "crypto": "only stems ['DesKeyGeneration', 'WeakMessageDigest', 'WeakMessageDigestAdditionalSig'] mapped to CWE-327; other crypto samples skipped",
+    "cwe_coverage_plan": {
+      "CWE-89": "testcode/sqli",
+      "CWE-79": "testcode/xss (+ wicket XSS pages)",
+      "CWE-22": "testcode/pathtraversal, file",
+      "CWE-502": "testcode/serial",
+      "CWE-798": "testcode/password (+ potential hardcoded password)",
+      "CWE-327": "WeakMessageDigest / DesKeyGeneration only"
+    },
+    "license_note": "Find Security Bugs plugin samples (LGPL-style SpotBugs plugin project). Test-code is for detector tests, not a scored AST benchmark CSV.",
+    "cwe_coverage": {
+      "CWE-89": "present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "present",
+      "CWE-798": "present",
+      "CWE-327": "present"
+    },
+    "per_cwe_n": {
+      "CWE-327": {
+        "vulnerable": 1,
+        "not_vulnerable": 0,
+        "n": 1
+      },
+      "CWE-22": {
+        "vulnerable": 2,
+        "not_vulnerable": 1,
+        "n": 3
+      },
+      "CWE-798": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-502": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-89": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-79": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      }
+    }
+  }
+}

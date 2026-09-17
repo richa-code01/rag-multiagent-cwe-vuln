@@ -4,8 +4,8 @@ Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulne
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
 **This evaluation is on an authored corpus — not Juliet.**
-Juliet Java v1.3 mapped-subset numbers live in [`docs/benchmark-results.md`](benchmark-results.md) (SAST n=20728; LLM sample n=72). Do not copy those figures into this table.
-It is not Juliet, OWASP Benchmark, or Big-Vul. Numbers below were computed from
+Juliet Java v1.3 mapped-subset numbers live in [`docs/benchmark-results.md`](benchmark-results.md) (SAST n=20728; LLM sample n=72). Six named public suites live in [`docs/six-benchmark-results.md`](six-benchmark-results.md). Do not copy those figures into this table.
+It is not Juliet, OWASP Benchmark, Vul4J, or Big-Vul. Numbers below were computed from
 units under `data/seed/java/` and `data/research/java/` with labels in the
 manifests. Related-work names, if mentioned, are papers already in
 `research-papers/` or well-known public system names without invented venues.
@@ -16,10 +16,10 @@ retrieves CWE knowledge, (3) a Groq LLM produces A4-schema explanations, (4) a
 validator checks schema/lines/KB not SAST agreement, (5) on this 24-unit FP/FN
 trap split, regex/template fail and live LLM recovers most cases.
 
-**Do not claim:** SOTA, Juliet/OWASP numbers, 100% novelty, that template/SAST
+**Do not claim:** SOTA, six-suite numbers as this table, 100% novelty, that template/SAST
 are the deployed system, or that this evaluation is a public benchmark.
 
-Repro: `uv run pytest` (62 passed, Groq mocked / keys cleared) then
+Repro: `uv run pytest` (71 passed, Groq mocked / keys cleared) then
 `uv run cwe-vuln-eval --suite research` (requires `GROQ_API_KEY`).
 Ablation without a key: `uv run cwe-vuln-eval --suite research --ablation template`.
 Advisor short table: [`results/research-eval-summary.md`](../results/research-eval-summary.md).

@@ -2,7 +2,7 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** Juliet Java public-benchmark subset (`benchmark-eval`)
+**Current milestone:** six public Java suites (`six-benchmarks`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
@@ -19,7 +19,7 @@ A RAG-augmented multi-agent detector for **six Java CWEs** in which:
 4. A validator checks schema, CWE-in-KB, cited lines, and JSON consistency — **not** SAST agreement
 5. On an authored 24-unit FP/FN trap split, regex SAST and TemplateReasoner fail (F1=0) and the live LLM recovers most cases
 
-This is **not** a claim of SOTA, 100% novelty, or that the authored 36-unit trap split is Juliet. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition, the honest trap-split contrast, and a **mapped Juliet Java v1.3 subset** evaluation (not the full 28,881-case suite).
+This is **not** a claim of SOTA, 100% novelty, or that the authored 36-unit trap split is Juliet. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition, the honest trap-split contrast, and measured scores on **six named public/industry-style Java suites** versus regex/template baselines (not “first system ever”).
 
 ## Problem statement
 
@@ -59,6 +59,8 @@ uv run cwe-vuln-eval --suite research --ablation template
 **Research split** (24 held-out authored traps, **authored corpus — not Juliet**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), validator **24/24**. Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
 
 **Juliet Java v1.3** (mapped/nearby CWE folders, **n=20728 SAST**; live Groq on stratified sample **n=72**): regex SAST P=0.300 R=0.334 F1=0.316; sample template F1=0.552; sample live Groq F1=0.733. NIST zip returned HTTP 403; GitHub mirror commit `b2c6df3`. CWE-79/22/502/798 folders are missing; nearby ids were not relabeled. Details: [`docs/benchmark-results.md`](docs/benchmark-results.md).
+
+**Six public suites** (advisor table): Juliet n=20728 SAST F1=0.316 / LLM n=72 F1=0.733; OWASP Benchmark n=2740 F1=0.395 / LLM n=12 F1=0.286; Securibench Micro n=119 F1=0.072 / LLM n=12 F1=0.500; Find Security Bugs test-code n=79 F1=0.435 / LLM n=12 F1=0.364; Vul4J n=62 F1=0.244 / LLM n=12 F1=0.000; CVEfixes-Java-slice n=92 F1=0.207 / LLM n=12 F1=0.000. **No HTTP 429.** LLM samples are not full suites; regex ≠ CodeQL. Six-suite measurement does **not** prove 100% novelty. Details: [`docs/six-benchmark-results.md`](docs/six-benchmark-results.md).
 
 ## MiniLM embeddings
 
@@ -112,9 +114,10 @@ Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`. Pat
 | Live LLM reasoner | Done — Groq `LLMReasoner`; default path **fails** without `GROQ_API_KEY` |
 | Research evaluation (authored 36-unit corpus) | Done — `uv run cwe-vuln-eval --suite research` |
 | Live research default | Groq required; validator no longer tied to SAST |
-| Juliet Java v1.3 mapped eval | Done — `uv run cwe-vuln-eval --suite juliet-sast` / `--suite juliet-llm-sample` |
+| Juliet Java v1.3 mapped eval | Done — `uv run cwe-vuln-eval --suite juliet` / `--suite juliet-llm-sample` |
+| Six public Java suites | Done — `--suite owasp-benchmark` · `securibench-micro` · `find-sec-bugs` · `vul4j` · `cvefixes-java-slice` (+ `-llm-sample`) |
 
-Authored 36-unit metrics live in [`docs/research-evaluation.md`](docs/research-evaluation.md). Juliet metrics live in [`docs/benchmark-results.md`](docs/benchmark-results.md). Those tables are not interchangeable.
+Authored 36-unit metrics live in [`docs/research-evaluation.md`](docs/research-evaluation.md). Juliet metrics live in [`docs/benchmark-results.md`](docs/benchmark-results.md). Six-suite table: [`docs/six-benchmark-results.md`](docs/six-benchmark-results.md). Those tables are not interchangeable.
 
 ## Seed (Assignment 1)
 

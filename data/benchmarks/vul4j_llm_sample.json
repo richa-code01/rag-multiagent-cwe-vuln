@@ -1,0 +1,127 @@
+{
+  "suite": "vul4j",
+  "seed": 13,
+  "n_target": 12,
+  "n_units": 12,
+  "per_cwe_counts": {
+    "CWE-22": {
+      "vulnerable": 2,
+      "not_vulnerable": 2,
+      "n": 4
+    },
+    "CWE-79": {
+      "vulnerable": 2,
+      "not_vulnerable": 2,
+      "n": 4
+    },
+    "CWE-502": {
+      "vulnerable": 2,
+      "not_vulnerable": 2,
+      "n": 4
+    }
+  },
+  "cwe_coverage": {
+    "CWE-89": "not present",
+    "CWE-79": "present",
+    "CWE-22": "present",
+    "CWE-502": "present",
+    "CWE-798": "not present",
+    "CWE-327": "not present"
+  },
+  "provenance": {
+    "suite": "vul4j",
+    "source_url": "https://github.com/tuhh-softsec/vul4j.git",
+    "downloaded_at": "2026-09-17T14:02:54Z",
+    "method": "cached",
+    "sha256_or_commit": "376411da11fa705019f731404de1d0679fe73537",
+    "license_note": "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. Java snippets are fetched from upstream patch commits and are not vendored in git."
+  },
+  "unit_ids": [
+    "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+    "vul4j_VUL4J-25_XSSAPIImplTest_fixed",
+    "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+    "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+    "vul4j_VUL4J-37_BlacklistClassResolver_fixed",
+    "vul4j_VUL4J-37_Setup_fixed",
+    "vul4j_VUL4J-37_Setup_vuln",
+    "vul4j_VUL4J-43_ZipUtil_vuln",
+    "vul4j_VUL4J-50_HtmlSessionInformationsReport_vuln",
+    "vul4j_VUL4J-54_XStream2Test_vuln",
+    "vul4j_VUL4J-69_ResourceServlet_fixed",
+    "vul4j_VUL4J-76_RequestFactoryTest_fixed"
+  ],
+  "units": [
+    {
+      "unit_id": "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+      "cwe_id": "CWE-22",
+      "label": "vulnerable",
+      "path": "jspwiki-main/src/main/java/org/apache/wiki/url/DefaultURLConstructor.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_fixed",
+      "cwe_id": "CWE-79",
+      "label": "not_vulnerable",
+      "path": "src/test/java/org/apache/sling/xss/impl/XSSAPIImplTest.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+      "cwe_id": "CWE-79",
+      "label": "vulnerable",
+      "path": "src/test/java/org/apache/sling/xss/impl/XSSAPIImplTest.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+      "cwe_id": "CWE-79",
+      "label": "not_vulnerable",
+      "path": "src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolver_fixed",
+      "cwe_id": "CWE-502",
+      "label": "not_vulnerable",
+      "path": "container/openejb-core/src/main/java/org/apache/openejb/core/rmi/BlacklistClassResolver.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_fixed",
+      "cwe_id": "CWE-502",
+      "label": "not_vulnerable",
+      "path": "arquillian/arquillian-tomee-common/src/main/java/org/apache/openejb/arquillian/common/Setup.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_vuln",
+      "cwe_id": "CWE-502",
+      "label": "vulnerable",
+      "path": "arquillian/arquillian-tomee-common/src/main/java/org/apache/openejb/arquillian/common/Setup.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-43_ZipUtil_vuln",
+      "cwe_id": "CWE-22",
+      "label": "vulnerable",
+      "path": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-50_HtmlSessionInformationsReport_vuln",
+      "cwe_id": "CWE-79",
+      "label": "vulnerable",
+      "path": "javamelody-core/src/main/java/net/bull/javamelody/HtmlSessionInformationsReport.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-54_XStream2Test_vuln",
+      "cwe_id": "CWE-502",
+      "label": "vulnerable",
+      "path": "core/src/test/java/hudson/util/XStream2Test.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-69_ResourceServlet_fixed",
+      "cwe_id": "CWE-22",
+      "label": "not_vulnerable",
+      "path": "spring-webmvc/src/main/java/org/springframework/web/servlet/ResourceServlet.java"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-76_RequestFactoryTest_fixed",
+      "cwe_id": "CWE-22",
+      "label": "not_vulnerable",
+      "path": "retrofit/src/test/java/retrofit2/RequestFactoryTest.java"
+    }
+  ]
+}

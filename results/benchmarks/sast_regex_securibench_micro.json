@@ -1,0 +1,1051 @@
+{
+  "trial_id": "sast_regex_securibench_micro",
+  "date": "2026-09-17T14:00:27Z",
+  "suite": "securibench-micro",
+  "split": "securibench-micro_mapped",
+  "n_units": 119,
+  "evaluation_scope": "securibench_micro",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "securibench-micro",
+    "reasoner": "sast",
+    "backend": "regex",
+    "provenance": {
+      "suite": "securibench-micro",
+      "source_url": "https://github.com/too4words/securibench-micro.git",
+      "downloaded_at": "2026-09-17T14:00:27Z",
+      "method": "cached",
+      "sha256_or_commit": "6a5a72488ea830d99f9464fc1f0562c4f864214b",
+      "license_note": "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro)."
+    },
+    "per_cwe_n": {
+      "CWE-79": {
+        "vulnerable": 100,
+        "not_vulnerable": 13,
+        "n": 113
+      },
+      "CWE-89": {
+        "vulnerable": 3,
+        "not_vulnerable": 0,
+        "n": 3
+      },
+      "CWE-22": {
+        "vulnerable": 2,
+        "not_vulnerable": 1,
+        "n": 3
+      }
+    }
+  },
+  "metrics": {
+    "tp": 4,
+    "fp": 2,
+    "tn": 12,
+    "fn": 101,
+    "precision": 0.6666666666666666,
+    "recall": 0.0380952380952381,
+    "f1": 0.07207207207207207,
+    "support": 119
+  },
+  "per_cwe": {
+    "CWE-79": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 12,
+      "fn": 99,
+      "precision": 0.5,
+      "recall": 0.01,
+      "f1": 0.0196078431372549,
+      "support": 113
+    },
+    "CWE-89": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+    },
+    "CWE-22": {
+      "tp": 0,
+      "fp": 1,
+      "tn": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "sbmicro_Aliasing1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Aliasing2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Aliasing3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Aliasing4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Aliasing5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Aliasing6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays10",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays7",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays8",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Arrays9",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic10",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic11",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic12",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic13",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic14",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic15",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic16",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic17",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic18",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic22",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic23",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic25",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic26",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic27",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic28",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic29",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic30",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic31",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic32",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic33",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic34",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic35",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic36",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic37",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic38",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic39",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic40",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic41",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic42",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic7",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic8",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic9",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections11b",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections12",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections13",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections14",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections7",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Collections8",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Datastructures6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Factories1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Factories2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Factories3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter10",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter11",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter12",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter13",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter14",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter6",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter7",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter8",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Inter9",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Pred4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Pred5",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Pred8",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Pred9",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Refl1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Refl2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Refl3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Refl4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Sanitizers1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Sanitizers2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "sbmicro_Sanitizers6",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "sbmicro_Session1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Session2",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Session3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_StrongUpdates4",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Full regex SAST on ingested securibench-micro units n=119. Missing thesis CWEs are 'not present', not relabeled.",
+  "error": null,
+  "cwe_mapping": {
+    "gold": "@servlet vuln_count / getVulnerabilityCount(); 0 = not_vulnerable",
+    "cwe": "From @servlet description keywords (XSS/SQL/path) else Java sink APIs (java.sql \u2192 89, File/getRealPath \u2192 22, PrintWriter/getWriter \u2192 79). HTTP-splitting and other non-thesis families are skipped, not relabeled.",
+    "cwe_coverage_plan": {
+      "CWE-89": "SQL injection descriptions / java.sql sinks",
+      "CWE-79": "XSS descriptions / writer sinks (majority of suite)",
+      "CWE-22": "path traversal descriptions / File sinks",
+      "CWE-502": "not present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "license_note": "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro).",
+    "cwe_coverage": {
+      "CWE-89": "present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "not present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "per_cwe_n": {
+      "CWE-79": {
+        "vulnerable": 100,
+        "not_vulnerable": 13,
+        "n": 113
+      },
+      "CWE-89": {
+        "vulnerable": 3,
+        "not_vulnerable": 0,
+        "n": 3
+      },
+      "CWE-22": {
+        "vulnerable": 2,
+        "not_vulnerable": 1,
+        "n": 3
+      }
+    }
+  }
+}

@@ -37,7 +37,8 @@ Do **not** tell the advisor this is SOTA, Juliet/OWASP numbers, 100% novel, or t
 | Neural embeddings + LLM reasoner | **Done** | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; Groq required on default path |
 | Research evaluation (authored corpus) | **Done** | `research-eval` | [research-evaluation.md](research-evaluation.md) | `uv run cwe-vuln-eval --suite research` |
 | Live research default | **Done** | `live-research` | [research-evaluation.md](research-evaluation.md) | Requires `GROQ_API_KEY`; `--ablation template` for F1=0 contrast |
-| Juliet Java v1.3 mapped eval | **This PR** | `benchmark-eval` | [benchmark-plan.md](benchmark-plan.md) · [benchmark-results.md](benchmark-results.md) | `uv run cwe-vuln-eval --suite juliet-sast` |
+| Juliet Java v1.3 mapped eval | **Done** | `benchmark-eval` | [benchmark-plan.md](benchmark-plan.md) · [benchmark-results.md](benchmark-results.md) | `uv run cwe-vuln-eval --suite juliet` |
+| Six public Java suites | **This PR** | `six-benchmarks` | [six-benchmark-plan.md](six-benchmark-plan.md) · [six-benchmark-results.md](six-benchmark-results.md) | `uv run cwe-vuln-eval --suite owasp-benchmark` |
 
 ## Honesty
 
