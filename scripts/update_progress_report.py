@@ -46,13 +46,12 @@ def main() -> None:
     set_para(
         doc,
         28,
-        "Assignments 1–4 and the wired seed pipeline are implemented in the GitHub repository "
-        "(PRs #1–#10), then extended with a MiniLM embedding port and an LLM reasoner "
-        "(embeddings-llm). Evaluation is seed-only on 12 authored Java units and 18 retrieval "
-        "queries — not a public benchmark (not Juliet, OWASP Benchmark, or Big-Vul). Live LLM "
-        "uses GROQ_API_KEY (optional CWE_VULN_LLM_API_KEY override); without a key the "
-        "default path is offline (regex SAST, hybrid retrieval with MiniLM or TF-IDF fallback, "
-        "template reasoner). No OpenAI account is required; OPENAI_API_KEY is unused.",
+        "Assignments 1–4 and the wired seed pipeline are implemented (PRs #1–#10), "
+        "then MiniLM embeddings and a Groq LLM reasoner (embeddings-llm). Research "
+        "evaluation is complete on an authored expanded Java corpus (36 units: original "
+        "12 plus 24 held-out FP/FN traps) — not a public benchmark (not Juliet, OWASP "
+        "Benchmark, or Big-Vul). Live Groq openai/gpt-oss-20b was used in trials. "
+        "Without GROQ_API_KEY the default path is offline. No OpenAI account is required.",
     )
 
     set_para(
@@ -114,22 +113,22 @@ def main() -> None:
         doc,
         55,
         "The seed pipeline is implemented and runnable: uv sync && uv run pytest && "
-        "uv run cwe-vuln-pipeline. Recorded seed-only scores: Assignment 1 detection on 12 units "
-        "P=R=F1=1.000 (tp=6 fp=0 tn=6 fn=0); Assignment 3 retrieval on 18 queries is recorded in "
-        "results/assignment-3-retrieval.json (seed-only, not a benchmark); framework test split "
-        "(4 units, live Groq) P=R=F1=1.000, validator 4/4, paths sast_then_llm=2 and "
-        "hybrid_retrieve_then_llm=2, reasoner=llm. Neural embeddings and the Groq LLM reasoner "
-        "have landed (default openai/gpt-oss-20b). Public-benchmark evaluation is not claimed.",
+        "uv run cwe-vuln-pipeline. Assignment 1 detection on 12 units P=R=F1=1.000 "
+        "(seed-only). Research evaluation on 24 held-out authored traps: SAST/template "
+        "P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923; "
+        "skip_llm P=0.500 R=1.000 F1=0.667. Retrieval on 48 authored queries: hybrid "
+        "R@1=0.854 MRR=0.917 vs MiniLM 0.812 / 0.894 vs TF-IDF 0.646 / 0.794. "
+        "Public-benchmark evaluation is not claimed.",
     )
 
     # Section 12 next steps: remaining honest gaps
-    set_para(doc, 57, "Keep the 12-unit Java seed as a pedagogical corpus; do not treat it as Juliet/OWASP Benchmark.")
+    set_para(doc, 57, "Keep the original 12-unit Java seed as the assignment split; research scores use the 24-unit held-out authored traps.")
     set_para(doc, 58, "Optional later: expand the curated CWE store without scraping an unofficial full dump.")
     set_para(doc, 59, "MiniLM embeddings are implemented with TF-IDF fallback if the local model is missing.")
     set_para(doc, 60, "Keep SAST as evidence extraction (CWE hints); knowledge layer owns descriptions.")
     set_para(doc, 61, "Keep SAST-first LLM routing in the orchestrator (GROQ_API_KEY).")
-    set_para(doc, 62, "Live LLM reasoner is implemented; export GROQ_API_KEY or CWE_VULN_LLM_API_KEY for Groq openai/gpt-oss-20b.")
-    set_para(doc, 63, "Validator already checks schema, CWE id, cited lines, and decision vs evidence.")
+    set_para(doc, 62, "Live LLM reasoner is implemented; research trials used Groq openai/gpt-oss-20b.")
+    set_para(doc, 63, "Validator already checks schema, CWE id, cited lines, and decision vs evidence — it currently fails when the LLM correctly overrides SAST.")
     set_para(doc, 64, "Optional later: richer confidence fusion beyond template confidence fields.")
     set_para(doc, 65, "Public-benchmark experiments remain out of scope until a labeled external dataset is adopted.")
 
@@ -146,8 +145,9 @@ def main() -> None:
     set_para(
         doc,
         71,
-        "Current work establishes the problem, layered architecture, MiniLM embeddings with "
-        "TF-IDF fallback, and an LLM reasoner that stays offline without an API key. "
+        "Current work establishes the problem, layered architecture, MiniLM embeddings, "
+        "an LLM reasoner, and a completed research evaluation on an authored expanded "
+        "corpus (with limitations: small N, traps written against our regex). "
         "Public-benchmark evaluation remains future work and is not reported as done.",
     )
 
@@ -164,7 +164,7 @@ def main() -> None:
         ("Hybrid retrieval", "Implemented", "MiniLM cosine + SAST + CWE relationships, RRF. TF-IDF fallback if MiniLM missing."),
         ("Cost-aware routing", "Implemented", "Orchestrator SAST-first; Groq LLM only if GROQ_API_KEY is set (CWE_VULN_LLM_API_KEY override)."),
         ("Multi-agent workflow", "Implemented", "Template + LLM reasoner, validator, framework CLI."),
-        ("Implementation / evaluation", "Seed pipeline done", "Embeddings + LLM structure landed. Live LLM waits on key. Seed-only."),
+        ("Implementation / evaluation", "Research eval done", "Authored 36-unit corpus. Live Groq trials recorded. Not a public benchmark."),
     ]
     for i, (a, b, c) in enumerate(rows):
         set_cell(t4.rows[i].cells[0], a)
@@ -175,7 +175,7 @@ def main() -> None:
         "src/cwe_vuln/\n"
         "  config.py\n"
         "  models/          Evidence, RankedHit, ReasoningResult, ValidationReport, metrics\n"
-        "  dataset/         SeedUnit, load_seed, 8/4 split\n"
+        "  dataset/         SeedUnit, load_seed 8/4, load_research_corpus 36\n"
         "  knowledge/       CWEKnowledgeBase\n"
         "  sast/            regex detect + extract_evidence\n"
         "  retrieval/       MiniLM Embedder + TF-IDF fallback + SAST + RRF\n"
@@ -183,7 +183,7 @@ def main() -> None:
         "  reasoner/        TemplateReasoner + LLMReasoner\n"
         "  validator/       ResultValidator\n"
         "  orchestrator/    Pipeline, LLM routing if API key present\n"
-        "  framework/       cwe-vuln-pipeline CLI\n"
+        "  framework/       cwe-vuln-pipeline + cwe-vuln-eval\n"
         "  cli/             baseline, kb, retrieve, schema, evidence\n"
         "data/  docs/  results/  schemas/  tests/ (mirrors packages)"
     )
@@ -202,7 +202,7 @@ def main() -> None:
         ("Validator agent", "Implemented", "Schema, CWE id, cited lines, decision vs evidence."),
         ("Layered packages", "Implemented", "models, dataset, knowledge, sast, retrieval, schema, reasoner, validator, orchestrator, framework, cli."),
         ("Reporting", "Implemented", "Assignment 4 JSON Schema + framework results JSON/MD."),
-        ("Evaluation", "Seed-only", "No Juliet / OWASP Benchmark / Big-Vul numbers. Do not invent them."),
+        ("Evaluation", "Authored corpus", "36 units / 24 held-out traps. No Juliet / OWASP Benchmark / Big-Vul numbers."),
     ]
     for i, (a, b, c) in enumerate(rows8):
         set_cell(t8.rows[i].cells[0], a)
@@ -214,7 +214,8 @@ def main() -> None:
         "Progress summary: XAI → RAG → CWE knowledge → agentic AI → Java seed + SAST baseline "
         "→ hybrid retrieval → schema → evidence → template reasoner → validator → "
         "orchestrator → framework CLI → layered packages → MiniLM embeddings + LLM "
-        "structure. Live Groq waits on GROQ_API_KEY. Public-benchmark evaluation remains later.",
+        "reasoner → research evaluation on an authored expanded corpus. Live Groq used "
+        "in trials. Public-benchmark evaluation remains later.",
     )
 
     set_cell(

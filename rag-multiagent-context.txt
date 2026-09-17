@@ -13,13 +13,15 @@ Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
 
 Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
-seed-only eval on authored units/queries; Java units are teaching samples, not exploits.
+seed-only eval on the original 12 units / 18 queries; research eval on an
+authored 36-unit corpus (24 held-out traps). Java units are teaching samples,
+not exploits.
 
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: embeddings-llm
-Branch: embeddings-llm
+Last phase in this file: research-eval
+Branch: research-eval
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -33,7 +35,8 @@ Branch: embeddings-llm
 | Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
 | Framework | DONE PR #9 | framework | docs/framework.md | uv run cwe-vuln-pipeline |
 | Layered packages | DONE PR #10 | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
-| Neural embeddings + LLM reasoner | THIS PR | embeddings-llm | docs/architecture.md | uv run pytest (offline); export GROQ_API_KEY tomorrow |
+| Neural embeddings + LLM reasoner | DONE | embeddings-llm | docs/architecture.md | MiniLM local; Groq LLM if GROQ_API_KEY |
+| Research evaluation | THIS PR | research-eval | docs/research-evaluation.md | uv run cwe-vuln-eval --suite research |
 
 ============================================================
 PACKAGE TREE
@@ -41,15 +44,15 @@ PACKAGE TREE
 src/cwe_vuln/
   config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS
   models/             Evidence, RankedHit, ReasoningResult, ValidationReport, PipelineResult, binary_metrics
-  dataset/            SeedUnit, load_seed, TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
+  dataset/            SeedUnit, load_seed (8/4), load_research_corpus (36), RESEARCH_TEST_UNIT_IDS (24)
   knowledge/          CWEKnowledgeBase
   sast/               regex RULES, detect(), extract_evidence()
   retrieval/          Embedder, MiniLMEmbedder, TfidfEmbedder, DenseIndex, HybridRetriever, RRF
   schema/             load/validate Assignment 4 JSON Schema
   reasoner/           TemplateReasoner + LLMReasoner; Reasoner.reason
   validator/          ResultValidator.check
-  orchestrator/       Pipeline.run; SAST-first LLM routing; ports
-  framework/          cwe-vuln-pipeline CLI
+  orchestrator/       Pipeline.run; SAST-first LLM routing; skip_llm override knobs
+  framework/          cwe-vuln-pipeline + cwe-vuln-eval
   cli/                baseline, knowledge, retrieval, schema, evidence
 
 tests/ mirrors those packages. data/ docs/ results/ schemas/ stay outside src/.
@@ -59,13 +62,9 @@ EMBEDDINGS
 ============================================================
 Port: Embedder.encode(texts) -> 2-D array-like
 MiniLM: sentence-transformers all-MiniLM-L6-v2, cache .cache/sentence-transformers/ (gitignored)
-Status this session: MiniLM DID run (embedder=minilm in results/assignment-3-retrieval.json)
 Fallback: embedder=tfidf_fallback if import/download fails. Never crash the pipeline.
 Unit tests: fake KeywordEmbedder; do not require MiniLM download.
-Optional integration test skipped if model not cached.
 Hybrid: RRF of neural cosine + SAST CWE ids + one-hop CWE relationships.
-Compare neural vs lexical_tfidf vs hybrid_rrf on data/retrieval/labeled_queries.jsonl
-Results: results/assignment-3-retrieval.json (seed-only — not a benchmark)
 
 ============================================================
 LLM (no OpenAI account)
@@ -80,7 +79,7 @@ Default base URL: https://api.groq.com/openai/v1
 Override: CWE_VULN_LLM_BASE_URL
 
 Client: openai.OpenAI(api_key=..., base_url=...) OpenAI-compatible.
-Load repo-root .env via python-dotenv. Never commit .env.
+Load repo-root .env via python-dotenv. Never commit .env. Never print gsk_.
 
 No key → orchestrator does not construct LLMReasoner; TemplateReasoner; paths
   sast_first_skip_llm / hybrid_retrieve_skip_llm
@@ -88,14 +87,10 @@ Key present → sast_then_llm / hybrid_retrieve_then_llm unless skip_llm_when_sa
 Invalid JSON: retry once, then reasoner=llm_fallback_template
 Tests mock the client. No live LLM calls in pytest.
 
-Tomorrow:
-  export GROQ_API_KEY=...
-  uv run cwe-vuln-pipeline
-
 ============================================================
-DATASET (stable)
+DATASET
 ============================================================
-12 Java units, data/seed/labels.jsonl, data/seed/java/
+Assignment seed (stable): 12 Java units, data/seed/labels.jsonl, data/seed/java/
 Split: src/cwe_vuln/dataset/seed.py TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
 
 Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescaped,
@@ -103,6 +98,10 @@ Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescape
   java_cwe502_readobject, java_cwe502_json_parse
 Test: java_cwe798_hardcoded, java_cwe798_env_config, java_cwe327_md5, java_cwe327_sha256
 CWEs: 89, 79, 22, 502, 798, 327 (one vuln + one safe each)
+
+Research corpus: 36 units (seed 12 + research_test 24). data/research/labels.jsonl
+Held-out traps: 12 fp_trap + 12 fn_trap. load_research_corpus(split="research_test")
+Research class names/javadocs must not contain gold labels (Safe/Vulnerable).
 
 ============================================================
 DATA FLOW
@@ -117,31 +116,43 @@ SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport
   reasoner     TemplateReasoner / LLMReasoner (no dataset I/O)
   validator    schema + KB + cited lines + decision vs evidence
   orchestrator Pipeline.run; SAST-first; LLM only if key present
-  framework    cwe-vuln-pipeline CLI + seed metrics
+  framework    cwe-vuln-pipeline + cwe-vuln-eval
   cli          thin A1 / KB / retrieve / schema / evidence
   models       one Evidence, one ReasoningResult, one binary_metrics
   config       paths, top_k, rrf_k, LLM env names, use_llm_if_available, skip_llm_when_sast_hits
 
 ============================================================
-METRICS ACTUALLY COMPUTED (seed-only — not a benchmark)
+METRICS ACTUALLY COMPUTED
 ============================================================
-A1 detection (12 units, regex only):
+A1 detection (12 units, regex only, seed-only — not a benchmark):
   overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
 
-A3 retrieval (18 queries, embedder=minilm):
+A3 retrieval (18 queries, embedder=minilm, seed-only):
   lexical_tfidf  R@1=0.7778 R@3=0.9444 R@5=0.9444 MRR=0.8681
   neural         R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
-  sast           R@1=0.3333 R@3=0.3333 R@5=0.3333 MRR=0.3333
   hybrid_rrf     R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
 
-Framework pipeline (test split, 4 units, live Groq openai/gpt-oss-20b):
+Framework pipeline (test split, 4 units, live Groq openai/gpt-oss-20b, seed-only):
   P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
   paths: sast_then_llm=2, hybrid_retrieve_then_llm=2
   reasoner=llm  embedder=minilm
-Framework pipeline (all 12, live Groq):
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=12/12
-  paths: sast_then_llm=6, hybrid_retrieve_then_llm=6
-  reasoner=llm
+
+Research detection (24 held-out authored traps — not a public benchmark):
+  SAST/template     P=0.000 R=0.000 F1=0.000 fp=12 fn=12
+  Groq then_llm     P=0.857 R=1.000 F1=0.923 fp=2 fn=0  validator 2/24  cited_lines 24/24
+  skip_llm          P=0.500 R=1.000 F1=0.667 fp=12 fn=0 validator 12/24
+  model=openai/gpt-oss-20b probe_ok
+
+Research retrieval (48 authored queries, embedder=minilm — not a public benchmark):
+  lexical_tfidf  R@1=0.646 R@3=0.917 R@5=0.938 R@10=1.000 MRR=0.794
+  neural         R@1=0.812 R@3=0.979 R@5=1.000 R@10=1.000 MRR=0.894
+  hybrid_rrf     R@1=0.854 R@3=0.958 R@5=1.000 R@10=1.000 MRR=0.917
+
+Failed/invalid trials kept in results/experiments/:
+  sast_fn_traps_javadoc_false_start
+  sast_fp_traps_javadoc_rewrite_regression
+  llm_then_research_test_label_leak
+  llm_skip_when_sast_research_test_label_leak
 
 ============================================================
 HOW TO RUN
@@ -150,6 +161,7 @@ uv sync
 uv run pytest
 uv run cwe-vuln-pipeline
 uv run cwe-vuln-pipeline --split all
+uv run cwe-vuln-eval --suite research
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve --eval
@@ -161,6 +173,7 @@ KEY FILES
 ============================================================
 README.md
 rag-multiagent-context.txt
+docs/research-evaluation.md
 docs/implementation-plan.md
 docs/advisor-phase-plan.md
 docs/architecture.md
@@ -169,30 +182,24 @@ docs/assignment-1-dataset-baseline.md
 docs/assignment-2-cwe-knowledge.md
 docs/assignment-3-hybrid-retrieval.md
 docs/assignment-4-output-schema.md
-docs/sast-evidence.md
-docs/reasoning-agent.md
-docs/validator.md
-docs/orchestrator.md
-schemas/reasoning_output.schema.json
 data/seed/labels.jsonl
-data/cwe/knowledge.json
+data/research/labels.jsonl
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/framework/cli.py
-src/cwe_vuln/orchestrator/pipeline.py
-src/cwe_vuln/retrieval/embed.py
-src/cwe_vuln/reasoner/llm.py
-results/assignment-1-baseline.json
-results/assignment-3-retrieval.json
-results/framework-seed.json
-results/framework-seed-all.json
+data/retrieval/research_queries.jsonl
+src/cwe_vuln/framework/eval.py
+src/cwe_vuln/dataset/research.py
+results/research-eval-summary.json
+results/experiments/
 Thesis Progress Report_RichaVerma_25MCSS02.docx
 
-Do not commit: ApproachDoc.pdf, secrets, .env, .cache/
+Do not commit: ApproachDoc.pdf, secrets, .env, .cache/, research-papers/ PDFs unless asked
 
 ============================================================
 LIMITATIONS
 ============================================================
-- Seed-only evaluation (12 authored Java units / 18 retrieval queries).
+- Seed-only 12-unit scores are distinct from research-split 24-unit scores.
+- Research corpus is authored, small N, traps written against our regex.
+- Validator requires decision to match SAST evidence, so LLM overrides fail A4 validation.
 - MiniLM may be tfidf_fallback if the model is not cached / download failed.
 - Live Groq waits on GROQ_API_KEY; default offline path is TemplateReasoner.
 - CWE store is a curated subset, not a full MITRE dump.

@@ -20,12 +20,20 @@ class Pipeline:
         reasoner: UnitReasoner,
         validator: UnitValidator,
         llm_reasoner: UnitReasoner | None = None,
+        skip_llm_when_sast_hits: bool | None = None,
+        use_llm_if_available: bool | None = None,
     ) -> None:
         self.extractor = extractor
         self.retriever = retriever
         self.reasoner = reasoner
         self.validator = validator
         self.llm_reasoner = llm_reasoner
+        self.skip_llm_when_sast_hits = (
+            settings.skip_llm_when_sast_hits if skip_llm_when_sast_hits is None else skip_llm_when_sast_hits
+        )
+        self.use_llm_if_available = (
+            settings.use_llm_if_available if use_llm_if_available is None else use_llm_if_available
+        )
 
     @classmethod
     def default(cls) -> Pipeline:
@@ -63,11 +71,11 @@ class Pipeline:
     def _route(self, has_evidence: bool) -> tuple[str, UnitReasoner]:
         can_llm = (
             self.llm_reasoner is not None
-            and settings.use_llm_if_available
+            and self.use_llm_if_available
             and bool(settings.llm_api_key())
         )
         if has_evidence:
-            if can_llm and not settings.skip_llm_when_sast_hits and self.llm_reasoner is not None:
+            if can_llm and not self.skip_llm_when_sast_hits and self.llm_reasoner is not None:
                 return "sast_then_llm", self.llm_reasoner
             return "sast_first_skip_llm", self.reasoner
         if can_llm and self.llm_reasoner is not None:

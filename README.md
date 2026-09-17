@@ -2,14 +2,14 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** neural embeddings + LLM reasoner with offline fallback (`cwe-vuln-pipeline`)
+**Current milestone:** research evaluation on an authored expanded Java corpus (`cwe-vuln-eval`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
 
 ## Problem statement
 
-This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. The runnable path is a **seed-only** pipeline (regex SAST + hybrid retrieval + reasoner). It is **not** a public benchmark. The default path is offline (template reasoner). A live LLM is used automatically when an API key is present.
+This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. Assignments 1–4 and the wired pipeline are complete. The research evaluation expands the authored Java corpus so regex SAST is imperfect. It is **not** a public benchmark. The default path is offline (template reasoner). A live LLM is used automatically when an API key is present.
 
 ## Pipeline
 
@@ -28,11 +28,14 @@ End-to-end:
 uv sync
 uv run pytest
 uv run cwe-vuln-pipeline
+uv run cwe-vuln-eval --suite research
 ```
 
-Default split is the **4 test units**. `uv run cwe-vuln-pipeline --split all` runs all 12. Writes `results/framework-seed.json`.
+Default pipeline split is the **4 test units**. `uv run cwe-vuln-pipeline --split all` runs all 12. Writes `results/framework-seed.json`.
 
-Recorded test-split metrics (**seed-only — not a benchmark**): precision=1.000 recall=1.000 F1=1.000 FP=0 FN=0. Validator passed 4/4. Paths: 2× `sast_then_llm`, 2× `hybrid_retrieve_then_llm`. Reasoner: `llm` (live Groq `openai/gpt-oss-20b`). Embedder: `minilm`. Full seed (`--split all`, 12 units): same scores, validator 12/12, paths 6× `sast_then_llm` / 6× `hybrid_retrieve_then_llm`, reasoner `llm`.
+Recorded **seed-only — not a benchmark** test-split metrics: precision=1.000 recall=1.000 F1=1.000 FP=0 FN=0. Validator passed 4/4. Paths: 2× `sast_then_llm`, 2× `hybrid_retrieve_then_llm`. Reasoner: `llm` (live Groq `openai/gpt-oss-20b`). Embedder: `minilm`. Full seed (`--split all`, 12 units): same scores, validator 12/12.
+
+**Research split** (24 held-out authored traps, **authored corpus — not a public benchmark**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN); skip_llm P=0.500 R=1.000 F1=0.667. Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
 
 ## MiniLM embeddings
 
@@ -43,6 +46,8 @@ uv run cwe-vuln-retrieve --eval
 ```
 
 Recorded seed-only retrieval (18 queries, embedder=`minilm`): neural R@1=0.944 R@3=1.000 R@5=1.000 MRR=0.972 vs lexical TF-IDF R@1=0.778 R@3=0.944 R@5=0.944 MRR=0.868. Hybrid RRF matches neural on this seed. **seed-only — not a benchmark.**
+
+Expanded authored queries (48, **not a public benchmark**): TF-IDF R@1=0.646 MRR=0.794; MiniLM R@1=0.812 MRR=0.894; hybrid RRF R@1=0.854 MRR=0.917. Hybrid still helps R@1/MRR on the expanded set.
 
 ## Live LLM (Groq)
 
@@ -73,15 +78,16 @@ With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_h
 | Regex baseline + P/R/F1 | Done (A1) `uv run cwe-vuln` |
 | CWE knowledge store + query API | Done ([PR #2](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/2)) `uv run cwe-vuln-kb demo` |
 | Hybrid retrieval (TF-IDF + SAST + relationships) | Done ([PR #3](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/3)) `uv run cwe-vuln-retrieve` |
-| Neural embeddings / MiniLM | **This PR** (`all-MiniLM-L6-v2`, TF-IDF fallback) |
+| Neural embeddings / MiniLM | Done (`all-MiniLM-L6-v2`, TF-IDF fallback) |
 | Reasoning output JSON Schema | Done ([PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4)) |
 | SAST evidence objects | Done ([PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5)) |
 | Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) |
 | Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)) |
-| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8); LLM routing in this PR) |
+| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)) |
 | Framework CLI on the seed | Done ([PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9)) |
 | Layered packages (`models`, `dataset`, `sast`, …) | Done ([PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10)) |
-| Live LLM reasoner | **This PR** — Groq `LLMReasoner`; skipped without `GROQ_API_KEY` |
+| Live LLM reasoner | Done — Groq `LLMReasoner`; skipped without `GROQ_API_KEY` |
+| Research evaluation (authored 36-unit corpus) | **This PR** — `uv run cwe-vuln-eval --suite research` |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 
@@ -95,6 +101,18 @@ No Juliet / OWASP Benchmark / Big-Vul numbers.
 | test | 4 | 798, 327 (vuln+safe each) | 2 / 2 |
 
 A1 regex-only overall (**seed-only**): P=1.000 R=1.000 F1=1.000 FP=0 FN=0.
+
+## Research corpus (this PR)
+
+`data/research/java/` + `data/research/labels.jsonl`. Assignment 8/4 is unchanged.
+
+| Split | n | Role |
+| --- | ---: | --- |
+| seed train/test | 8 / 4 | Assignment 1 plumbing |
+| research_test | 24 | held-out FP/FN traps |
+| authored total | 36 | **not a public benchmark** |
+
+`uv run cwe-vuln-eval --suite research` writes `results/experiments/` and `results/research-eval-summary.json`.
 
 ## Knowledge / retrieval / schema
 
@@ -111,4 +129,5 @@ Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 uv sync
 uv run pytest
 uv run cwe-vuln-pipeline
+uv run cwe-vuln-eval --suite research
 ```

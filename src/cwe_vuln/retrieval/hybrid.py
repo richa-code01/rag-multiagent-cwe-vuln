@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from cwe_vuln.config import repo_root, settings
-from cwe_vuln.dataset import SeedUnit, load_seed
+from cwe_vuln.dataset import DatasetError, SeedUnit, load_research_corpus, load_seed
 from cwe_vuln.knowledge import CWEEntry, CWEKnowledgeBase
 from cwe_vuln.models.retrieval import RankedHit, RetrievalQuery
 from cwe_vuln.retrieval.dense import DenseIndex
@@ -39,6 +39,11 @@ class HybridRetriever:
         kb = CWEKnowledgeBase.load()
         documents = {entry.id: _entry_document(entry) for entry in kb.entries.values()}
         units = {unit.unit_id: unit for unit in load_seed(root)}
+        try:
+            for unit in load_research_corpus(root):
+                units.setdefault(unit.unit_id, unit)
+        except DatasetError:
+            pass
         index = TfidfIndex(documents)
         dense: DenseIndex | None = None
         name = "tfidf_fallback"
@@ -111,6 +116,7 @@ class HybridRetriever:
 
     def rank_for_unit(self, unit: SeedUnit) -> list[RankedHit]:
         """Unit-level retrieve: notes as query, source as SAST signal, truncated to config.top_k."""
+        self.units_by_id[unit.unit_id] = unit
         query = RetrievalQuery(
             query_id=unit.unit_id,
             query=unit.notes,
@@ -120,21 +126,27 @@ class HybridRetriever:
         return self.hybrid_rank(query)[: settings.top_k]
 
 
-def load_retrieval_queries(root: Path | None = None) -> list[RetrievalQuery]:
-    path = (root or repo_root()) / "data" / "retrieval" / "labeled_queries.jsonl"
+def load_retrieval_queries(
+    root: Path | None = None,
+    files: tuple[str, ...] = ("labeled_queries.jsonl",),
+) -> list[RetrievalQuery]:
+    base = (root or repo_root()) / "data" / "retrieval"
     queries: list[RetrievalQuery] = []
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        if not raw.strip():
-            continue
-        payload = json.loads(raw)
-        queries.append(
-            RetrievalQuery(
-                query_id=str(payload["query_id"]),
-                query=str(payload["query"]),
-                relevant_cwes=tuple(payload["relevant_cwes"]),
-                unit_id=payload.get("unit_id"),
+    for name in files:
+        path = Path(name)
+        path = path if path.is_absolute() else base / name
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            if not raw.strip():
+                continue
+            payload = json.loads(raw)
+            queries.append(
+                RetrievalQuery(
+                    query_id=str(payload["query_id"]),
+                    query=str(payload["query"]),
+                    relevant_cwes=tuple(payload["relevant_cwes"]),
+                    unit_id=payload.get("unit_id"),
+                )
             )
-        )
     return queries
 
 
@@ -184,7 +196,7 @@ def evaluate_retriever(
         }
         for name, rank_fn in systems.items():
             ranked = rank_fn(query)
-            row["rankings"][name] = ranked[:5]
+            row["rankings"][name] = ranked[: max(k_values)]
             for k in k_values:
                 system_scores[name][f"recall@{k}"].append(recall_at_k(query.relevant_cwes, ranked, k))
             system_scores[name]["mrr"].append(mean_reciprocal_rank(query.relevant_cwes, ranked))

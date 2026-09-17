@@ -24,3 +24,5 @@ uv run cwe-vuln-pipeline --split all
 Writes `results/framework-seed.json` (and `.md`). Recorded test-split run (**seed-only**, live Groq `openai/gpt-oss-20b`, embedder=`minilm`): P=1.000 R=1.000 F1=1.000 FP=0 FN=0, 4/4 validator pass, paths `sast_then_llm=2` / `hybrid_retrieve_then_llm=2`, reasoner `llm`. `--split all` (12 units): same scores, 12/12 validator pass, paths 6/6.
 
 Still not a public benchmark. MiniLM is local. Live Groq uses `GROQ_API_KEY`; without a key the pipeline stays offline.
+
+Research evaluation (authored 24-unit held-out split) is `uv run cwe-vuln-eval --suite research` → [`research-evaluation.md`](research-evaluation.md).

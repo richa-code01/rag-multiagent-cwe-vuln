@@ -28,10 +28,12 @@ Cost-aware routing is an orchestrator component. It is **not** in the thesis tit
 | Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/orchestrator/test_orchestrator.py` |
 | Complete multi-agent framework | **Done** [PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9) | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
 | Layered package layout | **Done** [PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10) | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
-| Neural embeddings + LLM reasoner | **This PR** | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; LLM via env key; template fallback |
+| Neural embeddings + LLM reasoner | **Done** on `embeddings-llm` | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; LLM via env key; template fallback |
+| Research evaluation (authored corpus) | **This PR** | `research-eval` | [research-evaluation.md](research-evaluation.md) | `uv run cwe-vuln-eval --suite research` |
 
 ## Honesty
 
-- All detection/retrieval/framework scores are **seed-only — not a benchmark**
-- A3 retrieval now has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
+- Assignment 1–4 and seed pipeline scores remain **seed-only — not a benchmark** (12 units / 18 queries)
+- Research evaluation is on an **authored expanded corpus** (36 units, 24 held-out traps, 48 queries) — **not** Juliet / OWASP Benchmark / Big-Vul
+- A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
 - `TemplateReasoner` is the default offline composer; `LLMReasoner` runs only when `GROQ_API_KEY` is set

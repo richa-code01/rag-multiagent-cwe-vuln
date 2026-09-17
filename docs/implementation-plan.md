@@ -230,3 +230,15 @@ README, architecture, advisor plan, retrieval/reasoner/orchestrator/framework, c
 - `LLMReasoner` behind `Reasoner.reason`; no key today so orchestrator uses `TemplateReasoner`. Env: `GROQ_API_KEY`, optional `CWE_VULN_LLM_API_KEY`, optional `CWE_VULN_LLM_MODEL` / `CWE_VULN_LLM_BASE_URL`.
 - `uv run pytest`: 48 passed with MiniLM cached (47 passed + 1 skipped when the model is absent).
 - `uv run cwe-vuln-pipeline` offline: test split P=R=F1=1.0, paths 2/2 skip-LLM, reasoner=template, embedder=minilm.
+
+## Executed (`research-eval`, 2026-09-17)
+
+Research evaluation on an authored expanded corpus. Not Juliet / OWASP Benchmark / Big-Vul.
+
+- Assignment 8/4 seed unchanged (`load_seed()` still 12). Research corpus 36 units; held-out `research_test` n=24 (12 FP + 12 FN traps).
+- `cwe-vuln-eval --suite research` writes `results/experiments/` plus `results/research-eval-summary.json`.
+- Detection (authored corpus — not a public benchmark): SAST/template P=R=F1=0.000 (12 FP / 12 FN); Groq `openai/gpt-oss-20b` then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN); skip_llm P=0.500 R=1.000 F1=0.667.
+- Retrieval 48 queries: hybrid R@1=0.854 MRR=0.917 vs MiniLM R@1=0.812 MRR=0.894 vs TF-IDF R@1=0.646 MRR=0.794. Hybrid still helps R@1/MRR.
+- Explainability: then_llm validator 2/24 (SAST-tied contract); cited_lines 24/24 after normalize.
+- Trial-and-error logged: FN javadoc tokens, FP javadoc rewrite regression, first LLM run invalidated for gold-label leakage in class names.
+- `uv run pytest`: 54 passed. No `.env` / `gsk_` in git.

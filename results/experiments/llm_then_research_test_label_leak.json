@@ -1,0 +1,275 @@
+{
+  "trial_id": "llm_then_research_test_label_leak",
+  "date": "2026-09-17T03:21:24Z",
+  "suite": "research",
+  "split": "research_test",
+  "n_units": 24,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "invalid_label_leak",
+  "config": {
+    "suite": "research",
+    "reasoner": "llm_or_template",
+    "skip_llm_when_sast_hits": false,
+    "use_llm_if_available": true,
+    "model": "openai/gpt-oss-20b"
+  },
+  "metrics": {
+    "tp": 12,
+    "fp": 0,
+    "tn": 12,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 24
+  },
+  "per_cwe": {
+    "CWE-89": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "CWE-79": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "CWE-22": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "CWE-502": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "CWE-798": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    },
+    "CWE-327": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 2,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 4
+    }
+  },
+  "confusion": [],
+  "notes": "INVALID for detection claims: Java sources leaked gold labels via class names (Safe/Vulnerable) and javadocs ('labeled vulnerable'). Detection P=R=F1=1.0 is not trusted. Neutralized sources and re-ran. Validator was 0/24 because the LLM overrode SAST. cited_lines=24/24 after normalize. Live Groq then_llm (SAST/retrieve then LLM). probe_ok model=openai/gpt-oss-20b",
+  "error": null,
+  "validation_pass": 0,
+  "validation_pass_rate": 0.0,
+  "cited_lines_grounded": 24,
+  "cited_lines_n": 24,
+  "cited_lines_rate": 1.0,
+  "detector_path_counts": {
+    "sast_then_llm": 12,
+    "hybrid_retrieve_then_llm": 12
+  },
+  "reasoner_counts": {
+    "llm": 24
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "java_cwe89_sql_comment_concat_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe89_sql_constant_concat_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe89_sql_stringbuilder_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe89_sql_split_concat_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_encoded_then_concat_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_constant_html_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_getparameter_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_concat_method_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_const_concat_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_comment_file_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_twoarg_file_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_paths_get_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe502_javadoc_objectstream_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe502_trusted_roundtrip_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe502_helper_reflection_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe502_xmldecoder_reflect_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_sentinel_then_env_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_password_log_literal_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_char_array_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_split_literal_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe327_md5_comment_sha256_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe327_banned_algo_message_safe",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe327_md5_variable_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe327_md5_split_literal_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    }
+  ]
+}

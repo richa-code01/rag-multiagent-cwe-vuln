@@ -11,7 +11,7 @@ Advisor sequence: [`advisor-phase-plan.md`](advisor-phase-plan.md). Cost-aware r
 src/cwe_vuln/
   config.py              shared knobs (repo_root, Top-K, RRF k, LLM env names, seed CWE ids)
   models/                DTOs only — Evidence, RankedHit, ReasoningResult, ValidationReport, metrics
-  dataset/               load seed units, labels, 8/4 split
+  dataset/               load seed units, labels, 8/4 split; research corpus 36 units
   knowledge/             CWE store + get/search/relationships/mitigations
   sast/                  regex detector + evidence extraction → Evidence[]
   retrieval/             Embedder port, MiniLM / TF-IDF, DenseIndex, SAST ids, relationship expand, RRF
@@ -19,7 +19,7 @@ src/cwe_vuln/
   reasoner/              Reasoner.reason → schema-valid ReasoningResult (template or LLM)
   validator/             schema + KB + cited lines + decision consistency
   orchestrator/          Pipeline wiring + SAST-first LLM routing + ports
-  framework/             cwe-vuln-pipeline CLI
+  framework/             cwe-vuln-pipeline CLI + cwe-vuln-eval research runner
   cli/                   baseline, knowledge, retrieval, schema, evidence entrypoints
 ```
 
@@ -81,7 +81,7 @@ flowchart LR
 | `reasoner` | `Reasoner.reason`. `TemplateReasoner` offline default; `LLMReasoner` when a key exists. | Implemented (key-gated) |
 | `validator` | Schema + KB + cited lines + decision vs evidence. No retrieve. | Implemented |
 | `orchestrator` | `Pipeline.run`; SAST-first; construct LLM only if key present; log `path`. | Implemented |
-| `framework` | `cwe-vuln-pipeline` CLI + seed metrics. | Implemented |
+| `framework` | `cwe-vuln-pipeline` CLI + seed metrics; `cwe-vuln-eval` research trials. | Implemented |
 | `cli` | Thin A1 / KB / retrieve / schema / evidence entrypoints. | Implemented |
 
 ## Ports and fallbacks
