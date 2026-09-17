@@ -29,7 +29,7 @@ class UnitRetriever(Protocol):
 
 
 class UnitReasoner(Protocol):
-    def compose(
+    def reason(
         self,
         unit: SeedUnit,
         evidence: list[Evidence],

@@ -1,0 +1,17 @@
+{
+  "trial_id": "sast_fp_traps_javadoc_rewrite_regression",
+  "date": "2026-09-17T03:26:00Z",
+  "suite": "research",
+  "split": "research_test",
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus — not a public benchmark.",
+  "status": "failed",
+  "config": {
+    "reasoner": "sast",
+    "issue": "neutral_javadoc_removed_fp_tokens"
+  },
+  "metrics": null,
+  "notes": "After neutralizing gold-label javadocs, two FP traps stopped matching (CWE-798 log literal and CWE-327 banned-algorithm message) because the original hits lived in javadoc text, not in Java string literals with escaped quotes. Fix: put the regex tokens in code comments that are not gold labels. Restored 12 FP + 12 FN.",
+  "error": "fp_count dropped from 12 to 10 after javadoc neutralization",
+  "fix": "Comment-based password=\"...\" and getInstance(\"MD5\") tokens in the two units."
+}

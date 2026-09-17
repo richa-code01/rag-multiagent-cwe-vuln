@@ -1,4 +1,4 @@
-"""Validate reasoning outputs. Does not retrieve or run SAST."""
+"""Validate reasoning outputs. Schema, KB, cited lines, JSON consistency — not SAST agreement."""
 
 from cwe_vuln.models.pipeline import CheckResult, ValidationReport
 from cwe_vuln.validator.checks import ResultValidator

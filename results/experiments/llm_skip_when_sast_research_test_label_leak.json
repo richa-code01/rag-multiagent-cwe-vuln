@@ -1,0 +1,404 @@
+{
+  "trial_id": "llm_skip_when_sast_research_test_label_leak",
+  "date": "2026-09-17T03:23:52Z",
+  "suite": "research",
+  "split": "research_test",
+  "n_units": 24,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "invalid_label_leak",
+  "config": {
+    "suite": "research",
+    "reasoner": "llm_or_template",
+    "skip_llm_when_sast_hits": true,
+    "use_llm_if_available": true,
+    "model": "openai/gpt-oss-20b"
+  },
+  "metrics": {
+    "tp": 10,
+    "fp": 12,
+    "tn": 0,
+    "fn": 2,
+    "precision": 0.45454545454545453,
+    "recall": 0.8333333333333334,
+    "f1": 0.5882352941176471,
+    "support": 24
+  },
+  "per_cwe": {
+    "CWE-89": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 0,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "support": 4
+    },
+    "CWE-79": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 0,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "support": 4
+    },
+    "CWE-22": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 0,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "support": 4
+    },
+    "CWE-502": {
+      "tp": 1,
+      "fp": 2,
+      "tn": 0,
+      "fn": 1,
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1": 0.4,
+      "support": 4
+    },
+    "CWE-798": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 0,
+      "fn": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "support": 4
+    },
+    "CWE-327": {
+      "tp": 1,
+      "fp": 2,
+      "tn": 0,
+      "fn": 1,
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "f1": 0.4,
+      "support": 4
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "java_cwe89_sql_comment_concat_safe",
+      "cwe_id": "CWE-89",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe89_sql_constant_concat_safe",
+      "cwe_id": "CWE-89",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe79_xss_encoded_then_concat_safe",
+      "cwe_id": "CWE-79",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe79_xss_constant_html_safe",
+      "cwe_id": "CWE-79",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe22_path_const_concat_safe",
+      "cwe_id": "CWE-22",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe22_path_comment_file_safe",
+      "cwe_id": "CWE-22",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe502_javadoc_objectstream_safe",
+      "cwe_id": "CWE-502",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe502_trusted_roundtrip_safe",
+      "cwe_id": "CWE-502",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe502_helper_reflection_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "fn_trap",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "java_cwe798_sentinel_then_env_safe",
+      "cwe_id": "CWE-798",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe798_password_log_literal_safe",
+      "cwe_id": "CWE-798",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe327_md5_comment_sha256_safe",
+      "cwe_id": "CWE-327",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe327_banned_algo_message_safe",
+      "cwe_id": "CWE-327",
+      "trap_type": "fp_trap",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "java_cwe327_md5_variable_vuln",
+      "cwe_id": "CWE-327",
+      "trap_type": "fn_trap",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "INVALID: same gold-label leakage as llm_then_research_test_label_leak. Re-ran after neutralizing class names and javadocs. Cost path skip_llm: SAST hits use template; no-hit units use LLM. probe_ok model=openai/gpt-oss-20b",
+  "error": null,
+  "validation_pass": 14,
+  "validation_pass_rate": 0.5833333333333334,
+  "cited_lines_grounded": 24,
+  "cited_lines_n": 24,
+  "cited_lines_rate": 1.0,
+  "detector_path_counts": {
+    "sast_first_skip_llm": 12,
+    "hybrid_retrieve_then_llm": 12
+  },
+  "reasoner_counts": {
+    "template": 12,
+    "llm": 11,
+    "llm_fallback_template": 1
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "java_cwe89_sql_comment_concat_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe89_sql_constant_concat_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe89_sql_stringbuilder_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe89_sql_split_concat_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_encoded_then_concat_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe79_xss_constant_html_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe79_xss_getparameter_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe79_xss_concat_method_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_const_concat_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe22_path_comment_file_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe22_path_twoarg_file_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe22_path_paths_get_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe502_javadoc_objectstream_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe502_trusted_roundtrip_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe502_helper_reflection_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe502_xmldecoder_reflect_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_sentinel_then_env_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe798_password_log_literal_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe798_char_array_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe798_split_literal_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    },
+    {
+      "unit_id": "java_cwe327_md5_comment_sha256_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe327_banned_algo_message_safe",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe327_md5_variable_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true
+    },
+    {
+      "unit_id": "java_cwe327_md5_split_literal_vuln",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": false
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "trial_id": "llm_then_seed_test",
+  "date": "2026-09-17T03:59:03Z",
+  "suite": "seed",
+  "split": "test",
+  "n_units": 4,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "suite": "seed",
+    "reasoner": "llm",
+    "skip_llm_when_sast_hits": false,
+    "use_llm_if_available": true,
+    "model": "openai/gpt-oss-20b"
+  },
+  "metrics": {
+    "tp": 2,
+    "fp": 0,
+    "tn": 2,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "support": 4
+  },
+  "per_cwe": {
+    "CWE-798": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-327": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    }
+  },
+  "confusion": [],
+  "notes": "Live Groq on the assignment seed test split (n=4). seed-only \u2014 not a benchmark. probe_ok model=openai/gpt-oss-20b",
+  "error": null,
+  "validation_pass": 4,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 4,
+  "cited_lines_n": 4,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "sast_then_llm": 2,
+    "hybrid_retrieve_then_llm": 2
+  },
+  "reasoner_counts": {
+    "llm": 4
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "java_cwe798_hardcoded",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "java_cwe798_env_config",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "java_cwe327_md5",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "java_cwe327_sha256",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ]
+}

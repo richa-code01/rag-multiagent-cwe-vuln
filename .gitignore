@@ -20,6 +20,9 @@ htmlcov/
 .env.*
 !.env.example
 
+# Local model / Hugging Face caches (MiniLM)
+.cache/
+
 # OS / editor
 .DS_Store
 .idea/
@@ -28,6 +31,11 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Juliet / public benchmark binaries (adapter + manifests are committed)
+data/benchmarks/juliet-java/
+data/benchmarks/downloads/
+*.zip
 
 # Local thesis drafts (do not commit)
 ApproachDoc.pdf

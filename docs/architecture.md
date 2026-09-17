@@ -5,21 +5,23 @@ Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
 Advisor sequence: [`advisor-phase-plan.md`](advisor-phase-plan.md). Cost-aware routing lives only in the orchestrator, not in the title.
 
+**Contribution this tree defends:** a RAG-augmented multi-agent detector for six Java CWEs where SAST emits evidence, hybrid MiniLM + relationship/RRF retrieves CWE knowledge, Groq produces A4-schema explanations, and a validator checks schema/lines/KB rather than SAST agreement. On an authored 24-unit FP/FN trap split, regex/template fail and the live LLM recovers most cases. Juliet Java v1.3 mapped-subset scores are a **separate** table (SAST n=20728, LLM sample n=72). Not SOTA; not “first ever RAG-CWE detector.”
+
 ## Package tree
 
 ```text
 src/cwe_vuln/
   config.py              shared knobs (repo_root, Top-K, RRF k, LLM env names, seed CWE ids)
   models/                DTOs only — Evidence, RankedHit, ReasoningResult, ValidationReport, metrics
-  dataset/               load seed units, labels, 8/4 split
+  dataset/               load seed units, labels, 8/4 split; research corpus 36 units; Juliet adapter
   knowledge/             CWE store + get/search/relationships/mitigations
   sast/                  regex detector + evidence extraction → Evidence[]
-  retrieval/             TF-IDF index + SAST ids + relationship expand + RRF
+  retrieval/             Embedder port, MiniLM / TF-IDF, DenseIndex, SAST ids, relationship expand, RRF
   schema/                JSON Schema load + validate helpers
-  reasoner/              unit + evidence + hits → schema-valid ReasoningResult
-  validator/             schema + KB + cited lines + decision consistency
-  orchestrator/          Pipeline wiring + SAST-first skip-LLM policy + ports
-  framework/             cwe-vuln-pipeline CLI
+  reasoner/              Reasoner.reason → schema-valid ReasoningResult (LLM default; template ablation)
+  validator/             schema + KB + cited lines + JSON consistency (SAST disagreement = warning)
+  orchestrator/          Pipeline wiring + SAST-then-LLM routing + ports
+  framework/             cwe-vuln-pipeline CLI + cwe-vuln-eval research runner
   cli/                   baseline, knowledge, retrieval, schema, evidence entrypoints
 ```
 
@@ -30,10 +32,10 @@ Tests mirror packages under `tests/{dataset,knowledge,sast,retrieval,schema,reas
 
 ```text
 Java SeedUnit
-    → SAST Evidence[]          (sast rules → structured evidence)
-    → Hybrid RankedHit[]       (TF-IDF + SAST ids + CWE relationships, RRF)
-    → ReasoningResult          (Assignment 4 JSON Schema)
-    → ValidationReport
+    → SAST Evidence[]          (sast rules → structured evidence; not the decision)
+    → Hybrid RankedHit[]       (MiniLM cosine or TF-IDF fallback + SAST ids + CWE relationships, RRF)
+    → ReasoningResult          (Assignment 4 JSON Schema; Groq LLMReasoner)
+    → ValidationReport         (schema / CWE-in-KB / cited lines / internal consistency)
     → Metrics
 ```
 
@@ -54,6 +56,7 @@ flowchart LR
   models --> validator[validator]
   models --> orch
   schema[schema] --> validator
+  schema --> reasoner
   knowledge --> validator
   knowledge --> reasoner
   orch --> reasoner
@@ -72,24 +75,32 @@ flowchart LR
 | --- | --- | --- |
 | `models` | Shared DTOs + one `binary_metrics`. No I/O, no rules. | Implemented |
 | `dataset` | Load labels/split/source. No detection. | Implemented |
-| `config` | `repo_root`, Top-K, RRF k, LLM env names, seed CWE ids. | Implemented |
-| `sast` | Regex rules, `detect()`, `extract_evidence()`. CWE *hints* only. | Implemented |
+| `config` | `repo_root`, Top-K, RRF k, LLM env names, `use_llm_if_available`, `skip_llm_when_sast_hits`. | Implemented |
+| `sast` | Regex rules, `detect()`, `extract_evidence()`. CWE *hints* only. Not the final decision. | Implemented |
 | `knowledge` | CWE JSON store + query API (names, mitigations, relationships). | Implemented |
-| `retrieval` | Index, TF-IDF, SAST signal, relationship expand, RRF. No reasoner. | Implemented (lexical) |
+| `retrieval` | `Embedder.encode`, `MiniLMEmbedder`, `TfidfEmbedder` / `TfidfIndex`, `DenseIndex`, SAST signal, relationship expand, RRF. No reasoner. | Implemented (MiniLM + TF-IDF fallback) |
 | `schema` | Draft 2020-12 load + `validate_output` / `is_valid`. | Implemented |
-| `reasoner` | `TemplateReasoner.compose`. Caller passes units. | Implemented (no LLM) |
-| `validator` | Schema + KB + cited lines + decision vs evidence. No retrieve. | Implemented |
-| `orchestrator` | `Pipeline.run`; SAST-first; skip LLM without key / when evidence exists. | Implemented |
-| `framework` | `cwe-vuln-pipeline` CLI + seed metrics. | Implemented |
+| `reasoner` | `Reasoner.reason`. `LLMReasoner` is the live default; `TemplateReasoner` is `--offline` / `--ablation template`. | Implemented |
+| `validator` | Schema + KB + cited lines + JSON consistency. `sast_disagreement` is a warning. | Implemented |
+| `orchestrator` | `Pipeline.default()` requires Groq; `Pipeline.offline()` is the ablation. Log `path`. | Implemented |
+| `framework` | `cwe-vuln-pipeline` CLI + seed metrics; `cwe-vuln-eval` research and Juliet suites. | Implemented |
 | `cli` | Thin A1 / KB / retrieve / schema / evidence entrypoints. | Implemented |
+
+## Ports and fallbacks
+
+**Embedder** (`retrieval/embed.py`): `encode(texts) -> 2-D array-like`. `MiniLMEmbedder` loads `all-MiniLM-L6-v2` from `.cache/` (downloads on first CLI run). Import of the package never requires the model. On import/download failure, `HybridRetriever` uses TF-IDF and records `embedder=tfidf_fallback`. Unit tests inject a tiny fake embedder.
+
+**Reasoner** (`reasoner/`): `reason(unit, evidence, hits) -> ReasoningResult`. `Pipeline.default()` constructs `LLMReasoner` and **fails** without `GROQ_API_KEY` (or `CWE_VULN_LLM_API_KEY` override). `Pipeline.offline()` / `cwe-vuln-eval --ablation template` uses `TemplateReasoner` for paper contrast (F1=0 on research_test). Invalid LLM JSON is retried once, then `reasoner=llm_fallback_template`. Optional `CWE_VULN_LLM_MODEL` (default `openai/gpt-oss-20b`) and `CWE_VULN_LLM_BASE_URL`. Prompts live in `reasoner/prompts.py`, not in the orchestrator.
+
+**Orchestrator routing** (not in the reasoner): always extract SAST evidence first, then Groq decides. Default paths: `sast_then_llm` / `hybrid_retrieve_then_llm`. `--offline` or `skip_llm_when_sast_hits` uses template (`sast_first_skip_llm` / `hybrid_retrieve_skip_llm`).
 
 ## Rules
 
 - No CWE encyclopedia text in the detector; names/mitigations come from `knowledge`.
 - Retrieval does not call the reasoner.
 - Reasoner does not open the dataset from disk (caller passes units).
-- Validator does not retrieve.
-- Orchestrator does not inline regexes or CWE descriptions.
+- Validator does not retrieve and does not force the decision to match SAST.
+- Orchestrator does not inline regexes, CWE descriptions, or prompt blobs.
 - Layers do not import `orchestrator`. `models` imports nothing from agents.
-- LLM is optional; default path is offline. Skip policy belongs in the orchestrator.
-- Neural embeddings are **not** implemented. TF-IDF is a lexical vector space.
+- Default path is live Groq. Template/skip_llm are opt-in ablations.
+- Neural embeddings are implemented (MiniLM). TF-IDF remains the lexical baseline and the download fallback.

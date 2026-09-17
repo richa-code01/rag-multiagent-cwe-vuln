@@ -19,7 +19,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args(argv)
 
-    retriever = HybridRetriever.load()
+    retriever = HybridRetriever.load(allow_download=True)
+    print(f"embedder={retriever.embedder_name}")
     if args.query:
         query = RetrievalQuery(
             query_id="cli",
@@ -29,6 +30,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(f"hybrid RRF Top-{args.k} for: {args.query!r}")
         for index, hit in enumerate(retriever.hybrid_rank(query)[: args.k], start=1):
+            print(f"  {index}. {hit.cwe_id}  {hit.score:.4f}  {hit.name}")
+        print("neural:")
+        for index, hit in enumerate(retriever.neural_rank(args.query)[: args.k], start=1):
             print(f"  {index}. {hit.cwe_id}  {hit.score:.4f}  {hit.name}")
         print("lexical TF-IDF:")
         for index, hit in enumerate(retriever.lexical_rank(args.query)[: args.k], start=1):
@@ -46,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     md = output.with_suffix(".md")
     md.write_text(_markdown(report), encoding="utf-8")
     print("Assignment 3 retrieval (authored seed only — not a benchmark)")
+    print(f"  embedder={report.get('embedder')}")
     systems = report["systems"]
     for name, scores in systems.items():
         print(
@@ -70,6 +75,7 @@ def _markdown(report: dict) -> str:
         report["disclaimer"],
         "",
         f"- Queries: {report['n_queries']}",
+        f"- Embedder: `{report.get('embedder')}`",
         "",
         "## Macro metrics",
         "",

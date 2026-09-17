@@ -1,14 +1,19 @@
 {
   "assignment": "framework",
-  "generated_at": "2026-09-16T19:03:14Z",
+  "generated_at": "2026-09-17T02:56:05Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",
   "split": "all",
   "n_units": 12,
+  "embedder": "minilm",
+  "llm_configured": true,
   "detector_path_counts": {
-    "sast_first_skip_llm": 6,
-    "hybrid_retrieve_skip_llm": 6
+    "sast_then_llm": 6,
+    "hybrid_retrieve_then_llm": 6
+  },
+  "reasoner_counts": {
+    "llm": 12
   },
   "validation_pass": 12,
   "metrics": {
@@ -24,7 +29,9 @@
   "units": [
     {
       "unit_id": "java_cwe89_sqli_concat",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe89_sqli_concat:sql_string_concat:18",
@@ -60,7 +67,7 @@
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.03021353930031804,
+          "score": 0.0304147465437788,
           "name": "Improper Input Validation"
         }
       ],
@@ -78,10 +85,10 @@
           "end_line": 18,
           "snippet": "        String query = \"SELECT id, name FROM users WHERE name = '\" + userName + \"'\";"
         },
-        "root_cause": "The software constructs all or part of an SQL command using externally influenced input without neutralizing special elements that can modify the intended command.",
-        "explanation": "SAST rule sql_string_concat matched this seed unit. SQL keyword string concatenated with an identifier (string-built query).",
-        "remediation": "Bind user values as parameters instead of concatenating them into the SQL string.",
-        "confidence": 0.85,
+        "root_cause": "String concatenation of untrusted user input into an SQL statement without sanitization or parameterization.",
+        "explanation": "The method constructs an SQL query by directly appending the userName parameter into the query string. This allows an attacker to inject arbitrary SQL code through the userName value, leading to SQL injection vulnerabilities. The code does not use prepared statements or input validation, so the risk is high.",
+        "remediation": "Replace the string concatenation with a PreparedStatement and bind the userName as a parameter. For example:\n\nPreparedStatement ps = connection.prepareStatement(\"SELECT id, name FROM users WHERE name = ?\");\nps.setString(1, userName);\nResultSet rs = ps.executeQuery();",
+        "confidence": 0.95,
         "evidence_ids": [
           "java_cwe89_sqli_concat:sql_string_concat:18"
         ]
@@ -115,33 +122,35 @@
     },
     {
       "unit_id": "java_cwe89_sqli_prepared",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-564",
+          "cwe_id": "CWE-89",
           "score": 0.03278688524590164,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+        },
+        {
+          "cwe_id": "CWE-943",
+          "score": 0.03225806451612903,
+          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+        },
+        {
+          "cwe_id": "CWE-74",
+          "score": 0.03125763125763126,
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+        },
+        {
+          "cwe_id": "CWE-564",
+          "score": 0.03125,
           "name": "SQL Injection: Hibernate"
         },
         {
           "cwe_id": "CWE-79",
-          "score": 0.03225806451612903,
+          "score": 0.030536130536130537,
           "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
-        },
-        {
-          "cwe_id": "CWE-23",
-          "score": 0.03149801587301587,
-          "name": "Relative Path Traversal"
-        },
-        {
-          "cwe_id": "CWE-20",
-          "score": 0.031009615384615385,
-          "name": "Improper Input Validation"
-        },
-        {
-          "cwe_id": "CWE-89",
-          "score": 0.03057889822595705,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         }
       ],
       "reasoning": {
@@ -149,19 +158,19 @@
         "unit_id": "java_cwe89_sqli_prepared",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-564",
-          "name": "SQL Injection: Hibernate"
+          "id": "CWE-89",
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe89SqlPreparedSafe.java",
-          "start_line": 14,
-          "end_line": 14,
-          "snippet": "public class Cwe89SqlPreparedSafe {"
+          "start_line": 16,
+          "end_line": 19,
+          "snippet": "        String query = \"SELECT id, name FROM users WHERE name = ?\";\n        PreparedStatement statement = connection.prepareStatement(query);\n        statement.setString(1, userName);\n        return statement.executeQuery();"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-564) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Bind values through the ORM API rather than concatenating HQL/SQL.",
-        "confidence": 0.7
+        "root_cause": "The query uses a PreparedStatement with a parameter placeholder (?), and the user input is bound via setString, preventing direct concatenation into the SQL string.",
+        "explanation": "Because the SQL statement is parameterized, the database treats the user input as data rather than executable code, eliminating the risk of SQL injection. The code follows best practices for safe query construction.",
+        "remediation": "No remediation needed; continue using parameterized queries for all database interactions.",
+        "confidence": 1.0
       },
       "validation": {
         "unit_id": "java_cwe89_sqli_prepared",
@@ -175,7 +184,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-564"
+            "detail": "CWE-89"
           },
           {
             "name": "cited_lines",
@@ -192,7 +201,9 @@
     },
     {
       "unit_id": "java_cwe79_xss_unescaped",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe79_xss_unescaped:html_output_unencoded:15",
@@ -223,7 +234,7 @@
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.030834914611005692,
+          "score": 0.0315136476426799,
           "name": "Improper Input Validation"
         },
         {
@@ -246,10 +257,10 @@
           "end_line": 15,
           "snippet": "        out.println(\"<div class=\\\"comment\\\">\" + comment + \"</div>\");"
         },
-        "root_cause": "The software does not neutralize or incorrectly neutralizes user-controllable input before it is placed in output used as a web page.",
-        "explanation": "SAST rule html_output_unencoded matched this seed unit. HTML markup concatenated with a value that is not passed to htmlEncode().",
-        "remediation": "HTML-encode (or JSON/attribute/URL-encode, depending on sink) untrusted data before writing it into a page.",
-        "confidence": 0.85,
+        "root_cause": "Unsanitized user input is concatenated into HTML output, allowing injected scripts to execute.",
+        "explanation": "The method writes a comment directly into the page without encoding, which is a classic XSS vulnerability.",
+        "remediation": "Apply HTML encoding to the comment before output, e.g., use Apache Commons Text StringEscapeUtils.escapeHtml4(comment) or a framework-provided encoder.",
+        "confidence": 1.0,
         "evidence_ids": [
           "java_cwe79_xss_unescaped:html_output_unencoded:15"
         ]
@@ -283,33 +294,35 @@
     },
     {
       "unit_id": "java_cwe79_xss_encoded",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-80",
-          "score": 0.03278688524590164,
-          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
-        },
-        {
           "cwe_id": "CWE-79",
-          "score": 0.03225806451612903,
+          "score": 0.03278688524590164,
           "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         {
-          "cwe_id": "CWE-326",
-          "score": 0.031746031746031744,
-          "name": "Inadequate Encryption Strength"
+          "cwe_id": "CWE-80",
+          "score": 0.03225806451612903,
+          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
         },
         {
           "cwe_id": "CWE-74",
-          "score": 0.029877369007803793,
+          "score": 0.03149801587301587,
           "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
         },
         {
           "cwe_id": "CWE-20",
-          "score": 0.029709507042253523,
+          "score": 0.03125763125763126,
           "name": "Improper Input Validation"
+        },
+        {
+          "cwe_id": "CWE-943",
+          "score": 0.030536130536130537,
+          "name": "Improper Neutralization of Special Elements in Data Query Logic"
         }
       ],
       "reasoning": {
@@ -317,19 +330,19 @@
         "unit_id": "java_cwe79_xss_encoded",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-80",
-          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
+          "id": "CWE-79",
+          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe79XssEncodedSafe.java",
-          "start_line": 12,
-          "end_line": 12,
-          "snippet": "public class Cwe79XssEncodedSafe {"
+          "start_line": 13,
+          "end_line": 15,
+          "snippet": "    public void writeComment(PrintWriter out, String comment) {\n        out.println(\"<div class=\\\"comment\\\">\" + htmlEncode(comment) + \"</div>\");\n    }"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-80) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Strip or encode script-related tags before reflecting input into HTML.",
-        "confidence": 0.7
+        "root_cause": "The user-supplied comment is fully HTML-encoded before being inserted into the page, preventing any injected markup or scripts from executing.",
+        "explanation": "The htmlEncode method replaces &, <, >, and \" with their corresponding HTML entities, ensuring that any special characters in the comment are rendered as literal text rather than interpreted as HTML or JavaScript. Consequently, the output cannot be used to perform cross\u2011site scripting attacks.",
+        "remediation": "Maintain the current encoding strategy; ensure that all user input is passed through htmlEncode (or an equivalent safe encoding function) before being included in any HTML context.",
+        "confidence": 0.95
       },
       "validation": {
         "unit_id": "java_cwe79_xss_encoded",
@@ -343,7 +356,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-80"
+            "detail": "CWE-79"
           },
           {
             "name": "cited_lines",
@@ -360,7 +373,9 @@
     },
     {
       "unit_id": "java_cwe22_path_concat",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe22_path_concat:file_path_concat:15",
@@ -381,23 +396,23 @@
         },
         {
           "cwe_id": "CWE-23",
-          "score": 0.03225806451612903,
+          "score": 0.03200204813108039,
           "name": "Relative Path Traversal"
         },
         {
           "cwe_id": "CWE-36",
-          "score": 0.03149801587301587,
+          "score": 0.03200204813108039,
           "name": "Absolute Path Traversal"
         },
         {
           "cwe_id": "CWE-706",
-          "score": 0.030776515151515152,
+          "score": 0.03125,
           "name": "Use of Incorrectly-Resolved Name or Reference"
         },
         {
-          "cwe_id": "CWE-564",
-          "score": 0.015873015873015872,
-          "name": "SQL Injection: Hibernate"
+          "cwe_id": "CWE-913",
+          "score": 0.015384615384615385,
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         }
       ],
       "reasoning": {
@@ -414,10 +429,10 @@
           "end_line": 15,
           "snippet": "        return new File(baseDir + \"/\" + relativePath);"
         },
-        "root_cause": "The software uses external input to construct a pathname that is intended to stay under a restricted parent directory, but does not properly neutralize special elements such as '..' sequences.",
-        "explanation": "SAST rule file_path_concat matched this seed unit. java.io.File constructed with string concatenation of a path segment.",
-        "remediation": "Normalize/canonicalize the path and reject it if it does not remain under the intended base directory.",
-        "confidence": 0.85,
+        "root_cause": "Concatenating user-controlled relativePath into baseDir without validation allows path traversal.",
+        "explanation": "The code constructs a File object by concatenating baseDir and relativePath, enabling an attacker to supply a relative path that escapes the intended directory.",
+        "remediation": "Validate or sanitize relativePath, enforce a whitelist, or use java.nio.file.Path's resolve and normalize methods to prevent traversal.",
+        "confidence": 0.95,
         "evidence_ids": [
           "java_cwe22_path_concat:file_path_concat:15"
         ]
@@ -451,7 +466,9 @@
     },
     {
       "unit_id": "java_cwe22_path_resolved",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -460,14 +477,14 @@
           "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
         },
         {
-          "cwe_id": "CWE-23",
+          "cwe_id": "CWE-36",
           "score": 0.03225806451612903,
-          "name": "Relative Path Traversal"
+          "name": "Absolute Path Traversal"
         },
         {
-          "cwe_id": "CWE-36",
+          "cwe_id": "CWE-23",
           "score": 0.031746031746031744,
-          "name": "Absolute Path Traversal"
+          "name": "Relative Path Traversal"
         },
         {
           "cwe_id": "CWE-706",
@@ -475,9 +492,9 @@
           "name": "Use of Incorrectly-Resolved Name or Reference"
         },
         {
-          "cwe_id": "CWE-89",
+          "cwe_id": "CWE-913",
           "score": 0.015384615384615385,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         }
       ],
       "reasoning": {
@@ -490,14 +507,14 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe22PathResolvedSafe.java",
-          "start_line": 12,
-          "end_line": 12,
-          "snippet": "public class Cwe22PathResolvedSafe {"
+          "start_line": 13,
+          "end_line": 18,
+          "snippet": "    public Path openUserFile(Path baseDir, String relativePath) throws Exception {\n        Path resolved = baseDir.resolve(relativePath).normalize();\n        if (!resolved.startsWith(baseDir.normalize())) {\n            throw new SecurityException(\"path escapes base directory\");\n        }\n        return resolved;"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-22) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Normalize/canonicalize the path and reject it if it does not remain under the intended base directory.",
-        "confidence": 0.7
+        "root_cause": "No path traversal occurs because the resolved path is normalized and verified to remain within the base directory.",
+        "explanation": "The method resolves the user-supplied relative path against the base directory, normalizes the result, and then checks that the normalized path starts with the normalized base directory. This prevents directory traversal attacks by ensuring the final path cannot escape the intended base directory.",
+        "remediation": "No remediation needed; the current implementation correctly enforces path containment.",
+        "confidence": 0.9
       },
       "validation": {
         "unit_id": "java_cwe22_path_resolved",
@@ -528,7 +545,9 @@
     },
     {
       "unit_id": "java_cwe502_readobject",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe502_readobject:java_deserialization:4",
@@ -579,23 +598,23 @@
         },
         {
           "cwe_id": "CWE-913",
-          "score": 0.02878726010616578,
+          "score": 0.0315136476426799,
           "name": "Improper Control of Dynamically-Managed Code Resources"
         },
         {
-          "cwe_id": "CWE-79",
+          "cwe_id": "CWE-327",
           "score": 0.016129032258064516,
-          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+          "name": "Use of a Broken or Risky Cryptographic Algorithm"
         },
         {
-          "cwe_id": "CWE-798",
+          "cwe_id": "CWE-22",
           "score": 0.015873015873015872,
-          "name": "Use of Hard-coded Credentials"
+          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
         },
         {
-          "cwe_id": "CWE-287",
+          "cwe_id": "CWE-74",
           "score": 0.015625,
-          "name": "Improper Authentication"
+          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
         }
       ],
       "reasoning": {
@@ -608,17 +627,16 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe502ReadObjectVulnerable.java",
-          "start_line": 4,
-          "end_line": 4,
-          "snippet": "import java.io.ObjectInputStream;"
+          "start_line": 16,
+          "end_line": 17,
+          "snippet": "        ObjectInputStream stream = new ObjectInputStream(input);\n        return stream.readObject();"
         },
-        "root_cause": "The application deserializes untrusted data without sufficiently verifying that the resulting data will be valid, which can lead to unexpected object graphs or control flow.",
-        "explanation": "SAST rule java_deserialization matched this seed unit. ObjectInputStream and/or readObject on an input stream.",
-        "remediation": "Prefer data-only formats (JSON, protobuf) with explicit schemas over ObjectInputStream on untrusted input.",
-        "confidence": 0.85,
+        "root_cause": "Untrusted data is deserialized via ObjectInputStream.readObject without any validation or filtering, allowing arbitrary object creation and potential exploitation.",
+        "explanation": "The code directly deserializes data from an InputStream using ObjectInputStream.readObject. This API can instantiate any class present on the classpath, leading to code execution or other attacks if the input is crafted maliciously. No class filtering, validation, or security manager checks are applied, making the application vulnerable to CWE\u2011502.",
+        "remediation": "Implement a strict ObjectInputFilter to allow only trusted classes, or replace deserialization with a safer data format (e.g., JSON, XML) and validate input. Alternatively, use a library that provides safe deserialization mechanisms. Ensure that any deserialization occurs only on data from trusted sources.",
+        "confidence": 0.9,
         "evidence_ids": [
           "java_cwe502_readobject:java_deserialization:4",
-          "java_cwe502_readobject:java_deserialization:16",
           "java_cwe502_readobject:java_deserialization:16",
           "java_cwe502_readobject:java_deserialization:17"
         ]
@@ -652,7 +670,9 @@
     },
     {
       "unit_id": "java_cwe502_json_parse",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -661,24 +681,24 @@
           "name": "Deserialization of Untrusted Data"
         },
         {
-          "cwe_id": "CWE-22",
+          "cwe_id": "CWE-79",
           "score": 0.03225806451612903,
-          "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+          "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
         },
         {
-          "cwe_id": "CWE-564",
+          "cwe_id": "CWE-80",
           "score": 0.03149801587301587,
-          "name": "SQL Injection: Hibernate"
+          "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)"
         },
         {
-          "cwe_id": "CWE-89",
-          "score": 0.030090497737556562,
-          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+          "cwe_id": "CWE-913",
+          "score": 0.03149801587301587,
+          "name": "Improper Control of Dynamically-Managed Code Resources"
         },
         {
-          "cwe_id": "CWE-706",
-          "score": 0.029211087420042643,
-          "name": "Use of Incorrectly-Resolved Name or Reference"
+          "cwe_id": "CWE-20",
+          "score": 0.02967032967032967,
+          "name": "Improper Input Validation"
         }
       ],
       "reasoning": {
@@ -691,14 +711,14 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe502JsonParseSafe.java",
-          "start_line": 15,
-          "end_line": 15,
-          "snippet": "public class Cwe502JsonParseSafe {"
+          "start_line": 17,
+          "end_line": 18,
+          "snippet": "        BufferedReader reader =\n                new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-502) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Prefer data-only formats (JSON, protobuf) with explicit schemas over ObjectInputStream on untrusted input.",
-        "confidence": 0.7
+        "root_cause": "The method performs a simple line read from an InputStream without any deserialization or JSON parsing of untrusted data.",
+        "explanation": "The code only constructs a BufferedReader and reads a single line. No JSON library is invoked, and no object deserialization occurs, so it does not satisfy the conditions for CWE\u2011502. The method is therefore not vulnerable to deserialization attacks.",
+        "remediation": "No remediation required for this code snippet.",
+        "confidence": 0.9
       },
       "validation": {
         "unit_id": "java_cwe502_json_parse",
@@ -729,7 +749,9 @@
     },
     {
       "unit_id": "java_cwe798_hardcoded",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe798_hardcoded:hardcoded_secret_literal:14",
@@ -755,17 +777,17 @@
         },
         {
           "cwe_id": "CWE-287",
-          "score": 0.03149801587301587,
+          "score": 0.031746031746031744,
           "name": "Improper Authentication"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.028782894736842105,
+          "score": 0.03055037313432836,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
           "cwe_id": "CWE-89",
-          "score": 0.015873015873015872,
+          "score": 0.015625,
           "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         }
       ],
@@ -783,10 +805,10 @@
           "end_line": 14,
           "snippet": "        String password = \"password\";"
         },
-        "root_cause": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data.",
-        "explanation": "SAST rule hardcoded_secret_literal matched this seed unit. password / apiKey / secret assigned a string literal.",
-        "remediation": "Do not ship passwords or API keys as string literals; inject them at deployment time.",
-        "confidence": 0.85,
+        "root_cause": "Hardcoded credentials are embedded directly in the source code.",
+        "explanation": "The code assigns a literal username and password to variables, exposing them in the codebase. This allows anyone with access to the source to discover valid credentials, enabling unauthorized access or credential reuse across systems.",
+        "remediation": "Remove hardcoded credentials from source code. Store credentials in secure configuration files, environment variables, or a secrets management service, and load them at runtime. Ensure credentials are not committed to version control.",
+        "confidence": 0.95,
         "evidence_ids": [
           "java_cwe798_hardcoded:hardcoded_secret_literal:14"
         ]
@@ -820,33 +842,35 @@
     },
     {
       "unit_id": "java_cwe798_env_config",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
-          "cwe_id": "CWE-259",
-          "score": 0.03278688524590164,
-          "name": "Use of Hard-coded Password"
-        },
-        {
           "cwe_id": "CWE-798",
-          "score": 0.03225806451612903,
+          "score": 0.03278688524590164,
           "name": "Use of Hard-coded Credentials"
         },
         {
-          "cwe_id": "CWE-943",
-          "score": 0.03149801587301587,
-          "name": "Improper Neutralization of Special Elements in Data Query Logic"
+          "cwe_id": "CWE-259",
+          "score": 0.03225806451612903,
+          "name": "Use of Hard-coded Password"
+        },
+        {
+          "cwe_id": "CWE-89",
+          "score": 0.03125763125763126,
+          "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
         },
         {
           "cwe_id": "CWE-321",
-          "score": 0.030798389007344232,
+          "score": 0.03125,
           "name": "Use of Hard-coded Cryptographic Key"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.02904040404040404,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-287",
+          "score": 0.031024531024531024,
+          "name": "Improper Authentication"
         }
       ],
       "reasoning": {
@@ -854,19 +878,19 @@
         "unit_id": "java_cwe798_env_config",
         "decision": "not_vulnerable",
         "cwe": {
-          "id": "CWE-259",
-          "name": "Use of Hard-coded Password"
+          "id": "CWE-798",
+          "name": "Use of Hard-coded Credentials"
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe798EnvConfigSafe.java",
-          "start_line": 10,
-          "end_line": 10,
-          "snippet": "public class Cwe798EnvConfigSafe {"
+          "start_line": 12,
+          "end_line": 14,
+          "snippet": "        String username = System.getenv(\"APP_USERNAME\");\n        String password = System.getenv(\"APP_PASSWORD\");\n        return username + \":\" + password;"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-259) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Read passwords from a secret manager or environment; never commit real passwords.",
-        "confidence": 0.7
+        "root_cause": "The credentials are retrieved from environment variables rather than being hard\u2011coded in the source code, which mitigates the risk associated with CWE\u2011798.",
+        "explanation": "CWE\u2011798 concerns the use of hard\u2011coded credentials. In this implementation the username and password are obtained via System.getenv(), meaning they are supplied externally at runtime and are not embedded in the code. Therefore the code does not exhibit the vulnerability described by CWE\u2011798.",
+        "remediation": "No remediation is required for this pattern. Ensure that the environment variables are protected and not exposed in logs or error messages.",
+        "confidence": 1.0
       },
       "validation": {
         "unit_id": "java_cwe798_env_config",
@@ -880,7 +904,7 @@
           {
             "name": "cwe_in_knowledge",
             "passed": true,
-            "detail": "CWE-259"
+            "detail": "CWE-798"
           },
           {
             "name": "cited_lines",
@@ -897,7 +921,9 @@
     },
     {
       "unit_id": "java_cwe327_md5",
-      "path": "sast_first_skip_llm",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [
         {
           "evidence_id": "java_cwe327_md5:weak_crypto_algorithm:14",
@@ -923,13 +949,13 @@
         },
         {
           "cwe_id": "CWE-326",
-          "score": 0.03128054740957967,
+          "score": 0.030621785881252923,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-798",
+          "cwe_id": "CWE-36",
           "score": 0.015873015873015872,
-          "name": "Use of Hard-coded Credentials"
+          "name": "Absolute Path Traversal"
         },
         {
           "cwe_id": "CWE-22",
@@ -951,10 +977,10 @@
           "end_line": 14,
           "snippet": "        MessageDigest digest = MessageDigest.getInstance(\"MD5\");"
         },
-        "root_cause": "The software stores or transmits sensitive data using a cryptographic algorithm that is known to be weak, obsolete, or otherwise inappropriate for the protection needed.",
-        "explanation": "SAST rule weak_crypto_algorithm matched this seed unit. MessageDigest/Cipher getInstance using MD5, DES, RC4, or SHA-1.",
-        "remediation": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security.",
-        "confidence": 0.85,
+        "root_cause": "The code uses MD5 as the hash algorithm, which is cryptographically broken and considered insecure for any security-sensitive purpose.",
+        "explanation": "MD5 produces 128\u2011bit digests that are vulnerable to collision attacks and preimage attacks. Modern cryptographic practice requires stronger hash functions such as SHA\u2011256 or SHA\u20113. Using MD5 in this context exposes the application to potential hash collision attacks, undermining data integrity and authenticity guarantees.",
+        "remediation": "Replace the MD5 algorithm with a secure hash function, e.g., SHA\u2011256: MessageDigest digest = MessageDigest.getInstance(\"SHA-256\"); Ensure that the rest of the application handles the larger digest size appropriately.",
+        "confidence": 0.9,
         "evidence_ids": [
           "java_cwe327_md5:weak_crypto_algorithm:14"
         ]
@@ -988,7 +1014,9 @@
     },
     {
       "unit_id": "java_cwe327_sha256",
-      "path": "hybrid_retrieve_skip_llm",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "embedder": "minilm",
       "evidence": [],
       "hits": [
         {
@@ -1002,19 +1030,19 @@
           "name": "Use of Weak Hash"
         },
         {
-          "cwe_id": "CWE-20",
-          "score": 0.03149801587301587,
-          "name": "Improper Input Validation"
-        },
-        {
           "cwe_id": "CWE-326",
-          "score": 0.03036576949620428,
+          "score": 0.031746031746031744,
           "name": "Inadequate Encryption Strength"
         },
         {
-          "cwe_id": "CWE-74",
-          "score": 0.0288981288981289,
-          "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')"
+          "cwe_id": "CWE-36",
+          "score": 0.015625,
+          "name": "Absolute Path Traversal"
+        },
+        {
+          "cwe_id": "CWE-502",
+          "score": 0.015384615384615385,
+          "name": "Deserialization of Untrusted Data"
         }
       ],
       "reasoning": {
@@ -1027,14 +1055,14 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe327Sha256Safe.java",
-          "start_line": 12,
-          "end_line": 12,
-          "snippet": "public class Cwe327Sha256Safe {"
+          "start_line": 13,
+          "end_line": 15,
+          "snippet": "    public byte[] digest(byte[] data) throws Exception {\n        MessageDigest digest = MessageDigest.getInstance(\"SHA-256\");\n        return digest.digest(data);"
         },
-        "root_cause": "No configured SAST rule matched; the unit is treated as the safe counterpart for this CWE family.",
-        "explanation": "Regex evidence is empty. Hybrid retrieval may still rank a related CWE (CWE-327) for explanation context; that is not a vulnerability decision.",
-        "remediation": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security.",
-        "confidence": 0.7
+        "root_cause": "The code employs SHA-256, a modern and secure cryptographic hash function, and does not expose any weak or deprecated algorithms.",
+        "explanation": "SHA-256 is considered a strong hash algorithm with no known weaknesses that would make this implementation vulnerable. The code correctly obtains a MessageDigest instance for SHA-256 and processes the input data without any additional insecure operations.",
+        "remediation": "No remediation required; the implementation is already following best practices for cryptographic hashing.",
+        "confidence": 0.95
       },
       "validation": {
         "unit_id": "java_cwe327_sha256",
