@@ -50,8 +50,9 @@ def main() -> None:
         "(PRs #1–#10), then extended with a MiniLM embedding port and an LLM reasoner "
         "(embeddings-llm). Evaluation is seed-only on 12 authored Java units and 18 retrieval "
         "queries — not a public benchmark (not Juliet, OWASP Benchmark, or Big-Vul). Live LLM "
-        "calls wait on GROQ_API_KEY or CWE_VULN_LLM_API_KEY; without a key the default path is "
-        "offline (regex SAST, hybrid retrieval with MiniLM or TF-IDF fallback, template reasoner).",
+        "calls wait on GROQ_API_KEY (optional CWE_VULN_LLM_API_KEY override); without a key the "
+        "default path is offline (regex SAST, hybrid retrieval with MiniLM or TF-IDF fallback, "
+        "template reasoner). No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
 
     set_para(
@@ -69,7 +70,8 @@ def main() -> None:
         "The implemented architecture combines regex SAST evidence, hybrid CWE retrieval "
         "(MiniLM cosine with TF-IDF fallback, SAST ids, CWE relationships, RRF), a cost-aware "
         "orchestrator, a template reasoner, an LLMReasoner behind the same port, and a "
-        "validator. Without GROQ_API_KEY or CWE_VULN_LLM_API_KEY the LLM is not constructed.",
+        "validator. Without GROQ_API_KEY (or CWE_VULN_LLM_API_KEY override) the LLM is not "
+        "constructed. No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
 
     set_para(
@@ -96,7 +98,8 @@ def main() -> None:
         "The cost-aware orchestrator runs SAST first. If no GROQ_API_KEY or CWE_VULN_LLM_API_KEY "
         "is set, the LLM is skipped and TemplateReasoner runs. With a key, the "
         "path is sast_then_llm or hybrid_retrieve_then_llm unless skip_llm_when_sast_hits is set. "
-        "Default model is llama-3.1-8b-instant; CWE_VULN_LLM_BASE_URL can point at an OpenAI-compatible endpoint.",
+        "Default model is Groq llama-3.1-8b-instant at https://api.groq.com/openai/v1. "
+        "No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
 
     set_para(
@@ -115,8 +118,8 @@ def main() -> None:
         "P=R=F1=1.000 (tp=6 fp=0 tn=6 fn=0); Assignment 3 retrieval on 18 queries is recorded in "
         "results/assignment-3-retrieval.json (seed-only, not a benchmark); framework test split "
         "(4 units, no API key) P=R=F1=1.000, validator 4/4, paths sast_first_skip_llm=2 and "
-        "hybrid_retrieve_skip_llm=2. Neural embeddings and LLM reasoner structure have landed; live "
-        "LLM calls wait on GROQ_API_KEY or CWE_VULN_LLM_API_KEY. Public-benchmark evaluation is not claimed.",
+        "hybrid_retrieve_skip_llm=2. Neural embeddings and the Groq LLM reasoner have landed; live "
+        "LLM calls wait on GROQ_API_KEY. Public-benchmark evaluation is not claimed.",
     )
 
     # Section 12 next steps: remaining honest gaps
@@ -159,7 +162,7 @@ def main() -> None:
         ("Vulnerability detection problem", "Defined", "Focused on precision, false positives, false negatives and explainability."),
         ("Static analysis role", "Implemented", "Regex SAST + Evidence spans (PRs #1, #5). Seed-only baseline P=R=F1=1.000."),
         ("Hybrid retrieval", "Implemented", "MiniLM cosine + SAST + CWE relationships, RRF. TF-IDF fallback if MiniLM missing."),
-        ("Cost-aware routing", "Implemented", "Orchestrator SAST-first; LLM only if GROQ_API_KEY or CWE_VULN_LLM_API_KEY is set."),
+        ("Cost-aware routing", "Implemented", "Orchestrator SAST-first; Groq LLM only if GROQ_API_KEY is set (CWE_VULN_LLM_API_KEY override)."),
         ("Multi-agent workflow", "Implemented", "Template + LLM reasoner, validator, framework CLI."),
         ("Implementation / evaluation", "Seed pipeline done", "Embeddings + LLM structure landed. Live LLM waits on key. Seed-only."),
     ]

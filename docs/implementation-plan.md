@@ -3,17 +3,17 @@
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
-This plan is the work executed on branch `modular-layout` (and a follow-up `thesis-completion` only if embeddings or a live LLM path actually land). It is not a product roadmap.
+This plan records two executed slices: `modular-layout` (PR #10, layered packages) and `embeddings-llm` (MiniLM + Groq LLM with offline fallback). Earlier sections are a **snapshot of `main` after PRs 1–9**; they are not current status. Current capability is in [Embeddings + live LLM](#embeddings--live-llm-branch-embeddings-llm) and [Executed (`embeddings-llm`)](#executed-embeddings-llm-2026-09-17). It is not a product roadmap.
 
-## Current state (`origin/main`, PRs 1–9)
+## Snapshot after PRs 1–9 (before modular layout and embeddings-llm)
 
-Merged and runnable today:
+Merged and runnable at that snapshot:
 
 | PR | What exists | Honest limit |
 | --- | --- | --- |
 | #1 | 12 Java seed units, 6 CWEs, 8/4 split, regex baseline, binary P/R/F1 | seed-only, not a benchmark |
 | #2 | curated `data/cwe/knowledge.json` + `CWEKnowledgeBase` query API | teaching subset, not a MITRE dump |
-| #3 | TF-IDF + SAST ids + CWE relationship expansion, RRF hybrid | lexical, **not** neural embeddings |
+| #3 | TF-IDF + SAST ids + CWE relationship expansion, RRF hybrid | lexical only on this snapshot; MiniLM landed later on `embeddings-llm` |
 | #4 | Draft 2020-12 `schemas/reasoning_output.schema.json` + samples | schema only |
 | #5 | `Evidence` spans from regex matches | CWE names still come from knowledge |
 | #6 | `TemplateReasoner` → schema-valid JSON | no LLM call |
@@ -29,11 +29,11 @@ Recorded seed-only metrics (read from `results/`, not invented):
 
 Working tree at plan time: `main` is still a **flat** `src/cwe_vuln/*.py` dump. A partial restructure has started on `modular-layout` (`models/`, `dataset/`, `knowledge/`, `sast/`, `retrieval/index.py`) but old sibling modules and flat tests remain. That mixed tree is **not** the target; it will be finished or discarded into the layered layout below.
 
-Not on `main` and not claimed:
+Not yet on that snapshot of `main`:
 
-- Neural / MiniLM embeddings
-- Live LLM reasoner
-- Juliet / OWASP Benchmark / Big-Vul evaluation
+- Neural / MiniLM embeddings — **initially skipped, then landed in `embeddings-llm`**
+- Live LLM reasoner — **initially skipped, then landed in `embeddings-llm`** (Groq; template fallback without a key)
+- Juliet / OWASP Benchmark / Big-Vul evaluation — still out of scope
 
 ## Target architecture (this PR)
 
@@ -96,18 +96,18 @@ SeedUnit
   → framework metrics vs seed labels
 ```
 
-Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. LLM path remains unimplemented unless a later slice actually calls a model.
+Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. On this snapshot the LLM path was skip-only. `embeddings-llm` later added `LLMReasoner` (Groq `GROQ_API_KEY`, default `llama-3.1-8b-instant`); no key still uses `TemplateReasoner`.
 
 ## Remaining research gaps (honest)
 
-| Gap | This overnight pass |
-| --- | --- |
-| Dense MiniLM embeddings | Probe `sentence-transformers`. If install/download is heavy or flaky, **skip** and keep TF-IDF documented as lexical vector space, not neural RAG. |
-| Live LLM reasoner | Structure is implemented (`GROQ_API_KEY`). Without a key, `TemplateReasoner` + skip-LLM. |
-| Public benchmarks | Out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
-| Full MITRE CWE dump | Out of scope. Curated store stays. |
+At the `modular-layout` snapshot, MiniLM and a live LLM client were still probes. **Both landed on `embeddings-llm`.** Public benchmarks and a full MITRE dump remain out of scope.
 
-Default outcome if probes fail: modular layout + docs/context/DOCX freeze; gaps stay labeled unimplemented.
+| Gap | Outcome |
+| --- | --- |
+| Dense MiniLM embeddings | **Initially skipped** in `modular-layout` to keep `uv sync` small. **Landed** on `embeddings-llm`: `all-MiniLM-L6-v2`, TF-IDF fallback (`embedder=tfidf_fallback`) if the model is missing. |
+| Live LLM reasoner | **Initially skipped** (no client in the layout PR). **Landed** on `embeddings-llm`: Groq `LLMReasoner` (`GROQ_API_KEY`, default `llama-3.1-8b-instant`). No key → `TemplateReasoner` / skip-LLM. Invalid JSON → template fallback. `OPENAI_API_KEY` is unused. |
+| Public benchmarks | Still out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
+| Full MITRE CWE dump | Still out of scope. Curated store stays. |
 
 ## Refinement (against the tree, 2026-09-17)
 
@@ -115,8 +115,8 @@ Checked `origin/main` @ `6afd6cb` (PR #9 merged), `results/*.json`, `pyproject.t
 
 - Flat modules still present next to new packages (`dataset.py` *and* `dataset/`). That conflict must be resolved by **deleting** the sibling `.py` files after the package move — not by leaving shims.
 - `retrieval/` currently has only `index.py` + `__init__.py` (the `__init__` already names `hybrid` and `rank`). Those two files are still to write; no extra phantom packages.
-- No MiniLM extra is on `main` (`jsonschema` + `pytest` only). `sentence-transformers` is **not** added in this PR: A3 already chose lexical TF-IDF to keep `uv sync` offline-small. Neural embeddings stay unimplemented and documented.
-- LLM env keys are not assumed present. No live LLM client in this PR. Orchestrator skip-LLM policy stays.
+- No MiniLM extra was on that `main` (`jsonschema` + `pytest` only). `sentence-transformers` was **not** added in the layout PR: A3 already chose lexical TF-IDF to keep `uv sync` offline-small. Neural embeddings were initially skipped there, then landed on `embeddings-llm`.
+- LLM env keys were not assumed present in the layout PR (no live client). Orchestrator skip-LLM policy stayed; Groq `LLMReasoner` landed later on `embeddings-llm`.
 - Results files already exist; do not invent new scores. Re-running the pipeline may only refresh timestamps.
 - DOCX on disk: `RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx` (gitignored). Also write `Thesis Progress Report_RichaVerma_25MCSS02.docx` and allow that official filename in git.
 - `research-papers/` untracked local copy: **out of this PR**.
@@ -174,8 +174,8 @@ Pytest must stay green with the same seed assertions (12 units, 8/4, schema samp
 
 ## PR plan
 
-1. `modular-layout` → `main`: layered packages, mirrored tests, console scripts, docs/context/DOCX. No new retrieval/LLM capability claims.
-2. `thesis-completion` → `main`: **only if** embeddings or a real LLM path actually work. Otherwise skip this PR and document the gaps in (1).
+1. `modular-layout` → `main`: layered packages, mirrored tests, console scripts, docs/context/DOCX. No new retrieval/LLM capability claims in that PR.
+2. `embeddings-llm` → `main`: MiniLM neural embeddings + Groq `LLMReasoner` with offline fallback (replaces the earlier `thesis-completion` idea).
 
 No `cursor/` branch prefix. No force-push.
 
@@ -186,9 +186,9 @@ No `cursor/` branch prefix. No force-push.
 - Console scripts point at `cwe_vuln.cli.*` and `cwe_vuln.framework:main`. Command names unchanged.
 - `uv run pytest`: 35 passed.
 - `uv run cwe-vuln-pipeline` and `--split all` match recorded seed-only metrics (test P/R/F1=1.0, paths 2/2 skip-LLM; all-12 paths 6/6).
-- Neural embeddings: **skipped** (no `sentence-transformers`; TF-IDF remains lexical).
-- Live LLM: **skipped in that PR** (no key). This `embeddings-llm` slice adds `LLMReasoner` gated on `GROQ_API_KEY` / `CWE_VULN_LLM_API_KEY`.
-- Second PR `thesis-completion` **not opened** — nothing extra to add without lying.
+- Neural embeddings: **initially skipped** in that PR (no `sentence-transformers`; TF-IDF remained lexical). **Then landed** on `embeddings-llm`.
+- Live LLM: **initially skipped** in that PR (no client). **Then landed** on `embeddings-llm` as Groq `LLMReasoner` gated on `GROQ_API_KEY` / `CWE_VULN_LLM_API_KEY`.
+- Second PR was opened as `embeddings-llm` (not `thesis-completion`) once MiniLM and Groq actually worked.
 - Docs, `rag-multiagent-context.txt`, and progress-report DOCX updated to this tree.
 
 ## Embeddings + live LLM (branch `embeddings-llm`)
