@@ -3,17 +3,17 @@
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 
-This plan is the work executed on branch `modular-layout` (and a follow-up `thesis-completion` only if embeddings or a live LLM path actually land). It is not a product roadmap.
+This plan records two executed slices: `modular-layout` (PR #10, layered packages) and `embeddings-llm` (MiniLM + Groq LLM with offline fallback). Earlier sections are a **snapshot of `main` after PRs 1–9**; they are not current status. Current capability is in [Embeddings + live LLM](#embeddings--live-llm-branch-embeddings-llm) and [Executed (`embeddings-llm`)](#executed-embeddings-llm-2026-09-17). It is not a product roadmap.
 
-## Current state (`origin/main`, PRs 1–9)
+## Snapshot after PRs 1–9 (before modular layout and embeddings-llm)
 
-Merged and runnable today:
+Merged and runnable at that snapshot:
 
 | PR | What exists | Honest limit |
 | --- | --- | --- |
 | #1 | 12 Java seed units, 6 CWEs, 8/4 split, regex baseline, binary P/R/F1 | seed-only, not a benchmark |
 | #2 | curated `data/cwe/knowledge.json` + `CWEKnowledgeBase` query API | teaching subset, not a MITRE dump |
-| #3 | TF-IDF + SAST ids + CWE relationship expansion, RRF hybrid | lexical, **not** neural embeddings |
+| #3 | TF-IDF + SAST ids + CWE relationship expansion, RRF hybrid | lexical only on this snapshot; MiniLM landed later on `embeddings-llm` |
 | #4 | Draft 2020-12 `schemas/reasoning_output.schema.json` + samples | schema only |
 | #5 | `Evidence` spans from regex matches | CWE names still come from knowledge |
 | #6 | `TemplateReasoner` → schema-valid JSON | no LLM call |
@@ -25,15 +25,15 @@ Recorded seed-only metrics (read from `results/`, not invented):
 
 - A1 detection (12 units): P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
 - A3 hybrid_rrf (18 queries): R@1=0.7778 R@3=0.9444 R@5=1.0 MRR=0.8722
-- Framework test split (4 units): P=1.0 R=1.0 F1=1.0 fp=0 fn=0, validation 4/4; paths `sast_first_skip_llm=2`, `hybrid_retrieve_skip_llm=2`
+- Framework test split (4 units, **seed-only**, live Groq): P=1.0 R=1.0 F1=1.0 fp=0 fn=0, validation 4/4; paths `sast_then_llm=2`, `hybrid_retrieve_then_llm=2`, reasoner `llm`
 
 Working tree at plan time: `main` is still a **flat** `src/cwe_vuln/*.py` dump. A partial restructure has started on `modular-layout` (`models/`, `dataset/`, `knowledge/`, `sast/`, `retrieval/index.py`) but old sibling modules and flat tests remain. That mixed tree is **not** the target; it will be finished or discarded into the layered layout below.
 
-Not on `main` and not claimed:
+Not yet on that snapshot of `main`:
 
-- Neural / MiniLM embeddings
-- Live LLM reasoner
-- Juliet / OWASP Benchmark / Big-Vul evaluation
+- Neural / MiniLM embeddings — **initially skipped, then landed in `embeddings-llm`**
+- Live LLM reasoner — **initially skipped, then landed in `embeddings-llm`** (Groq; template fallback without a key)
+- Juliet / OWASP Benchmark / Big-Vul evaluation — still out of scope
 
 ## Target architecture (this PR)
 
@@ -96,18 +96,18 @@ SeedUnit
   → framework metrics vs seed labels
 ```
 
-Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. LLM path remains unimplemented unless a later slice actually calls a model.
+Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. On this snapshot the LLM path was skip-only. `embeddings-llm` later added `LLMReasoner` (Groq `GROQ_API_KEY`, default now `openai/gpt-oss-20b` after `llama-3.1-8b-instant` retired); no key still uses `TemplateReasoner`.
 
 ## Remaining research gaps (honest)
 
-| Gap | This overnight pass |
-| --- | --- |
-| Dense MiniLM embeddings | Probe `sentence-transformers`. If install/download is heavy or flaky, **skip** and keep TF-IDF documented as lexical vector space, not neural RAG. |
-| Live LLM reasoner | Only if `CWE_VULN_LLM_API_KEY` / `OPENAI_API_KEY` is present **and** a real HTTP call can be made. No fake completions. If no key, keep `TemplateReasoner` + skip-LLM policy. |
-| Public benchmarks | Out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
-| Full MITRE CWE dump | Out of scope. Curated store stays. |
+At the `modular-layout` snapshot, MiniLM and a live LLM client were still probes. **Both landed on `embeddings-llm`.** Public benchmarks and a full MITRE dump remain out of scope.
 
-Default outcome if probes fail: modular layout + docs/context/DOCX freeze; gaps stay labeled unimplemented.
+| Gap | Outcome |
+| --- | --- |
+| Dense MiniLM embeddings | **Initially skipped** in `modular-layout` to keep `uv sync` small. **Landed** on `embeddings-llm`: `all-MiniLM-L6-v2`, TF-IDF fallback (`embedder=tfidf_fallback`) if the model is missing. |
+| Live LLM reasoner | **Initially skipped** (no client in the layout PR). **Landed** on `embeddings-llm`: Groq `LLMReasoner` (`GROQ_API_KEY`, default `openai/gpt-oss-20b`; `llama-3.1-8b-instant` retired on Groq free tier). No key → `TemplateReasoner` / skip-LLM. Invalid JSON → template fallback. `OPENAI_API_KEY` is unused. |
+| Public benchmarks | Still out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
+| Full MITRE CWE dump | Still out of scope. Curated store stays. |
 
 ## Refinement (against the tree, 2026-09-17)
 
@@ -115,8 +115,8 @@ Checked `origin/main` @ `6afd6cb` (PR #9 merged), `results/*.json`, `pyproject.t
 
 - Flat modules still present next to new packages (`dataset.py` *and* `dataset/`). That conflict must be resolved by **deleting** the sibling `.py` files after the package move — not by leaving shims.
 - `retrieval/` currently has only `index.py` + `__init__.py` (the `__init__` already names `hybrid` and `rank`). Those two files are still to write; no extra phantom packages.
-- No MiniLM extra is on `main` (`jsonschema` + `pytest` only). `sentence-transformers` is **not** added in this PR: A3 already chose lexical TF-IDF to keep `uv sync` offline-small. Neural embeddings stay unimplemented and documented.
-- LLM env keys are not assumed present. No live LLM client in this PR. Orchestrator skip-LLM policy stays.
+- No MiniLM extra was on that `main` (`jsonschema` + `pytest` only). `sentence-transformers` was **not** added in the layout PR: A3 already chose lexical TF-IDF to keep `uv sync` offline-small. Neural embeddings were initially skipped there, then landed on `embeddings-llm`.
+- LLM env keys were not assumed present in the layout PR (no live client). Orchestrator skip-LLM policy stayed; Groq `LLMReasoner` landed later on `embeddings-llm`.
 - Results files already exist; do not invent new scores. Re-running the pipeline may only refresh timestamps.
 - DOCX on disk: `RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx` (gitignored). Also write `Thesis Progress Report_RichaVerma_25MCSS02.docx` and allow that official filename in git.
 - `research-papers/` untracked local copy: **out of this PR**.
@@ -174,8 +174,8 @@ Pytest must stay green with the same seed assertions (12 units, 8/4, schema samp
 
 ## PR plan
 
-1. `modular-layout` → `main`: layered packages, mirrored tests, console scripts, docs/context/DOCX. No new retrieval/LLM capability claims.
-2. `thesis-completion` → `main`: **only if** embeddings or a real LLM path actually work. Otherwise skip this PR and document the gaps in (1).
+1. `modular-layout` → `main`: layered packages, mirrored tests, console scripts, docs/context/DOCX. No new retrieval/LLM capability claims in that PR.
+2. `embeddings-llm` → `main`: MiniLM neural embeddings + Groq `LLMReasoner` with offline fallback (replaces the earlier `thesis-completion` idea).
 
 No `cursor/` branch prefix. No force-push.
 
@@ -186,7 +186,71 @@ No `cursor/` branch prefix. No force-push.
 - Console scripts point at `cwe_vuln.cli.*` and `cwe_vuln.framework:main`. Command names unchanged.
 - `uv run pytest`: 35 passed.
 - `uv run cwe-vuln-pipeline` and `--split all` match recorded seed-only metrics (test P/R/F1=1.0, paths 2/2 skip-LLM; all-12 paths 6/6).
-- Neural embeddings: **skipped** (no `sentence-transformers`; TF-IDF remains lexical).
-- Live LLM: **skipped** (no `OPENAI_API_KEY` / `CWE_VULN_LLM_API_KEY`; template reasoner + skip-LLM policy unchanged).
-- Second PR `thesis-completion` **not opened** — nothing extra to add without lying.
+- Neural embeddings: **initially skipped** in that PR (no `sentence-transformers`; TF-IDF remained lexical). **Then landed** on `embeddings-llm`.
+- Live LLM: **initially skipped** in that PR (no client). **Then landed** on `embeddings-llm` as Groq `LLMReasoner` gated on `GROQ_API_KEY` / `CWE_VULN_LLM_API_KEY`.
+- Second PR was opened as `embeddings-llm` (not `thesis-completion`) once MiniLM and Groq actually worked.
 - Docs, `rag-multiagent-context.txt`, and progress-report DOCX updated to this tree.
+
+## Embeddings + live LLM (branch `embeddings-llm`)
+
+Layered tree is already on `main` (PR #10). This slice adds capability **without flattening** packages.
+
+### Neural embeddings (`retrieval/`)
+
+- `Embedder` protocol: `encode(texts) -> 2-D array-like`. Implementations: `MiniLMEmbedder` (`all-MiniLM-L6-v2`, project-local `.cache/`) and `TfidfEmbedder` (existing lexical path).
+- `DenseIndex` cosine-ranks CWE documents. Unit tests use a tiny fake embedder; they must not download MiniLM.
+- `HybridRetriever.hybrid_rank` fuses **neural cosine** with SAST CWE ids and one-hop relationships (RRF). Compare `neural` vs `lexical_tfidf` vs `hybrid_rrf` on `data/retrieval/labeled_queries.jsonl`.
+- If MiniLM import/download fails: still importable; `embedder=tfidf_fallback` in results JSON; pipeline does not crash.
+- Persist `results/assignment-3-retrieval.json` (+ md). Label **seed-only — not a benchmark**.
+
+### Live LLM reasoner (`reasoner/`)
+
+- Shared port: `Reasoner.reason(unit, evidence, hits) -> ReasoningResult`. `TemplateReasoner` stays the offline default. `LLMReasoner` is the same port.
+- Key from env only: `GROQ_API_KEY` (primary) or `CWE_VULN_LLM_API_KEY` (override). Default model `openai/gpt-oss-20b` (Groq free-tier replacement after `llama-3.1-8b-instant` retired), default base URL `https://api.groq.com/openai/v1`. Optional `CWE_VULN_LLM_MODEL` (e.g. `openai/gpt-oss-120b`). Uses the OpenAI Python SDK OpenAI-compatible. Load project `.env` via python-dotenv; never commit it. `OPENAI_API_KEY` is not used.
+- No key → orchestrator **does not construct** `LLMReasoner`; template path. Never raise at import for a missing key.
+- Prompt asks for A4 JSON only (detection/explanation; no exploit generation). Parse, schema-validate; retry once; else template and `reasoner=llm_fallback_template`.
+- Tests mock the SDK client. No live API in CI.
+
+### Orchestrator policy (routing stays here)
+
+Knobs in `config.py`: `use_llm_if_available`, `skip_llm_when_sast_hits`.
+
+- Always SAST first.
+- No key → `sast_first_skip_llm` / `hybrid_retrieve_skip_llm` + template (runs today).
+- Key present and `use_llm_if_available` → `sast_then_llm` or `hybrid_retrieve_then_llm`, unless `skip_llm_when_sast_hits` and evidence exists.
+- Log `path` (and reasoner/embedder) on every unit.
+
+### Docs / verify / PR
+
+README, architecture, advisor plan, retrieval/reasoner/orchestrator/framework, context file, progress-report DOCX. `uv run pytest` green without a key and without requiring MiniLM in unit tests. `uv run cwe-vuln-pipeline` offline. PR `embeddings-llm` → `main`.
+
+## Executed (`embeddings-llm`, 2026-09-17)
+
+- MiniLM `all-MiniLM-L6-v2` downloaded and used (`embedder=minilm`). Seed-only A3: neural R@1=0.9444 R@3=1.0 R@5=1.0 MRR=0.9722 vs lexical TF-IDF R@1=0.7778 R@3=0.9444 R@5=0.9444 MRR=0.8681. Hybrid RRF matches neural on this seed.
+- `LLMReasoner` behind `Reasoner.reason`; no key today so orchestrator uses `TemplateReasoner`. Env: `GROQ_API_KEY`, optional `CWE_VULN_LLM_API_KEY`, optional `CWE_VULN_LLM_MODEL` / `CWE_VULN_LLM_BASE_URL`.
+- `uv run pytest`: 48 passed with MiniLM cached (47 passed + 1 skipped when the model is absent).
+- `uv run cwe-vuln-pipeline` offline: test split P=R=F1=1.0, paths 2/2 skip-LLM, reasoner=template, embedder=minilm.
+
+## Executed (`research-eval`, 2026-09-17)
+
+Research evaluation on an authored expanded corpus. Not Juliet / OWASP Benchmark / Big-Vul.
+
+- Assignment 8/4 seed unchanged (`load_seed()` still 12). Research corpus 36 units; held-out `research_test` n=24 (12 FP + 12 FN traps).
+- `cwe-vuln-eval --suite research` writes `results/experiments/` plus `results/research-eval-summary.json`.
+- Detection (authored corpus — not a public benchmark): SAST/template P=R=F1=0.000 (12 FP / 12 FN); Groq `openai/gpt-oss-20b` then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN); skip_llm P=0.500 R=1.000 F1=0.667.
+- Retrieval 48 queries: hybrid R@1=0.854 MRR=0.917 vs MiniLM R@1=0.812 MRR=0.894 vs TF-IDF R@1=0.646 MRR=0.794. Hybrid still helps R@1/MRR.
+- Explainability: then_llm validator 2/24 (SAST-tied contract); cited_lines 24/24 after normalize.
+- Trial-and-error logged: FN javadoc tokens, FP javadoc rewrite regression, first LLM run invalidated for gold-label leakage in class names.
+- `uv run pytest`: 54 passed. No `.env` / `gsk_` in git.
+
+## Executed (`live-research`, 2026-09-17)
+
+Live Groq is the default research path. Template/SAST remain ablations.
+
+- `Pipeline.default()` / `cwe-vuln-pipeline` / `cwe-vuln-eval --suite research` require `GROQ_API_KEY`. Missing key exits non-zero. `--offline` and `--ablation template` keep the F1=0 contrast for the paper.
+- Validator no longer requires `vulnerable` iff SAST evidence is non-empty. Checks: schema, CWE-in-KB, cited lines, JSON consistency. `sast_disagreement` is a warning.
+- SAST stays evidence extraction. Decision is schema-validated Groq `LLMReasoner` grounded in code + evidence + hybrid CWE hits.
+- Defendable contribution (not “100% novel” / not SOTA / not Juliet): RAG-augmented multi-agent detector for six Java CWEs on an authored 24-unit FP/FN trap split where regex/template fail and live LLM recovers most cases.
+- `uv run pytest`: 62 passed (Groq mocked; default CLI tests fail clearly without a key).
+- Live re-run: `uv run cwe-vuln-eval --suite research` + seed test n=4. then_llm P=0.857 R=1.000 F1=0.923, validator **24/24** (was 2/24). Seed test P=R=F1=1.000, validator 4/4. Metrics in `results/research-eval-summary.md`.
+- No UAV/compiler code. No `.env` / `gsk_` in git.

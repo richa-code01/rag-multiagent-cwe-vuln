@@ -1,0 +1,30 @@
+{"query_id": "note_java_cwe89_t01_comment_concat", "unit_id": "java_cwe89_t01_comment_concat", "query": "Comment shows concatenated SELECT; executed query is parameterized.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe89_t02_constant_concat", "unit_id": "java_cwe89_t02_constant_concat", "query": "SQL concatenated with a compile-time category constant.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe89_t03_stringbuilder", "unit_id": "java_cwe89_t03_stringbuilder", "query": "SQL assembled with StringBuilder.append of a caller-supplied name.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe89_t04_split_concat", "unit_id": "java_cwe89_t04_split_concat", "query": "Query prefix stored then concatenated with a caller-supplied name later.", "relevant_cwes": ["CWE-89"]}
+{"query_id": "note_java_cwe79_t01_encoded_then_concat", "unit_id": "java_cwe79_t01_encoded_then_concat", "query": "Value HTML-encoded into a variable then concatenated into markup.", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe79_t02_constant_html", "unit_id": "java_cwe79_t02_constant_html", "query": "HTML markup concatenated with a compile-time status label.", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe79_t03_getparameter", "unit_id": "java_cwe79_t03_getparameter", "query": "Request getParameter value written into an HTML response.", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe79_t04_concat_method", "unit_id": "java_cwe79_t04_concat_method", "query": "Comment text joined into HTML using String.concat.", "relevant_cwes": ["CWE-79"]}
+{"query_id": "note_java_cwe22_t01_const_concat", "unit_id": "java_cwe22_t01_const_concat", "query": "File path concatenates a fixed readme.txt name.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe22_t02_comment_file", "unit_id": "java_cwe22_t02_comment_file", "query": "Comment shows File concat; executed path normalizes under a base directory.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe22_t03_twoarg_file", "unit_id": "java_cwe22_t03_twoarg_file", "query": "Two-argument File constructor joins a caller-supplied relative path.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe22_t04_paths_get", "unit_id": "java_cwe22_t04_paths_get", "query": "Paths.get joins a caller-supplied relative path.", "relevant_cwes": ["CWE-22"]}
+{"query_id": "note_java_cwe502_t01_javadoc_objectstream", "unit_id": "java_cwe502_t01_javadoc_objectstream", "query": "Documentation mentions a Java object stream type; method reads a UTF-8 line.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe502_t02_roundtrip", "unit_id": "java_cwe502_t02_roundtrip", "query": "Object streams round-trip a string created in the same method.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe502_t03_helper_reflection", "unit_id": "java_cwe502_t03_helper_reflection", "query": "A helper reconstructs a Java object graph from an InputStream.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe502_t04_xmldecoder_reflect", "unit_id": "java_cwe502_t04_xmldecoder_reflect", "query": "XMLDecoder constructed reflectively from an InputStream.", "relevant_cwes": ["CWE-502"]}
+{"query_id": "note_java_cwe798_t01_sentinel_then_env", "unit_id": "java_cwe798_t01_sentinel_then_env", "query": "A sentinel string is overwritten from APP_PASSWORD.", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe798_t02_password_log_literal", "unit_id": "java_cwe798_t02_password_log_literal", "query": "Log text contains password= while the credential is read from the environment.", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe798_t03_char_array", "unit_id": "java_cwe798_t03_char_array", "query": "A teaching credential stored in a char array.", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe798_t04_split_literal", "unit_id": "java_cwe798_t04_split_literal", "query": "A teaching token built from string fragments.", "relevant_cwes": ["CWE-798"]}
+{"query_id": "note_java_cwe327_t01_md5_comment_sha256", "unit_id": "java_cwe327_t01_md5_comment_sha256", "query": "Comment mentions a weak digest; executed digest uses SHA-256.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "note_java_cwe327_t02_banned_algo_message", "unit_id": "java_cwe327_t02_banned_algo_message", "query": "Error text embeds a weak digest name; runtime uses SHA-256.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "note_java_cwe327_t03_md5_variable", "unit_id": "java_cwe327_t03_md5_variable", "query": "MessageDigest.getInstance called with a variable algorithm name.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "note_java_cwe327_t04_md5_split_literal", "unit_id": "java_cwe327_t04_md5_split_literal", "query": "Digest algorithm assembled from two string fragments.", "relevant_cwes": ["CWE-327"]}
+{"query_id": "nl_sql_stringbuilder", "unit_id": null, "query": "database query assembled with StringBuilder from a user name", "relevant_cwes": ["CWE-89"]}
+{"query_id": "nl_xss_getparameter", "unit_id": null, "query": "HTTP getParameter value written into an HTML page without encoding", "relevant_cwes": ["CWE-79"]}
+{"query_id": "nl_twoarg_file", "unit_id": null, "query": "two argument File constructor with a user relative path", "relevant_cwes": ["CWE-22"]}
+{"query_id": "nl_xmldecoder", "unit_id": null, "query": "XMLDecoder used to rebuild Java objects from an input stream", "relevant_cwes": ["CWE-502"]}
+{"query_id": "nl_char_password", "unit_id": null, "query": "hard coded teaching password stored as a character array", "relevant_cwes": ["CWE-798"]}
+{"query_id": "nl_md5_variable", "unit_id": null, "query": "message digest algorithm name stored in a variable set to MD5", "relevant_cwes": ["CWE-327"]}

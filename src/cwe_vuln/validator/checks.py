@@ -1,6 +1,8 @@
-"""Schema + KB id + cited lines + decision vs evidence. No retrieval."""
+"""Schema + KB id + cited lines + JSON consistency. SAST disagreement is a warning."""
 
 from __future__ import annotations
+
+import re
 
 from cwe_vuln.dataset import SeedUnit
 from cwe_vuln.knowledge import CWEKnowledgeBase
@@ -9,9 +11,17 @@ from cwe_vuln.models.pipeline import CheckResult, ValidationReport
 from cwe_vuln.models.reasoning import ReasoningResult
 from cwe_vuln.schema import is_valid
 
+_CWE_ID = re.compile(r"^CWE-\d+$")
+_ALLOWED_DECISIONS = {"vulnerable", "not_vulnerable", "uncertain"}
+
 
 class ResultValidator:
-    """No retrieval here — only checks against unit, KB, and evidence."""
+    """No retrieval here — only checks against unit, KB, and JSON consistency.
+
+    SAST evidence is a signal, not a gold decision. Groq may call a unit
+    vulnerable when regex evidence is empty (FN traps). That is a warning,
+    not a failed check.
+    """
 
     def __init__(self, kb: CWEKnowledgeBase | None = None) -> None:
         self.kb = kb or CWEKnowledgeBase.load()
@@ -26,9 +36,16 @@ class ResultValidator:
             self._schema(result),
             self._cwe_in_kb(result),
             self._cited_lines(result, unit),
-            self._decision_matches_evidence(result, evidence),
+            self._internal_consistency(result, unit),
         )
-        return ValidationReport(unit_id=unit.unit_id, passed=all(item.passed for item in checks), checks=checks)
+        warning = self._sast_disagreement(result, evidence)
+        warnings = (warning,) if warning is not None else ()
+        return ValidationReport(
+            unit_id=unit.unit_id,
+            passed=all(item.passed for item in checks),
+            checks=checks,
+            warnings=warnings,
+        )
 
     def _schema(self, result: ReasoningResult) -> CheckResult:
         errors = [] if is_valid(result.to_dict()) else ["schema failed"]
@@ -49,11 +66,35 @@ class ResultValidator:
         ok = span.snippet.strip() in excerpt or span.snippet.strip() in unit.source
         return CheckResult("cited_lines", ok, "ok" if ok else "snippet not in cited line range")
 
-    def _decision_matches_evidence(self, result: ReasoningResult, evidence: list[Evidence]) -> CheckResult:
+    def _internal_consistency(self, result: ReasoningResult, unit: SeedUnit) -> CheckResult:
+        errors: list[str] = []
+        if result.unit_id != unit.unit_id:
+            errors.append(f"unit_id {result.unit_id} != {unit.unit_id}")
+        if result.decision not in _ALLOWED_DECISIONS:
+            errors.append(f"unknown decision {result.decision}")
+        if not _CWE_ID.fullmatch(result.cwe.id):
+            errors.append(f"malformed cwe id {result.cwe.id}")
+        if not result.cwe.name.strip():
+            errors.append("empty cwe name")
+        for field in ("root_cause", "explanation", "remediation"):
+            if not str(getattr(result, field)).strip():
+                errors.append(f"empty {field}")
+        if result.confidence is not None and not (0.0 <= result.confidence <= 1.0):
+            errors.append(f"confidence {result.confidence} out of [0, 1]")
+        span = result.supporting_source_lines
+        if span.start_line > span.end_line:
+            errors.append("start_line > end_line")
+        return CheckResult(
+            "internal_consistency",
+            not errors,
+            "ok" if not errors else "; ".join(errors),
+        )
+
+    def _sast_disagreement(self, result: ReasoningResult, evidence: list[Evidence]) -> CheckResult | None:
         if result.decision == "uncertain":
-            return CheckResult("decision_consistency", True, "uncertain allowed")
+            return None
         if result.decision == "vulnerable" and not evidence:
-            return CheckResult("decision_consistency", False, "vulnerable without SAST evidence")
+            return CheckResult("sast_disagreement", True, "vulnerable with empty SAST evidence")
         if result.decision == "not_vulnerable" and evidence:
-            return CheckResult("decision_consistency", False, "not_vulnerable despite SAST evidence")
-        return CheckResult("decision_consistency", True, "ok")
+            return CheckResult("sast_disagreement", True, "not_vulnerable despite SAST evidence")
+        return None

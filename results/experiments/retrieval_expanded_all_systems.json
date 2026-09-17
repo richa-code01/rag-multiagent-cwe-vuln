@@ -1,0 +1,91 @@
+{
+  "trial_id": "retrieval_expanded_all_systems",
+  "date": "2026-09-17T03:55:04Z",
+  "suite": "research",
+  "split": "expanded_queries",
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "embedder": "minilm",
+    "k_values": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "n_queries": 48
+  },
+  "metrics": {
+    "lexical_tfidf": {
+      "recall@1": 0.6458,
+      "recall@3": 0.9167,
+      "recall@5": 0.9375,
+      "recall@10": 1.0,
+      "mrr": 0.7936
+    },
+    "neural": {
+      "recall@1": 0.8125,
+      "recall@3": 0.9792,
+      "recall@5": 1.0,
+      "recall@10": 1.0,
+      "mrr": 0.8941
+    },
+    "sast": {
+      "recall@1": 0.375,
+      "recall@3": 0.375,
+      "recall@5": 0.375,
+      "recall@10": 0.375,
+      "mrr": 0.375
+    },
+    "hybrid_rrf": {
+      "recall@1": 0.8542,
+      "recall@3": 0.9583,
+      "recall@5": 1.0,
+      "recall@10": 1.0,
+      "mrr": 0.9167
+    }
+  },
+  "notes": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "error": null,
+  "report": {
+    "embedder": "minilm",
+    "n_queries": 48,
+    "k_values": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "systems": {
+      "lexical_tfidf": {
+        "recall@1": 0.6458,
+        "recall@3": 0.9167,
+        "recall@5": 0.9375,
+        "recall@10": 1.0,
+        "mrr": 0.7936
+      },
+      "neural": {
+        "recall@1": 0.8125,
+        "recall@3": 0.9792,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.8941
+      },
+      "sast": {
+        "recall@1": 0.375,
+        "recall@3": 0.375,
+        "recall@5": 0.375,
+        "recall@10": 0.375,
+        "mrr": 0.375
+      },
+      "hybrid_rrf": {
+        "recall@1": 0.8542,
+        "recall@3": 0.9583,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.9167
+      }
+    }
+  }
+}

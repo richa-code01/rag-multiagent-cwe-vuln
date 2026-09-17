@@ -2,7 +2,8 @@
   "assignment": 3,
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
-  "disclaimer": "seed-only \u2014 not a benchmark. Queries are the 12 unit notes plus 6 short descriptions. TF-IDF is lexical (not neural embeddings). Hybrid is RRF of TF-IDF + SAST-style rules + CWE relationship expansion.",
+  "embedder": "minilm",
+  "disclaimer": "seed-only \u2014 not a benchmark. Queries are the 12 unit notes plus 6 short descriptions. lexical_tfidf is TF-IDF cosine. neural is MiniLM cosine (all-MiniLM-L6-v2). Hybrid is RRF of neural + SAST-style rules + CWE relationship expansion.",
   "n_queries": 18,
   "k_values": [
     1,
@@ -16,6 +17,12 @@
       "recall@5": 0.9444,
       "mrr": 0.8681
     },
+    "neural": {
+      "recall@1": 0.9444,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.9722
+    },
     "sast": {
       "recall@1": 0.3333,
       "recall@3": 0.3333,
@@ -23,10 +30,10 @@
       "mrr": 0.3333
     },
     "hybrid_rrf": {
-      "recall@1": 0.7778,
-      "recall@3": 0.9444,
+      "recall@1": 0.9444,
+      "recall@3": 1.0,
       "recall@5": 1.0,
-      "mrr": 0.8722
+      "mrr": 0.9722
     }
   },
   "per_query": [
@@ -43,6 +50,13 @@
           "CWE-564",
           "CWE-74",
           "CWE-23"
+        ],
+        "neural": [
+          "CWE-89",
+          "CWE-943",
+          "CWE-564",
+          "CWE-74",
+          "CWE-79"
         ],
         "sast": [
           "CWE-89"
@@ -70,13 +84,20 @@
           "CWE-20",
           "CWE-943"
         ],
+        "neural": [
+          "CWE-89",
+          "CWE-943",
+          "CWE-74",
+          "CWE-564",
+          "CWE-79"
+        ],
         "sast": [],
         "hybrid_rrf": [
+          "CWE-89",
+          "CWE-943",
+          "CWE-74",
           "CWE-564",
-          "CWE-79",
-          "CWE-23",
-          "CWE-20",
-          "CWE-89"
+          "CWE-79"
         ]
       }
     },
@@ -93,6 +114,13 @@
           "CWE-74",
           "CWE-89",
           "CWE-564"
+        ],
+        "neural": [
+          "CWE-79",
+          "CWE-80",
+          "CWE-74",
+          "CWE-89",
+          "CWE-20"
         ],
         "sast": [
           "CWE-79"
@@ -120,13 +148,20 @@
           "CWE-287",
           "CWE-89"
         ],
+        "neural": [
+          "CWE-79",
+          "CWE-80",
+          "CWE-74",
+          "CWE-798",
+          "CWE-20"
+        ],
         "sast": [],
         "hybrid_rrf": [
-          "CWE-80",
           "CWE-79",
-          "CWE-326",
+          "CWE-80",
           "CWE-74",
-          "CWE-20"
+          "CWE-20",
+          "CWE-943"
         ]
       }
     },
@@ -144,6 +179,13 @@
           "CWE-36",
           "CWE-321"
         ],
+        "neural": [
+          "CWE-22",
+          "CWE-36",
+          "CWE-23",
+          "CWE-706",
+          "CWE-913"
+        ],
         "sast": [
           "CWE-22"
         ],
@@ -152,7 +194,7 @@
           "CWE-23",
           "CWE-36",
           "CWE-706",
-          "CWE-564"
+          "CWE-913"
         ]
       }
     },
@@ -170,13 +212,20 @@
           "CWE-706",
           "CWE-89"
         ],
+        "neural": [
+          "CWE-22",
+          "CWE-36",
+          "CWE-23",
+          "CWE-706",
+          "CWE-913"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-22",
-          "CWE-23",
           "CWE-36",
+          "CWE-23",
           "CWE-706",
-          "CWE-89"
+          "CWE-913"
         ]
       }
     },
@@ -194,15 +243,22 @@
           "CWE-287",
           "CWE-89"
         ],
+        "neural": [
+          "CWE-502",
+          "CWE-327",
+          "CWE-22",
+          "CWE-74",
+          "CWE-913"
+        ],
         "sast": [
           "CWE-502"
         ],
         "hybrid_rrf": [
           "CWE-502",
           "CWE-913",
-          "CWE-79",
-          "CWE-798",
-          "CWE-287"
+          "CWE-327",
+          "CWE-22",
+          "CWE-74"
         ]
       }
     },
@@ -220,13 +276,20 @@
           "CWE-943",
           "CWE-89"
         ],
+        "neural": [
+          "CWE-502",
+          "CWE-79",
+          "CWE-80",
+          "CWE-913",
+          "CWE-22"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-502",
-          "CWE-22",
-          "CWE-564",
-          "CWE-89",
-          "CWE-706"
+          "CWE-79",
+          "CWE-80",
+          "CWE-913",
+          "CWE-20"
         ]
       }
     },
@@ -242,6 +305,13 @@
           "CWE-259",
           "CWE-89",
           "CWE-287",
+          "CWE-79"
+        ],
+        "neural": [
+          "CWE-798",
+          "CWE-259",
+          "CWE-287",
+          "CWE-89",
           "CWE-79"
         ],
         "sast": [
@@ -270,13 +340,20 @@
           "CWE-326",
           "CWE-20"
         ],
+        "neural": [
+          "CWE-798",
+          "CWE-259",
+          "CWE-89",
+          "CWE-321",
+          "CWE-79"
+        ],
         "sast": [],
         "hybrid_rrf": [
-          "CWE-259",
           "CWE-798",
-          "CWE-943",
+          "CWE-259",
+          "CWE-89",
           "CWE-321",
-          "CWE-74"
+          "CWE-287"
         ]
       }
     },
@@ -294,6 +371,13 @@
           "CWE-22",
           "CWE-79"
         ],
+        "neural": [
+          "CWE-327",
+          "CWE-328",
+          "CWE-36",
+          "CWE-22",
+          "CWE-502"
+        ],
         "sast": [
           "CWE-327"
         ],
@@ -301,7 +385,7 @@
           "CWE-327",
           "CWE-328",
           "CWE-326",
-          "CWE-798",
+          "CWE-36",
           "CWE-22"
         ]
       }
@@ -320,13 +404,20 @@
           "CWE-22",
           "CWE-23"
         ],
+        "neural": [
+          "CWE-327",
+          "CWE-328",
+          "CWE-326",
+          "CWE-36",
+          "CWE-23"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-327",
           "CWE-328",
-          "CWE-20",
           "CWE-326",
-          "CWE-74"
+          "CWE-36",
+          "CWE-23"
         ]
       }
     },
@@ -344,12 +435,19 @@
           "CWE-79",
           "CWE-564"
         ],
+        "neural": [
+          "CWE-89",
+          "CWE-943",
+          "CWE-564",
+          "CWE-74",
+          "CWE-79"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-89",
-          "CWE-798",
-          "CWE-74",
+          "CWE-943",
           "CWE-564",
+          "CWE-74",
           "CWE-20"
         ]
       }
@@ -368,13 +466,20 @@
           "CWE-287",
           "CWE-74"
         ],
+        "neural": [
+          "CWE-79",
+          "CWE-80",
+          "CWE-74",
+          "CWE-89",
+          "CWE-798"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-79",
           "CWE-80",
-          "CWE-89",
           "CWE-74",
-          "CWE-20"
+          "CWE-20",
+          "CWE-943"
         ]
       }
     },
@@ -392,13 +497,20 @@
           "CWE-79",
           "CWE-321"
         ],
+        "neural": [
+          "CWE-22",
+          "CWE-36",
+          "CWE-23",
+          "CWE-706",
+          "CWE-287"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-22",
-          "CWE-23",
           "CWE-36",
+          "CWE-23",
           "CWE-706",
-          "CWE-79"
+          "CWE-287"
         ]
       }
     },
@@ -416,13 +528,20 @@
           "CWE-79",
           "CWE-36"
         ],
+        "neural": [
+          "CWE-502",
+          "CWE-913",
+          "CWE-74",
+          "CWE-20",
+          "CWE-22"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-502",
-          "CWE-564",
-          "CWE-80",
-          "CWE-79",
-          "CWE-89"
+          "CWE-913",
+          "CWE-74",
+          "CWE-20",
+          "CWE-79"
         ]
       }
     },
@@ -440,13 +559,20 @@
           "CWE-321",
           "CWE-287"
         ],
+        "neural": [
+          "CWE-798",
+          "CWE-259",
+          "CWE-79",
+          "CWE-89",
+          "CWE-321"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-798",
           "CWE-259",
-          "CWE-287",
-          "CWE-89",
-          "CWE-321"
+          "CWE-79",
+          "CWE-321",
+          "CWE-287"
         ]
       }
     },
@@ -464,13 +590,20 @@
           "CWE-321",
           "CWE-798"
         ],
+        "neural": [
+          "CWE-328",
+          "CWE-327",
+          "CWE-321",
+          "CWE-326",
+          "CWE-259"
+        ],
         "sast": [],
         "hybrid_rrf": [
           "CWE-328",
           "CWE-327",
-          "CWE-74",
-          "CWE-79",
-          "CWE-20"
+          "CWE-321",
+          "CWE-326",
+          "CWE-259"
         ]
       }
     }
