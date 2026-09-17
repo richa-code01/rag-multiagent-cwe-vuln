@@ -1,0 +1,934 @@
+{
+  "trial_id": "llm_then_juliet_sample",
+  "date": "2026-09-17T13:34:15Z",
+  "suite": "juliet-llm-sample",
+  "split": "juliet_llm_sample",
+  "n_units": 72,
+  "evaluation_scope": "juliet_java_v1_3_mapped_subset",
+  "disclaimer": "Juliet Java public-benchmark subset. Not the authored 36-unit research table. LLM scores are on a stratified sample only unless n equals the ingested SAST set. Nearby CWE folders keep their Juliet ids (no silent relabel to 79/22/798/327).",
+  "status": "ok",
+  "config": {
+    "suite": "juliet-llm-sample",
+    "reasoner": "llm",
+    "skip_llm_when_sast_hits": false,
+    "use_llm_if_available": true,
+    "model": "openai/gpt-oss-20b",
+    "provenance": {
+      "juliet_version": "1.3",
+      "source_url": "https://github.com/find-sec-bugs/juliet-test-suite.git",
+      "downloaded_at": "2026-09-17T13:21:18Z",
+      "method": "github_sparse_clone",
+      "sha256_or_commit": "b2c6df3733e2176fe7097e4784895c6891632b4c",
+      "nist_suite_page": "https://samate.nist.gov/SARD/test-suites/111",
+      "notes": "NIST zip failed or was blocked; used find-sec-bugs Juliet Java 1.3 mirror. Prior NIST attempt: nist_zip_failed: HTTP Error 403: Forbidden"
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/juliet_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 22,
+    "fp": 2,
+    "tn": 34,
+    "fn": 14,
+    "precision": 0.9166666666666666,
+    "recall": 0.6111111111111112,
+    "f1": 0.7333333333333334,
+    "support": 72
+  },
+  "per_cwe": {
+    "CWE-23": {
+      "tp": 5,
+      "fp": 0,
+      "tn": 6,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.8333333333333334,
+      "f1": 0.9090909090909091,
+      "support": 12
+    },
+    "CWE-259": {
+      "tp": 6,
+      "fp": 1,
+      "tn": 5,
+      "fn": 0,
+      "precision": 0.8571428571428571,
+      "recall": 1.0,
+      "f1": 0.923076923076923,
+      "support": 12
+    },
+    "CWE-327": {
+      "tp": 6,
+      "fp": 0,
+      "tn": 6,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 12
+    },
+    "CWE-328": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 6,
+      "fn": 3,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "support": 12
+    },
+    "CWE-80": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 6,
+      "fn": 6,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 12
+    },
+    "CWE-89": {
+      "tp": 2,
+      "fp": 1,
+      "tn": 5,
+      "fn": 4,
+      "precision": 0.6666666666666666,
+      "recall": 0.3333333333333333,
+      "f1": 0.4444444444444444,
+      "support": 12
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__Environment_41__method_bad",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_22a__method_goodG2B2",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": false,
+      "why": "llm_overclaim"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_11__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_File_61a__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_PropertiesFile_05__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_database_72a__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_12__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_71a__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getQueryString_Servlet_41__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_prepareStatement_11__method_goodG2B2",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_execute_73a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__PropertiesFile_execute_51a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_67a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__URLConnection_executeUpdate_81a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "System of record on sample n=72 (not the full ingested set). Live Groq on the stratified Juliet sample. probe_ok model=openai/gpt-oss-20b",
+  "error": null,
+  "validation_pass": 72,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 72,
+  "cited_lines_n": 72,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 12,
+  "sast_disagreement_rate": 0.16666666666666666,
+  "detector_path_counts": {
+    "hybrid_retrieve_then_llm": 50,
+    "sast_then_llm": 22
+  },
+  "reasoner_counts": {
+    "llm": 30,
+    "llm_fallback_template": 42
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__Environment_41__method_bad",
+      "decision": "uncertain",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_15__method_goodG2B2",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_03__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__database_71a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_04__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getCookies_Servlet_06__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_07__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_10__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getQueryString_Servlet_04__method_goodG2B2",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_08__method_goodG2B2",
+      "decision": "not_vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_12__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__listen_tcp_22a__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_03__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_14__method_goodG2B2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_22a__method_goodG2B2",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_52a__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_81_goodG2B__file_good",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_13__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_81a__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_01__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_08__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_13__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_15__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_67a__method_bad",
+      "decision": "vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": true
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_01__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_02__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_05__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_09__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_10__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_11__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_12__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_17__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_07__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_14__method_good2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_16__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_11__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_13__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_03__method_good2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_10__method_good2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD5_15__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_01__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_04__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_08__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_16__method_good1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_File_61a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_PropertiesFile_05__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_connect_tcp_81a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_database_66a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_database_72a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_12__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_71a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getQueryString_Servlet_41__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_listen_tcp_75a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_File_53a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_database_71b__method_goodG2BSink",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_listen_tcp_21__method_goodG2B1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_prepareStatement_11__method_goodG2B2",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_executeBatch_02__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_execute_72a__method_goodG2B",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__database_execute_73a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s02_CWE89_SQL_Injection__File_prepareStatement_07__method_goodB2G2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s03_CWE89_SQL_Injection__listen_tcp_executeUpdate_21__method_goodB2G2Sink",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__PropertiesFile_execute_51a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_08__method_goodB2G1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_executeQuery_67a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_execute_42__method_bad",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__Property_prepareStatement_10__method_goodB2G2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__URLConnection_executeUpdate_81a__method_bad",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 72,
+  "n_scored": 72,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "juliet_version": "1.3",
+  "cwe_mapping": {
+    "thesis_cwes": [
+      "CWE-89",
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798",
+      "CWE-327"
+    ],
+    "primary_present": [
+      "CWE-89",
+      "CWE-327"
+    ],
+    "primary_missing_in_juliet_java_1_3": [
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798"
+    ],
+    "ingest_folders": [
+      {
+        "cwe_id": "CWE-89",
+        "folder": "CWE89_SQL_Injection",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-80",
+        "folder": "CWE80_XSS",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-81",
+        "folder": "CWE81_XSS_Error_Message",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-83",
+        "folder": "CWE83_XSS_Attribute",
+        "role": "nearby_missing_CWE79"
+      },
+      {
+        "cwe_id": "CWE-23",
+        "folder": "CWE23_Relative_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-36",
+        "folder": "CWE36_Absolute_Path_Traversal",
+        "role": "nearby_missing_CWE22"
+      },
+      {
+        "cwe_id": "CWE-327",
+        "folder": "CWE327_Use_Broken_Crypto",
+        "role": "primary"
+      },
+      {
+        "cwe_id": "CWE-328",
+        "folder": "CWE328_Reversible_One_Way_Hash",
+        "role": "nearby_CWE327_not_relabeled"
+      },
+      {
+        "cwe_id": "CWE-259",
+        "folder": "CWE259_Hard_Coded_Password",
+        "role": "nearby_missing_CWE798"
+      },
+      {
+        "cwe_id": "CWE-321",
+        "folder": "CWE321_Hard_Coded_Cryptographic_Key",
+        "role": "nearby_missing_CWE798"
+      }
+    ],
+    "llm_sample_cwes": [
+      "CWE-89",
+      "CWE-80",
+      "CWE-23",
+      "CWE-327",
+      "CWE-328",
+      "CWE-259"
+    ],
+    "sast_only_ingested_cwes": [
+      "CWE-81",
+      "CWE-83",
+      "CWE-36",
+      "CWE-321"
+    ],
+    "cwe502": "no Juliet Java 1.3 folder; not evaluated",
+    "retrieval_at_juliet": "skipped \u2014 nearby gold ids are not in the curated CWE store"
+  }
+}

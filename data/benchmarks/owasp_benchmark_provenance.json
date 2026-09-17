@@ -1,0 +1,8 @@
+{
+  "suite": "owasp-benchmark",
+  "source_url": "https://github.com/OWASP-Benchmark/BenchmarkJava.git",
+  "downloaded_at": "2026-09-17T14:03:49Z",
+  "method": "cached",
+  "sha256_or_commit": "20cbf3d11123347e47ed89541e6942836def53f7",
+  "license_note": "OWASP Benchmark for Java (BenchmarkJava). Educational AST test suite; see the upstream repository license/README. Not redistributed in git."
+}

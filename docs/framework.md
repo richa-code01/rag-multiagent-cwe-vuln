@@ -7,20 +7,25 @@ Thin CLI over `Pipeline.run` (`src/cwe_vuln/framework/`). Agents and data flow: 
 
 ```text
 Java unit
-  → SAST Evidence[]          (regex rules)
-  → RankedHit[]              (hybrid TF-IDF + SAST + CWE relationships)
-  → ReasoningResult          (template reasoner, A4 schema)
-  → ValidationReport
+  → SAST Evidence[]          (regex rules; evidence only)
+  → RankedHit[]              (hybrid MiniLM or TF-IDF fallback + SAST + CWE relationships)
+  → ReasoningResult          (Groq LLMReasoner; A4 schema)
+  → ValidationReport         (schema / KB / cited lines / JSON consistency)
   → binary metrics vs seed labels
 ```
 
 Default evaluation is the **4 test units**. Pass `--split all` for all 12. **seed-only — not a benchmark.**
 
 ```bash
-uv run cwe-vuln-pipeline
+uv run cwe-vuln-pipeline                 # requires GROQ_API_KEY
 uv run cwe-vuln-pipeline --split all
+uv run cwe-vuln-pipeline --offline       # TemplateReasoner ablation
 ```
 
-Writes `results/framework-seed.json` (and `.md`). Recorded test-split run: P=1.000 R=1.000 F1=1.000 FP=0 FN=0, 4/4 validator pass, paths `sast_first_skip_llm=2` / `hybrid_retrieve_skip_llm=2`.
+Writes `results/framework-seed.json` (and `.md`). Missing Groq key → exit 1 with a message to set `GROQ_API_KEY`. Recorded test-split run (**seed-only**, live Groq `openai/gpt-oss-20b`, embedder=`minilm`): P=1.000 R=1.000 F1=1.000 FP=0 FN=0, paths `sast_then_llm=2` / `hybrid_retrieve_then_llm=2`, reasoner `llm`.
 
-Still not a public benchmark. Neural embeddings and a live LLM reasoner are not implemented; the default path is offline.
+Still not a public benchmark. MiniLM is local. Live Groq uses `GROQ_API_KEY`. Template/SAST are ablations (`--offline`, `cwe-vuln-eval --ablation template`); they scored F1=0 on the 24-unit research split.
+
+Research evaluation (authored 24-unit held-out split) is `uv run cwe-vuln-eval --suite research` → [`research-evaluation.md`](research-evaluation.md).
+
+Juliet Java v1.3 mapped subset is `uv run cwe-vuln-eval --suite juliet-sast` / `--suite juliet-llm-sample` → [`benchmark-results.md`](benchmark-results.md). That table is not the 36-unit authored table.

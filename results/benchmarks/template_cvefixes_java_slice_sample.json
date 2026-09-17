@@ -1,0 +1,667 @@
+{
+  "trial_id": "template_cvefixes_java_slice_sample",
+  "date": "2026-09-17T14:07:43Z",
+  "suite": "cvefixes-java-slice-llm-sample",
+  "split": "cvefixes-java-slice_llm_sample",
+  "n_units": 12,
+  "evaluation_scope": "cvefixes_java_slice_stratified_sample",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "cvefixes-java-slice-llm-sample",
+    "reasoner": "template",
+    "skip_llm_when_sast_hits": true,
+    "use_llm_if_available": false,
+    "model": null,
+    "provenance": {
+      "suite": "cvefixes-java-slice",
+      "source_url": "https://api.github.com/advisories?ecosystem=maven",
+      "downloaded_at": "2026-09-17T14:01:31Z",
+      "method": "github_advisories_maven_slice",
+      "sha256_or_commit": "n_advisories=24 pages<=3",
+      "license_note": "Slice constructed from public GitHub Security Advisories (ecosystem=maven) plus referenced GitHub commits. Named CVEfixes-Java-slice because the full CVEfixes (Zenodo/SQLite) dump is too large to vendor; gold CWE comes from the advisory CWE list. Not the complete CVEfixes database.",
+      "n_advisories": 24,
+      "advisories": [
+        {
+          "ghsa_id": "GHSA-crq5-92j2-j7wv",
+          "cve_id": "CVE-2026-69201",
+          "cwe_id": "CWE-22",
+          "summary": "Http4s: ResourceService and Webjar Service path escape via percent-encoded separators",
+          "html_url": "https://github.com/advisories/GHSA-crq5-92j2-j7wv",
+          "published_at": "2026-09-15T20:01:12Z",
+          "commits": [
+            {
+              "slug": "http4s/http4s",
+              "sha": "bcd99cdc1342ef58a0f132acb814af06a668a8d3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-g29j-rwfv-h99w",
+          "cve_id": "CVE-2026-63490",
+          "cwe_id": "CWE-22",
+          "summary": "Handlebars.java: Arbitrary file read in `SpringTemplateLoader` via URL-fragment suffix bypass",
+          "html_url": "https://github.com/advisories/GHSA-g29j-rwfv-h99w",
+          "published_at": "2026-09-02T22:12:03Z",
+          "commits": [
+            {
+              "slug": "jknack/handlebars.java",
+              "sha": "61f43423a337b87db5fec1fe59f0725aaaa38df5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-p68j-q7hf-3qcp",
+          "cve_id": "CVE-2026-55175",
+          "cwe_id": "CWE-502",
+          "summary": "Spinnaker: Improper yaml processing on kustomize bake operations",
+          "html_url": "https://github.com/advisories/GHSA-p68j-q7hf-3qcp",
+          "published_at": "2026-08-28T18:35:06Z",
+          "commits": [
+            {
+              "slug": "spinnaker/spinnaker",
+              "sha": "2d75818b85cc4c35144d5e5ed45e7340fcab5dfe"
+            },
+            {
+              "slug": "spinnaker/spinnaker",
+              "sha": "bbc30c9b9034a056e95f012fa1b34e9fd703cae7"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9272-wg2r-7xmx",
+          "cve_id": "CVE-2026-55566",
+          "cwe_id": "CWE-79",
+          "summary": "Yamcs has DOM XSS in Extension Routing",
+          "html_url": "https://github.com/advisories/GHSA-9272-wg2r-7xmx",
+          "published_at": "2026-08-28T17:32:16Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "8e18e279d8ce761c21f4f67bbd06a1bff804d297"
+            },
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "ecf34a4e2ccbe085e6ceff0253595b24d5ecb4aa"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9jg3-g3wh-w9pj",
+          "cve_id": "CVE-2026-55552",
+          "cwe_id": "CWE-22",
+          "summary": "Yamcs has Unauthenticated Directory Traversal",
+          "html_url": "https://github.com/advisories/GHSA-9jg3-g3wh-w9pj",
+          "published_at": "2026-08-28T17:20:42Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "c7dfd24e469ae1086c23e0fe04401cb1ce4260d4"
+            },
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "f4bc588880c166849e983aa8f65b9c8107d06091"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-rxpg-wjf8-qv9c",
+          "cve_id": "CVE-2026-55549",
+          "cwe_id": "CWE-79",
+          "summary": "Yamcs has Reflected XSS in the URL of the Authorize Endpoint",
+          "html_url": "https://github.com/advisories/GHSA-rxpg-wjf8-qv9c",
+          "published_at": "2026-08-28T17:17:50Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "4d47d5cdcf5d92c2c5bbbc19feada422923332e3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-f63g-88cj-hjf9",
+          "cve_id": "CVE-2026-54550",
+          "cwe_id": "CWE-22",
+          "summary": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries",
+          "html_url": "https://github.com/advisories/GHSA-f63g-88cj-hjf9",
+          "published_at": "2026-08-26T14:24:40Z",
+          "commits": [
+            {
+              "slug": "izpack/izpack",
+              "sha": "4233ba38d0f1825f9cf3e0204e5261a5498e29d8"
+            },
+            {
+              "slug": "izpack/izpack",
+              "sha": "8b7c6792c4fe85e3b1759c106aae39b904848466"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-w2x5-gv52-9ccv",
+          "cve_id": "CVE-2026-54049",
+          "cwe_id": "CWE-79",
+          "summary": "Sakai Conversations has a Stored XSS Issue",
+          "html_url": "https://github.com/advisories/GHSA-w2x5-gv52-9ccv",
+          "published_at": "2026-08-24T19:37:53Z",
+          "commits": [
+            {
+              "slug": "sakaiproject/sakai",
+              "sha": "2696b4b48cbef2e81512f52f84f7477adff78b27"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mqjf-5f49-2fjh",
+          "cve_id": "CVE-2026-76904",
+          "cwe_id": "CWE-89",
+          "summary": "GeoTools has unauthenticated SQL injection in the jsonArrayContains filter function against PostGIS layers",
+          "html_url": "https://github.com/advisories/GHSA-mqjf-5f49-2fjh",
+          "published_at": "2026-08-21T20:25:41Z",
+          "commits": [
+            {
+              "slug": "geotools/geotools",
+              "sha": "d821c4d321dd91c22e31fcd5b1ce676645da5176"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-34pm-923j-7wf8",
+          "cve_id": "CVE-2026-55839",
+          "cwe_id": "CWE-79",
+          "summary": "Kestra vulnerable to stored XSS via custom Markdown [[link]] attribute injection",
+          "html_url": "https://github.com/advisories/GHSA-34pm-923j-7wf8",
+          "published_at": "2026-08-18T16:31:38Z",
+          "commits": [
+            {
+              "slug": "kestra-io/kestra",
+              "sha": "6c8e6d099ed172cbb6b003b7fb30b7bb1f8f710e"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-vxxm-wwqh-mh47",
+          "cve_id": "CVE-2026-54147",
+          "cwe_id": "CWE-327",
+          "summary": "http4k: `DigestAuthProvider.verify` ignored configured algorithm and did not bind to request URI",
+          "html_url": "https://github.com/advisories/GHSA-vxxm-wwqh-mh47",
+          "published_at": "2026-08-17T21:56:58Z",
+          "commits": [
+            {
+              "slug": "http4k/http4k",
+              "sha": "65d23d99fc"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-pmhh-3w7g-xqp8",
+          "cve_id": "CVE-2026-71497",
+          "cwe_id": "CWE-79",
+          "summary": "jsoup: Cleaner may expose markup with custom raw-text elements",
+          "html_url": "https://github.com/advisories/GHSA-pmhh-3w7g-xqp8",
+          "published_at": "2026-08-06T21:09:36Z",
+          "commits": [
+            {
+              "slug": "jhy/jsoup",
+              "sha": "92f1aca552548b484bc7d4b94c51e48b8e6eca70"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-crq5-92j2-j7wv",
+          "cve_id": "CVE-2026-69201",
+          "cwe_id": "CWE-22",
+          "summary": "Http4s: ResourceService and Webjar Service path escape via percent-encoded separators",
+          "html_url": "https://github.com/advisories/GHSA-crq5-92j2-j7wv",
+          "published_at": "2026-09-15T20:01:12Z",
+          "commits": [
+            {
+              "slug": "http4s/http4s",
+              "sha": "bcd99cdc1342ef58a0f132acb814af06a668a8d3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-g29j-rwfv-h99w",
+          "cve_id": "CVE-2026-63490",
+          "cwe_id": "CWE-22",
+          "summary": "Handlebars.java: Arbitrary file read in `SpringTemplateLoader` via URL-fragment suffix bypass",
+          "html_url": "https://github.com/advisories/GHSA-g29j-rwfv-h99w",
+          "published_at": "2026-09-02T22:12:03Z",
+          "commits": [
+            {
+              "slug": "jknack/handlebars.java",
+              "sha": "61f43423a337b87db5fec1fe59f0725aaaa38df5"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-p68j-q7hf-3qcp",
+          "cve_id": "CVE-2026-55175",
+          "cwe_id": "CWE-502",
+          "summary": "Spinnaker: Improper yaml processing on kustomize bake operations",
+          "html_url": "https://github.com/advisories/GHSA-p68j-q7hf-3qcp",
+          "published_at": "2026-08-28T18:35:06Z",
+          "commits": [
+            {
+              "slug": "spinnaker/spinnaker",
+              "sha": "2d75818b85cc4c35144d5e5ed45e7340fcab5dfe"
+            },
+            {
+              "slug": "spinnaker/spinnaker",
+              "sha": "bbc30c9b9034a056e95f012fa1b34e9fd703cae7"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9272-wg2r-7xmx",
+          "cve_id": "CVE-2026-55566",
+          "cwe_id": "CWE-79",
+          "summary": "Yamcs has DOM XSS in Extension Routing",
+          "html_url": "https://github.com/advisories/GHSA-9272-wg2r-7xmx",
+          "published_at": "2026-08-28T17:32:16Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "8e18e279d8ce761c21f4f67bbd06a1bff804d297"
+            },
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "ecf34a4e2ccbe085e6ceff0253595b24d5ecb4aa"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-9jg3-g3wh-w9pj",
+          "cve_id": "CVE-2026-55552",
+          "cwe_id": "CWE-22",
+          "summary": "Yamcs has Unauthenticated Directory Traversal",
+          "html_url": "https://github.com/advisories/GHSA-9jg3-g3wh-w9pj",
+          "published_at": "2026-08-28T17:20:42Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "c7dfd24e469ae1086c23e0fe04401cb1ce4260d4"
+            },
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "f4bc588880c166849e983aa8f65b9c8107d06091"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-rxpg-wjf8-qv9c",
+          "cve_id": "CVE-2026-55549",
+          "cwe_id": "CWE-79",
+          "summary": "Yamcs has Reflected XSS in the URL of the Authorize Endpoint",
+          "html_url": "https://github.com/advisories/GHSA-rxpg-wjf8-qv9c",
+          "published_at": "2026-08-28T17:17:50Z",
+          "commits": [
+            {
+              "slug": "yamcs/yamcs",
+              "sha": "4d47d5cdcf5d92c2c5bbbc19feada422923332e3"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-f63g-88cj-hjf9",
+          "cve_id": "CVE-2026-54550",
+          "cwe_id": "CWE-22",
+          "summary": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries",
+          "html_url": "https://github.com/advisories/GHSA-f63g-88cj-hjf9",
+          "published_at": "2026-08-26T14:24:40Z",
+          "commits": [
+            {
+              "slug": "izpack/izpack",
+              "sha": "4233ba38d0f1825f9cf3e0204e5261a5498e29d8"
+            },
+            {
+              "slug": "izpack/izpack",
+              "sha": "8b7c6792c4fe85e3b1759c106aae39b904848466"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-w2x5-gv52-9ccv",
+          "cve_id": "CVE-2026-54049",
+          "cwe_id": "CWE-79",
+          "summary": "Sakai Conversations has a Stored XSS Issue",
+          "html_url": "https://github.com/advisories/GHSA-w2x5-gv52-9ccv",
+          "published_at": "2026-08-24T19:37:53Z",
+          "commits": [
+            {
+              "slug": "sakaiproject/sakai",
+              "sha": "2696b4b48cbef2e81512f52f84f7477adff78b27"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-mqjf-5f49-2fjh",
+          "cve_id": "CVE-2026-76904",
+          "cwe_id": "CWE-89",
+          "summary": "GeoTools has unauthenticated SQL injection in the jsonArrayContains filter function against PostGIS layers",
+          "html_url": "https://github.com/advisories/GHSA-mqjf-5f49-2fjh",
+          "published_at": "2026-08-21T20:25:41Z",
+          "commits": [
+            {
+              "slug": "geotools/geotools",
+              "sha": "d821c4d321dd91c22e31fcd5b1ce676645da5176"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-34pm-923j-7wf8",
+          "cve_id": "CVE-2026-55839",
+          "cwe_id": "CWE-79",
+          "summary": "Kestra vulnerable to stored XSS via custom Markdown [[link]] attribute injection",
+          "html_url": "https://github.com/advisories/GHSA-34pm-923j-7wf8",
+          "published_at": "2026-08-18T16:31:38Z",
+          "commits": [
+            {
+              "slug": "kestra-io/kestra",
+              "sha": "6c8e6d099ed172cbb6b003b7fb30b7bb1f8f710e"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-vxxm-wwqh-mh47",
+          "cve_id": "CVE-2026-54147",
+          "cwe_id": "CWE-327",
+          "summary": "http4k: `DigestAuthProvider.verify` ignored configured algorithm and did not bind to request URI",
+          "html_url": "https://github.com/advisories/GHSA-vxxm-wwqh-mh47",
+          "published_at": "2026-08-17T21:56:58Z",
+          "commits": [
+            {
+              "slug": "http4k/http4k",
+              "sha": "65d23d99fc"
+            }
+          ]
+        },
+        {
+          "ghsa_id": "GHSA-pmhh-3w7g-xqp8",
+          "cve_id": "CVE-2026-71497",
+          "cwe_id": "CWE-79",
+          "summary": "jsoup: Cleaner may expose markup with custom raw-text elements",
+          "html_url": "https://github.com/advisories/GHSA-pmhh-3w7g-xqp8",
+          "published_at": "2026-08-06T21:09:36Z",
+          "commits": [
+            {
+              "slug": "jhy/jsoup",
+              "sha": "92f1aca552548b484bc7d4b94c51e48b8e6eca70"
+            }
+          ]
+        }
+      ]
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/cvefixes-java-slice_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 0,
+    "fp": 1,
+    "tn": 6,
+    "fn": 5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 12
+  },
+  "per_cwe": {
+    "CWE-22": {
+      "tp": 0,
+      "fp": 1,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    },
+    "CWE-89": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 2,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    },
+    "CWE-502": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-79": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 2,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "cveslice_GHSA-f63g-88cj-hjf9_AbstractInstallDataProvider_fixed",
+      "cwe_id": "CWE-22",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "cveslice_GHSA-f63g-88cj-hjf9_TemporaryDirectory_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "cveslice_GHSA-mqjf-5f49-2fjh_FilterToSqlHelper_vuln",
+      "cwe_id": "CWE-89",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "cveslice_GHSA-p68j-q7hf-3qcp_KustomizationFileReader_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "cveslice_GHSA-rxpg-wjf8-qv9c_IfStatement_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "cveslice_GHSA-rxpg-wjf8-qv9c_TemplateBody_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "cvefixes-java-slice",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Ablation: TemplateReasoner on the cvefixes-java-slice LLM sample. Not the system of record.",
+  "error": null,
+  "validation_pass": 12,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 12,
+  "cited_lines_n": 12,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "sast_first_skip_llm": 1,
+    "hybrid_retrieve_skip_llm": 11
+  },
+  "reasoner_counts": {
+    "template": 12
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "cveslice_GHSA-f63g-88cj-hjf9_AbstractInstallDataProvider_fixed",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-f63g-88cj-hjf9_TemporaryDirectory_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-g29j-rwfv-h99w_SpringTemplateLoader_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-mqjf-5f49-2fjh_FilterToSqlHelper_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-mqjf-5f49-2fjh_FilterToSqlHelper_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-mqjf-5f49-2fjh_PostgisJsonPathExistsTest_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-p68j-q7hf-3qcp_KustomizationFileReader_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-p68j-q7hf-3qcp_KustomizationFileReader_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-rxpg-wjf8-qv9c_IfStatement_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-rxpg-wjf8-qv9c_TemplateBody_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-w2x5-gv52-9ccv_ConversationsTestConfiguration_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "cveslice_GHSA-w2x5-gv52-9ccv_TaskServiceImpl_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 12,
+  "n_scored": 12,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "cwe_mapping": {
+    "gold": "GitHub Advisory CWE list; parent blob = vulnerable, patch blob = fixed",
+    "substitution": "Not the full CVEfixes SQLite dump. Named CVEfixes-Java-slice. Exact n is the number of ingested Java file versions.",
+    "license_note": "Slice constructed from public GitHub Security Advisories (ecosystem=maven) plus referenced GitHub commits. Named CVEfixes-Java-slice because the full CVEfixes (Zenodo/SQLite) dump is too large to vendor; gold CWE comes from the advisory CWE list. Not the complete CVEfixes database.",
+    "cwe_coverage_plan": {
+      "CWE-89": "present if an advisory+commit in the slice has that CWE else not present",
+      "CWE-79": "present if an advisory+commit in the slice has that CWE else not present",
+      "CWE-22": "present if an advisory+commit in the slice has that CWE else not present",
+      "CWE-502": "present if an advisory+commit in the slice has that CWE else not present",
+      "CWE-798": "present if an advisory+commit in the slice has that CWE else not present",
+      "CWE-327": "present if an advisory+commit in the slice has that CWE else not present"
+    },
+    "cwe_coverage": {
+      "CWE-89": "present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "per_cwe_n": {
+      "CWE-22": {
+        "vulnerable": 1,
+        "not_vulnerable": 2,
+        "n": 3
+      },
+      "CWE-89": {
+        "vulnerable": 1,
+        "not_vulnerable": 2,
+        "n": 3
+      },
+      "CWE-502": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-79": {
+        "vulnerable": 2,
+        "not_vulnerable": 2,
+        "n": 4
+      }
+    }
+  }
+}

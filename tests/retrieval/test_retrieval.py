@@ -52,3 +52,9 @@ def test_hybrid_retriever_returns_hits() -> None:
     assert any(hit.cwe_id == "CWE-89" for hit in hybrid[:3])
     sast = retriever.sast_rank(query)
     assert any(hit.cwe_id == "CWE-89" for hit in sast)
+    neural = retriever.neural_rank(query.query)
+    assert neural
+    assert retriever.embedder_name in {"minilm", "tfidf_fallback"}
+    neural = retriever.neural_rank(query.query)
+    assert neural
+    assert retriever.embedder_name in {"minilm", "tfidf_fallback"}

@@ -1,0 +1,281 @@
+{
+  "trial_id": "template_securibench_micro_sample",
+  "date": "2026-09-17T14:04:30Z",
+  "suite": "securibench-micro-llm-sample",
+  "split": "securibench-micro_llm_sample",
+  "n_units": 12,
+  "evaluation_scope": "securibench_micro_stratified_sample",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "securibench-micro-llm-sample",
+    "reasoner": "template",
+    "skip_llm_when_sast_hits": true,
+    "use_llm_if_available": false,
+    "model": null,
+    "provenance": {
+      "suite": "securibench-micro",
+      "source_url": "https://github.com/too4words/securibench-micro.git",
+      "downloaded_at": "2026-09-17T14:04:25Z",
+      "method": "cached",
+      "sha256_or_commit": "6a5a72488ea830d99f9464fc1f0562c4f864214b",
+      "license_note": "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro)."
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/securibench-micro_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 3,
+    "fp": 1,
+    "tn": 3,
+    "fn": 5,
+    "precision": 0.75,
+    "recall": 0.375,
+    "f1": 0.5,
+    "support": 12
+  },
+  "per_cwe": {
+    "CWE-79": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 6
+    },
+    "CWE-89": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 3
+    },
+    "CWE-22": {
+      "tp": 0,
+      "fp": 1,
+      "tn": 0,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 3
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "sbmicro_Basic18",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic22",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic23",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Basic3",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Factories1",
+      "cwe_id": "CWE-79",
+      "trap_type": "securibench-micro",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "sbmicro_Sanitizers6",
+      "cwe_id": "CWE-22",
+      "trap_type": "securibench-micro",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    }
+  ],
+  "notes": "Ablation: TemplateReasoner on the securibench-micro LLM sample. Not the system of record.",
+  "error": null,
+  "validation_pass": 12,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 12,
+  "cited_lines_n": 12,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "hybrid_retrieve_skip_llm": 8,
+    "sast_first_skip_llm": 4
+  },
+  "reasoner_counts": {
+    "template": 12
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "sbmicro_Basic18",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic19",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic20",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic21",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic22",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic23",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Basic3",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Factories1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Pred2",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Pred6",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_Sanitizers6",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "sbmicro_StrongUpdates1",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 12,
+  "n_scored": 12,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "cwe_mapping": {
+    "gold": "@servlet vuln_count / getVulnerabilityCount(); 0 = not_vulnerable",
+    "cwe": "From @servlet description keywords (XSS/SQL/path) else Java sink APIs (java.sql \u2192 89, File/getRealPath \u2192 22, PrintWriter/getWriter \u2192 79). HTTP-splitting and other non-thesis families are skipped, not relabeled.",
+    "cwe_coverage_plan": {
+      "CWE-89": "SQL injection descriptions / java.sql sinks",
+      "CWE-79": "XSS descriptions / writer sinks (majority of suite)",
+      "CWE-22": "path traversal descriptions / File sinks",
+      "CWE-502": "not present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "license_note": "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro).",
+    "cwe_coverage": {
+      "CWE-89": "present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "not present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "per_cwe_n": {
+      "CWE-79": {
+        "vulnerable": 3,
+        "not_vulnerable": 3,
+        "n": 6
+      },
+      "CWE-89": {
+        "vulnerable": 3,
+        "not_vulnerable": 0,
+        "n": 3
+      },
+      "CWE-22": {
+        "vulnerable": 2,
+        "not_vulnerable": 1,
+        "n": 3
+      }
+    }
+  }
+}

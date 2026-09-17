@@ -1,0 +1,402 @@
+{
+  "trial_id": "sast_regex_vul4j",
+  "date": "2026-09-17T14:01:09Z",
+  "suite": "vul4j",
+  "split": "vul4j_mapped",
+  "n_units": 62,
+  "evaluation_scope": "vul4j_thesis_cwes",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "vul4j",
+    "reasoner": "sast",
+    "backend": "regex",
+    "provenance": {
+      "suite": "vul4j",
+      "source_url": "https://github.com/tuhh-softsec/vul4j.git",
+      "downloaded_at": "2026-09-17T14:00:32Z",
+      "method": "cached",
+      "sha256_or_commit": "376411da11fa705019f731404de1d0679fe73537",
+      "license_note": "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. Java snippets are fetched from upstream patch commits and are not vendored in git."
+    },
+    "per_cwe_n": {
+      "CWE-22": {
+        "vulnerable": 10,
+        "not_vulnerable": 10,
+        "n": 20
+      },
+      "CWE-79": {
+        "vulnerable": 9,
+        "not_vulnerable": 9,
+        "n": 18
+      },
+      "CWE-502": {
+        "vulnerable": 12,
+        "not_vulnerable": 12,
+        "n": 24
+      }
+    }
+  },
+  "metrics": {
+    "tp": 5,
+    "fp": 5,
+    "tn": 26,
+    "fn": 26,
+    "precision": 0.5,
+    "recall": 0.16129032258064516,
+    "f1": 0.24390243902439024,
+    "support": 62
+  },
+  "per_cwe": {
+    "CWE-22": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 8,
+      "fn": 8,
+      "precision": 0.5,
+      "recall": 0.2,
+      "f1": 0.28571428571428575,
+      "support": 20
+    },
+    "CWE-79": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 8,
+      "fn": 8,
+      "precision": 0.5,
+      "recall": 0.1111111111111111,
+      "f1": 0.1818181818181818,
+      "support": 18
+    },
+    "CWE-502": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 10,
+      "fn": 10,
+      "precision": 0.5,
+      "recall": 0.16666666666666666,
+      "f1": 0.25,
+      "support": 24
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptor_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_TomEEConfiguration_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_EmbeddedTomEEConfiguration_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolver_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolverTest_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_EjbObjectInputStream_fixed",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Installer_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-41_AbstractUnArchiver_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-41_ZipUnArchiverTest_fixed",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-43_ZipUtil_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-50_HtmlSessionInformationsReport_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-54_XStream2_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-54_XStream2Test_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-59_TokeniserState_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-59_XmlTreeBuilderTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-60_MagicSAXFilter_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-65_ImportingUtilities_fixed",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-65_ImportingUtilitiesTests_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-69_ResourceServlet_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-76_RequestBuilder_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-76_RequestFactoryTest_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-77_DeserializationUtils_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-78_XStream_fixed",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-78_SecurityVulnerabilityTest_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-79_ZipUtil_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Full regex SAST on ingested vul4j units n=62. Missing thesis CWEs are 'not present', not relabeled.",
+  "error": null,
+  "cwe_mapping": {
+    "gold": "vul4j_dataset.csv cwe_id; parent commit file = vulnerable, patch commit = fixed",
+    "cwe_coverage_plan": {
+      "CWE-89": "not present in CSV (thesis set)",
+      "CWE-79": "present if fetch succeeds",
+      "CWE-22": "present if fetch succeeds",
+      "CWE-502": "present if fetch succeeds",
+      "CWE-798": "not present in CSV",
+      "CWE-327": "not present in CSV"
+    },
+    "license_note": "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. Java snippets are fetched from upstream patch commits and are not vendored in git.",
+    "cwe_coverage": {
+      "CWE-89": "not present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "per_cwe_n": {
+      "CWE-22": {
+        "vulnerable": 10,
+        "not_vulnerable": 10,
+        "n": 20
+      },
+      "CWE-79": {
+        "vulnerable": 9,
+        "not_vulnerable": 9,
+        "n": 18
+      },
+      "CWE-502": {
+        "vulnerable": 12,
+        "not_vulnerable": 12,
+        "n": 24
+      }
+    }
+  }
+}

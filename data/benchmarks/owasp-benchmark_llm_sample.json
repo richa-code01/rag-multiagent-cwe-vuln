@@ -1,0 +1,142 @@
+{
+  "suite": "owasp-benchmark",
+  "seed": 13,
+  "n_target": 12,
+  "n_units": 12,
+  "per_cwe_counts": {
+    "CWE-328": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    },
+    "CWE-22": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    },
+    "CWE-501": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    },
+    "CWE-327": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    },
+    "CWE-330": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    },
+    "CWE-614": {
+      "vulnerable": 1,
+      "not_vulnerable": 1,
+      "n": 2
+    }
+  },
+  "cwe_coverage": {
+    "CWE-89": "not present",
+    "CWE-79": "not present",
+    "CWE-22": "present",
+    "CWE-502": "not present",
+    "CWE-798": "not present",
+    "CWE-327": "present"
+  },
+  "provenance": {
+    "suite": "owasp-benchmark",
+    "source_url": "https://github.com/OWASP-Benchmark/BenchmarkJava.git",
+    "downloaded_at": "2026-09-17T14:02:38Z",
+    "method": "cached",
+    "sha256_or_commit": "20cbf3d11123347e47ed89541e6942836def53f7",
+    "license_note": "OWASP Benchmark for Java (BenchmarkJava). Educational AST test suite; see the upstream repository license/README. Not redistributed in git."
+  },
+  "unit_ids": [
+    "owasp_BenchmarkTest00074",
+    "owasp_BenchmarkTest00131",
+    "owasp_BenchmarkTest00322",
+    "owasp_BenchmarkTest00523",
+    "owasp_BenchmarkTest00564",
+    "owasp_BenchmarkTest00623",
+    "owasp_BenchmarkTest00795",
+    "owasp_BenchmarkTest01281",
+    "owasp_BenchmarkTest01541",
+    "owasp_BenchmarkTest01566",
+    "owasp_BenchmarkTest01862",
+    "owasp_BenchmarkTest02262"
+  ],
+  "units": [
+    {
+      "unit_id": "owasp_BenchmarkTest00074",
+      "cwe_id": "CWE-328",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00074.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00131",
+      "cwe_id": "CWE-22",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00131.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00322",
+      "cwe_id": "CWE-501",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00322.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00523",
+      "cwe_id": "CWE-327",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00523.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00564",
+      "cwe_id": "CWE-330",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00564.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00623",
+      "cwe_id": "CWE-22",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00623.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00795",
+      "cwe_id": "CWE-328",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00795.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01281",
+      "cwe_id": "CWE-614",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01281.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01541",
+      "cwe_id": "CWE-330",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01541.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01566",
+      "cwe_id": "CWE-327",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01566.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01862",
+      "cwe_id": "CWE-614",
+      "label": "not_vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01862.java"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest02262",
+      "cwe_id": "CWE-501",
+      "label": "vulnerable",
+      "path": "data/benchmarks/owasp-benchmark/src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02262.java"
+    }
+  ]
+}

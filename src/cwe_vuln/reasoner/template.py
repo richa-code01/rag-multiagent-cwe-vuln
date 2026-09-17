@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Protocol
+
 from cwe_vuln.dataset import SeedUnit
 from cwe_vuln.knowledge import CWEEntry, CWEKnowledgeBase
 from cwe_vuln.models.evidence import Evidence
@@ -9,11 +11,32 @@ from cwe_vuln.models.reasoning import CWERef, ReasoningResult, SourceSpan
 from cwe_vuln.models.retrieval import RankedHit
 
 
+class Reasoner(Protocol):
+    def reason(
+        self,
+        unit: SeedUnit,
+        evidence: list[Evidence],
+        hits: list[RankedHit],
+    ) -> ReasoningResult: ...
+
+
 class TemplateReasoner:
     """Deterministic composer. No LLM and no pipeline I/O."""
 
     def __init__(self, kb: CWEKnowledgeBase | None = None) -> None:
         self.kb = kb or CWEKnowledgeBase.load()
+        self.last_backend = "template"
+
+    def reason(
+        self,
+        unit: SeedUnit,
+        evidence: list[Evidence],
+        hits: list[RankedHit],
+    ) -> ReasoningResult:
+        self.last_backend = "template"
+        if evidence:
+            return self._vulnerable(unit, evidence)
+        return self._not_vulnerable(unit, hits)
 
     def compose(
         self,
@@ -21,9 +44,7 @@ class TemplateReasoner:
         evidence: list[Evidence],
         hits: list[RankedHit],
     ) -> ReasoningResult:
-        if evidence:
-            return self._vulnerable(unit, evidence)
-        return self._not_vulnerable(unit, hits)
+        return self.reason(unit, evidence, hits)
 
     def _entry(self, cwe_id: str, fallback: str) -> CWEEntry:
         for key in (cwe_id, fallback):
