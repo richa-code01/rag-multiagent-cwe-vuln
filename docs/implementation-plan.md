@@ -25,7 +25,7 @@ Recorded seed-only metrics (read from `results/`, not invented):
 
 - A1 detection (12 units): P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
 - A3 hybrid_rrf (18 queries): R@1=0.7778 R@3=0.9444 R@5=1.0 MRR=0.8722
-- Framework test split (4 units): P=1.0 R=1.0 F1=1.0 fp=0 fn=0, validation 4/4; paths `sast_first_skip_llm=2`, `hybrid_retrieve_skip_llm=2`
+- Framework test split (4 units, **seed-only**, live Groq): P=1.0 R=1.0 F1=1.0 fp=0 fn=0, validation 4/4; paths `sast_then_llm=2`, `hybrid_retrieve_then_llm=2`, reasoner `llm`
 
 Working tree at plan time: `main` is still a **flat** `src/cwe_vuln/*.py` dump. A partial restructure has started on `modular-layout` (`models/`, `dataset/`, `knowledge/`, `sast/`, `retrieval/index.py`) but old sibling modules and flat tests remain. That mixed tree is **not** the target; it will be finished or discarded into the layered layout below.
 
@@ -96,7 +96,7 @@ SeedUnit
   → framework metrics vs seed labels
 ```
 
-Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. On this snapshot the LLM path was skip-only. `embeddings-llm` later added `LLMReasoner` (Groq `GROQ_API_KEY`, default `llama-3.1-8b-instant`); no key still uses `TemplateReasoner`.
+Orchestrator path labels: `sast_first_skip_llm` when evidence exists and no key; `hybrid_retrieve_skip_llm` when no evidence and no key. On this snapshot the LLM path was skip-only. `embeddings-llm` later added `LLMReasoner` (Groq `GROQ_API_KEY`, default now `openai/gpt-oss-20b` after `llama-3.1-8b-instant` retired); no key still uses `TemplateReasoner`.
 
 ## Remaining research gaps (honest)
 
@@ -105,7 +105,7 @@ At the `modular-layout` snapshot, MiniLM and a live LLM client were still probes
 | Gap | Outcome |
 | --- | --- |
 | Dense MiniLM embeddings | **Initially skipped** in `modular-layout` to keep `uv sync` small. **Landed** on `embeddings-llm`: `all-MiniLM-L6-v2`, TF-IDF fallback (`embedder=tfidf_fallback`) if the model is missing. |
-| Live LLM reasoner | **Initially skipped** (no client in the layout PR). **Landed** on `embeddings-llm`: Groq `LLMReasoner` (`GROQ_API_KEY`, default `llama-3.1-8b-instant`). No key → `TemplateReasoner` / skip-LLM. Invalid JSON → template fallback. `OPENAI_API_KEY` is unused. |
+| Live LLM reasoner | **Initially skipped** (no client in the layout PR). **Landed** on `embeddings-llm`: Groq `LLMReasoner` (`GROQ_API_KEY`, default `openai/gpt-oss-20b`; `llama-3.1-8b-instant` retired on Groq free tier). No key → `TemplateReasoner` / skip-LLM. Invalid JSON → template fallback. `OPENAI_API_KEY` is unused. |
 | Public benchmarks | Still out of scope. Do not invent Juliet/OWASP/Big-Vul numbers. |
 | Full MITRE CWE dump | Still out of scope. Curated store stays. |
 
@@ -206,7 +206,7 @@ Layered tree is already on `main` (PR #10). This slice adds capability **without
 ### Live LLM reasoner (`reasoner/`)
 
 - Shared port: `Reasoner.reason(unit, evidence, hits) -> ReasoningResult`. `TemplateReasoner` stays the offline default. `LLMReasoner` is the same port.
-- Key from env only: `GROQ_API_KEY` (primary) or `CWE_VULN_LLM_API_KEY` (override). Default model `llama-3.1-8b-instant`, default base URL `https://api.groq.com/openai/v1`. Optional `CWE_VULN_LLM_MODEL` (e.g. `llama-3.3-70b-versatile`). Uses the OpenAI Python SDK OpenAI-compatible. Load project `.env` via python-dotenv; never commit it. `OPENAI_API_KEY` is not used.
+- Key from env only: `GROQ_API_KEY` (primary) or `CWE_VULN_LLM_API_KEY` (override). Default model `openai/gpt-oss-20b` (Groq free-tier replacement after `llama-3.1-8b-instant` retired), default base URL `https://api.groq.com/openai/v1`. Optional `CWE_VULN_LLM_MODEL` (e.g. `openai/gpt-oss-120b`). Uses the OpenAI Python SDK OpenAI-compatible. Load project `.env` via python-dotenv; never commit it. `OPENAI_API_KEY` is not used.
 - No key → orchestrator **does not construct** `LLMReasoner`; template path. Never raise at import for a missing key.
 - Prompt asks for A4 JSON only (detection/explanation; no exploit generation). Parse, schema-validate; retry once; else template and `reasoner=llm_fallback_template`.
 - Tests mock the SDK client. No live API in CI.

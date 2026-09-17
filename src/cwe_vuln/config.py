@@ -20,7 +20,7 @@ SEED_CWE_IDS: tuple[str, ...] = (
 LLM_KEY_ENV_VARS: tuple[str, ...] = ("CWE_VULN_LLM_API_KEY", "GROQ_API_KEY")
 LLM_MODEL_ENV = "CWE_VULN_LLM_MODEL"
 LLM_BASE_URL_ENV = "CWE_VULN_LLM_BASE_URL"
-DEFAULT_LLM_MODEL = "llama-3.1-8b-instant"
+DEFAULT_LLM_MODEL = "openai/gpt-oss-20b"
 DEFAULT_LLM_BASE_URL = "https://api.groq.com/openai/v1"
 MINILM_MODEL_ID = "all-MiniLM-L6-v2"
 

@@ -88,7 +88,7 @@ flowchart LR
 
 **Embedder** (`retrieval/embed.py`): `encode(texts) -> 2-D array-like`. `MiniLMEmbedder` loads `all-MiniLM-L6-v2` from `.cache/` (downloads on first CLI run). Import of the package never requires the model. On import/download failure, `HybridRetriever` uses TF-IDF and records `embedder=tfidf_fallback`. Unit tests inject a tiny fake embedder.
 
-**Reasoner** (`reasoner/`): `reason(unit, evidence, hits) -> ReasoningResult`. `TemplateReasoner` is the offline default. `LLMReasoner.from_env()` returns `None` without `GROQ_API_KEY` (or `CWE_VULN_LLM_API_KEY` override) — the orchestrator then never constructs it. Invalid LLM JSON is retried once, then `reasoner=llm_fallback_template`. Optional `CWE_VULN_LLM_MODEL` (default `llama-3.1-8b-instant`) and `CWE_VULN_LLM_BASE_URL`. Prompts live in `reasoner/prompts.py`, not in the orchestrator.
+**Reasoner** (`reasoner/`): `reason(unit, evidence, hits) -> ReasoningResult`. `TemplateReasoner` is the offline default. `LLMReasoner.from_env()` returns `None` without `GROQ_API_KEY` (or `CWE_VULN_LLM_API_KEY` override) — the orchestrator then never constructs it. Invalid LLM JSON is retried once, then `reasoner=llm_fallback_template`. Optional `CWE_VULN_LLM_MODEL` (default `openai/gpt-oss-20b`) and `CWE_VULN_LLM_BASE_URL`. Prompts live in `reasoner/prompts.py`, not in the orchestrator.
 
 **Orchestrator routing** (not in the reasoner): always SAST first. No key → `sast_first_skip_llm` / `hybrid_retrieve_skip_llm` + template. Key present → `sast_then_llm` / `hybrid_retrieve_then_llm` unless `skip_llm_when_sast_hits`.
 

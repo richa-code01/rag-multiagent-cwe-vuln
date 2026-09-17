@@ -32,7 +32,7 @@ uv run cwe-vuln-pipeline
 
 Default split is the **4 test units**. `uv run cwe-vuln-pipeline --split all` runs all 12. Writes `results/framework-seed.json`.
 
-Recorded test-split metrics (**seed-only — not a benchmark**): precision=1.000 recall=1.000 F1=1.000 FP=0 FN=0. Validator passed 4/4. Paths: 2× `sast_first_skip_llm`, 2× `hybrid_retrieve_skip_llm`. Reasoner: template (no API key). Embedder: `minilm`.
+Recorded test-split metrics (**seed-only — not a benchmark**): precision=1.000 recall=1.000 F1=1.000 FP=0 FN=0. Validator passed 4/4. Paths: 2× `sast_then_llm`, 2× `hybrid_retrieve_then_llm`. Reasoner: `llm` (live Groq `openai/gpt-oss-20b`). Embedder: `minilm`. Full seed (`--split all`, 12 units): same scores, validator 12/12, paths 6× `sast_then_llm` / 6× `hybrid_retrieve_then_llm`, reasoner `llm`.
 
 ## MiniLM embeddings
 
@@ -44,23 +44,23 @@ uv run cwe-vuln-retrieve --eval
 
 Recorded seed-only retrieval (18 queries, embedder=`minilm`): neural R@1=0.944 R@3=1.000 R@5=1.000 MRR=0.972 vs lexical TF-IDF R@1=0.778 R@3=0.944 R@5=0.944 MRR=0.868. Hybrid RRF matches neural on this seed. **seed-only — not a benchmark.**
 
-## Live LLM (tomorrow, when the key arrives)
+## Live LLM (Groq)
 
 The orchestrator does **not** construct `LLMReasoner` without a key. Copy `.env.example` to `.env` (gitignored) or export:
 
 ```bash
 export GROQ_API_KEY=...                 # or CWE_VULN_LLM_API_KEY
 # optional:
-# export CWE_VULN_LLM_MODEL=llama-3.1-8b-instant
+# export CWE_VULN_LLM_MODEL=openai/gpt-oss-20b
 # export CWE_VULN_LLM_BASE_URL=https://api.groq.com/openai/v1
 uv run cwe-vuln-pipeline
 ```
 
 | Env | Role |
 | --- | --- |
-| `GROQ_API_KEY` | Primary key (tomorrow) |
+| `GROQ_API_KEY` | Primary key |
 | `CWE_VULN_LLM_API_KEY` | Optional override |
-| `CWE_VULN_LLM_MODEL` | Default `llama-3.1-8b-instant` (optional `llama-3.3-70b-versatile`) |
+| `CWE_VULN_LLM_MODEL` | Default `openai/gpt-oss-20b` (Groq free-tier replacement for retired `llama-3.1-8b-instant`) |
 | `CWE_VULN_LLM_BASE_URL` | Default `https://api.groq.com/openai/v1` |
 
 With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_hits=False`), paths become `sast_then_llm` / `hybrid_retrieve_then_llm`. Invalid JSON is retried once, then the template reasoner is used (`reasoner=llm_fallback_template`). No exploit generation.

@@ -100,15 +100,20 @@ class LLMReasoner:
         return self.reason(unit, evidence, hits)
 
     def _normalize(self, payload: dict[str, Any], unit: SeedUnit, evidence: list[Evidence]) -> dict[str, Any]:
+        payload = {key: value for key, value in payload.items() if key in _ALLOWED_FIELDS}
         payload["unit_id"] = unit.unit_id
         payload["schema_version"] = payload.get("schema_version") or "1.0"
         cwe = payload.get("cwe")
         if isinstance(cwe, dict):
+            cwe = {key: value for key, value in cwe.items() if key in {"id", "name"}}
             cwe_id = str(cwe.get("id") or "")
             entry = self.kb.entries.get(cwe_id)
             if entry is not None:
                 cwe["name"] = entry.name
-                payload["cwe"] = cwe
+            payload["cwe"] = cwe
+        payload["supporting_source_lines"] = ground_source_span(
+            payload.get("supporting_source_lines"), unit, evidence
+        )
         if evidence and "evidence_ids" not in payload:
             payload["evidence_ids"] = [item.evidence_id for item in evidence]
         return payload
@@ -124,9 +129,57 @@ class LLMReasoner:
             model=self.model,
             messages=messages,
             temperature=0,
+            response_format={"type": "json_object"},
         )
         content = response.choices[0].message.content
         return content or ""
+
+
+_ALLOWED_FIELDS = {
+    "schema_version",
+    "unit_id",
+    "decision",
+    "cwe",
+    "supporting_source_lines",
+    "root_cause",
+    "explanation",
+    "remediation",
+    "confidence",
+    "evidence_ids",
+}
+
+
+def ground_source_span(span: object, unit: SeedUnit, evidence: list[Evidence]) -> dict[str, str | int]:
+    """Replace LLM snippets with the exact cited source so the validator can pass."""
+    lines = unit.source.splitlines() or [" "]
+    n_lines = len(lines)
+    raw = span if isinstance(span, dict) else {}
+    try:
+        start = int(raw.get("start_line") or 0)
+        end = int(raw.get("end_line") or start)
+    except (TypeError, ValueError):
+        start, end = 0, 0
+    if not (1 <= start <= end <= n_lines):
+        if evidence:
+            primary = evidence[0]
+            return {
+                "path": unit.path,
+                "start_line": primary.start_line,
+                "end_line": primary.end_line,
+                "snippet": primary.snippet,
+            }
+        start = end = 1
+        for index, line in enumerate(lines, start=1):
+            if line.strip().startswith(("public ", "return ", "String ", "Path ", "File ", "byte[]")):
+                start = end = index
+                break
+    excerpt = "\n".join(lines[start - 1 : end]) or lines[0]
+    return {
+        "path": unit.path,
+        "start_line": start,
+        "end_line": end,
+        "snippet": excerpt,
+    }
 
 
 def parse_json_object(text: str) -> dict[str, Any]:

@@ -22,6 +22,7 @@ Required keys:
   decision: "vulnerable" | "not_vulnerable" | "uncertain"
   cwe: {{"id": "CWE-NNN", "name": "..."}}
   supporting_source_lines: {{"path": "...", "start_line": int, "end_line": int, "snippet": "..."}}
+  (snippet must be copied verbatim from those source lines, including indentation)
   root_cause: string
   explanation: string
   remediation: string

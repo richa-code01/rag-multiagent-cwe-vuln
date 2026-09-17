@@ -46,12 +46,12 @@ def test_groq_defaults_and_override_key(monkeypatch) -> None:
     monkeypatch.delenv("CWE_VULN_LLM_BASE_URL", raising=False)
     monkeypatch.setenv("GROQ_API_KEY", "gsk-primary")
     monkeypatch.setenv("CWE_VULN_LLM_API_KEY", "gsk-override")
-    assert DEFAULT_LLM_MODEL == "llama-3.1-8b-instant"
+    assert DEFAULT_LLM_MODEL == "openai/gpt-oss-20b"
     assert DEFAULT_LLM_BASE_URL == "https://api.groq.com/openai/v1"
     assert settings.llm_api_key() == "gsk-override"
     reasoner = LLMReasoner.from_env()
     assert reasoner is not None
-    assert reasoner.model == "llama-3.1-8b-instant"
+    assert reasoner.model == "openai/gpt-oss-20b"
     assert reasoner.base_url == "https://api.groq.com/openai/v1"
     assert reasoner.api_key == "gsk-override"
 
@@ -88,6 +88,41 @@ def test_invalid_json_retries_then_falls_back_to_template() -> None:
     template = TemplateReasoner().reason(unit, extract_evidence(unit), [])
     assert result.decision == template.decision
     assert result.cwe.id == template.cwe.id
+
+
+def test_normalize_grounds_reformatted_snippet_to_source() -> None:
+    from cwe_vuln.validator import ResultValidator
+
+    unit = next(item for item in load_seed() if item.unit_id == "java_cwe798_env_config")
+    payload = {
+        "schema_version": "1.0",
+        "unit_id": unit.unit_id,
+        "decision": "not_vulnerable",
+        "cwe": {"id": "CWE-798", "name": "Use of Hard-coded Credentials"},
+        "supporting_source_lines": {
+            "path": "wrong/path.java",
+            "start_line": 12,
+            "end_line": 14,
+            "snippet": 'String username = System.getenv("APP_USERNAME");\nString password = System.getenv("APP_PASSWORD");',
+        },
+        "root_cause": "Credentials come from the environment.",
+        "explanation": "No hardcoded password literal.",
+        "remediation": "Keep using environment variables.",
+        "confidence": 0.9,
+        "extra_ignored": "drop me",
+    }
+
+    def complete(_messages: list[dict[str, str]]) -> str:
+        return json.dumps(payload)
+
+    reasoner = LLMReasoner(api_key="gsk-test", complete=complete)
+    result = reasoner.reason(unit, [], [])
+    assert reasoner.last_backend == "llm"
+    assert result.supporting_source_lines.path == unit.path
+    assert result.supporting_source_lines.snippet in unit.source
+    assert is_valid(result.to_dict())
+    report = ResultValidator().check(result, unit, [])
+    assert report.passed
 
 
 def test_invalid_then_valid_json_uses_retry() -> None:

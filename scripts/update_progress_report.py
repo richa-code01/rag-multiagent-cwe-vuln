@@ -50,7 +50,7 @@ def main() -> None:
         "(PRs #1–#10), then extended with a MiniLM embedding port and an LLM reasoner "
         "(embeddings-llm). Evaluation is seed-only on 12 authored Java units and 18 retrieval "
         "queries — not a public benchmark (not Juliet, OWASP Benchmark, or Big-Vul). Live LLM "
-        "calls wait on GROQ_API_KEY (optional CWE_VULN_LLM_API_KEY override); without a key the "
+        "uses GROQ_API_KEY (optional CWE_VULN_LLM_API_KEY override); without a key the "
         "default path is offline (regex SAST, hybrid retrieval with MiniLM or TF-IDF fallback, "
         "template reasoner). No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
@@ -98,7 +98,7 @@ def main() -> None:
         "The cost-aware orchestrator runs SAST first. If no GROQ_API_KEY or CWE_VULN_LLM_API_KEY "
         "is set, the LLM is skipped and TemplateReasoner runs. With a key, the "
         "path is sast_then_llm or hybrid_retrieve_then_llm unless skip_llm_when_sast_hits is set. "
-        "Default model is Groq llama-3.1-8b-instant at https://api.groq.com/openai/v1. "
+        "Default model is Groq openai/gpt-oss-20b at https://api.groq.com/openai/v1. "
         "No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
 
@@ -117,9 +117,9 @@ def main() -> None:
         "uv run cwe-vuln-pipeline. Recorded seed-only scores: Assignment 1 detection on 12 units "
         "P=R=F1=1.000 (tp=6 fp=0 tn=6 fn=0); Assignment 3 retrieval on 18 queries is recorded in "
         "results/assignment-3-retrieval.json (seed-only, not a benchmark); framework test split "
-        "(4 units, no API key) P=R=F1=1.000, validator 4/4, paths sast_first_skip_llm=2 and "
-        "hybrid_retrieve_skip_llm=2. Neural embeddings and the Groq LLM reasoner have landed; live "
-        "LLM calls wait on GROQ_API_KEY. Public-benchmark evaluation is not claimed.",
+        "(4 units, live Groq) P=R=F1=1.000, validator 4/4, paths sast_then_llm=2 and "
+        "hybrid_retrieve_then_llm=2, reasoner=llm. Neural embeddings and the Groq LLM reasoner "
+        "have landed (default openai/gpt-oss-20b). Public-benchmark evaluation is not claimed.",
     )
 
     # Section 12 next steps: remaining honest gaps
@@ -128,7 +128,7 @@ def main() -> None:
     set_para(doc, 59, "MiniLM embeddings are implemented with TF-IDF fallback if the local model is missing.")
     set_para(doc, 60, "Keep SAST as evidence extraction (CWE hints); knowledge layer owns descriptions.")
     set_para(doc, 61, "Keep SAST-first LLM routing in the orchestrator (GROQ_API_KEY).")
-    set_para(doc, 62, "Live LLM reasoner is implemented; tomorrow export GROQ_API_KEY or CWE_VULN_LLM_API_KEY.")
+    set_para(doc, 62, "Live LLM reasoner is implemented; export GROQ_API_KEY or CWE_VULN_LLM_API_KEY for Groq openai/gpt-oss-20b.")
     set_para(doc, 63, "Validator already checks schema, CWE id, cited lines, and decision vs evidence.")
     set_para(doc, 64, "Optional later: richer confidence fusion beyond template confidence fields.")
     set_para(doc, 65, "Public-benchmark experiments remain out of scope until a labeled external dataset is adopted.")
@@ -198,7 +198,7 @@ def main() -> None:
         ("Static analysis", "Implemented", "Regex evidence extraction on the 12-unit Java seed."),
         ("Hybrid retrieval", "Implemented", "MiniLM with TF-IDF fallback; seed-only metrics in results/."),
         ("Cost-aware orchestrator", "Implemented", "SAST-first; LLM path when GROQ_API_KEY or CWE_VULN_LLM_API_KEY is set."),
-        ("Reasoning agent", "Implemented", "Template offline; LLMReasoner (default llama-3.1-8b-instant)."),
+        ("Reasoning agent", "Implemented", "Template offline; LLMReasoner (default openai/gpt-oss-20b)."),
         ("Validator agent", "Implemented", "Schema, CWE id, cited lines, decision vs evidence."),
         ("Layered packages", "Implemented", "models, dataset, knowledge, sast, retrieval, schema, reasoner, validator, orchestrator, framework, cli."),
         ("Reporting", "Implemented", "Assignment 4 JSON Schema + framework results JSON/MD."),

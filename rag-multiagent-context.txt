@@ -74,8 +74,8 @@ Primary key: GROQ_API_KEY
 Override: CWE_VULN_LLM_API_KEY
 Do not tell Richa to create an OpenAI account.
 
-Default model: llama-3.1-8b-instant
-Optional model: CWE_VULN_LLM_MODEL=llama-3.3-70b-versatile
+Default model: openai/gpt-oss-20b
+Optional model: CWE_VULN_LLM_MODEL=openai/gpt-oss-120b
 Default base URL: https://api.groq.com/openai/v1
 Override: CWE_VULN_LLM_BASE_URL
 
@@ -134,12 +134,14 @@ A3 retrieval (18 queries, embedder=minilm):
   sast           R@1=0.3333 R@3=0.3333 R@5=0.3333 MRR=0.3333
   hybrid_rrf     R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
 
-Framework pipeline (test split, 4 units, no API key):
+Framework pipeline (test split, 4 units, live Groq openai/gpt-oss-20b):
   P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
-  paths: sast_first_skip_llm=2, hybrid_retrieve_skip_llm=2
-  reasoner=template  embedder=minilm
-Framework pipeline (all 12, no API key):
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  paths 6/6 sast vs hybrid skip_llm
+  paths: sast_then_llm=2, hybrid_retrieve_then_llm=2
+  reasoner=llm  embedder=minilm
+Framework pipeline (all 12, live Groq):
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=12/12
+  paths: sast_then_llm=6, hybrid_retrieve_then_llm=6
+  reasoner=llm
 
 ============================================================
 HOW TO RUN
