@@ -1,0 +1,17 @@
+{
+  "trial_id": "sast_fn_traps_javadoc_false_start",
+  "date": "2026-09-17T03:10:00Z",
+  "suite": "research",
+  "split": "research_test",
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus — not a public benchmark.",
+  "status": "failed",
+  "config": {
+    "reasoner": "sast",
+    "issue": "javadoc_tokens_matched_regex"
+  },
+  "metrics": null,
+  "notes": "First FN-trap draft failed: javadocs contained the regex tokens they were meant to hide (quoted SELECT plus, ObjectInputStream, .readObject(, password=\", getInstance(\"MD5\")). Five units that should have been SAST misses were hits. Fix: rewrite FN comments without those tokens. After the fix, research_test SAST is 12 FP + 12 FN as designed.",
+  "error": "FN traps matched regex via documentation text, not executable code",
+  "fix": "Neutral javadocs on FN units; re-verified match_rules on source."
+}

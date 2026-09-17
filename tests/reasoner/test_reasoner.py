@@ -7,11 +7,13 @@ from cwe_vuln.schema import is_valid
 
 def test_vulnerable_unit_is_schema_valid() -> None:
     unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_concat")
-    result = TemplateReasoner().compose(unit, extract_evidence(unit), [])
+    result = TemplateReasoner().reason(unit, extract_evidence(unit), [])
     assert result.decision == "vulnerable"
     assert result.cwe.id == "CWE-89"
     assert result.evidence_ids
     assert is_valid(result.to_dict())
+    again = TemplateReasoner().reason(unit, extract_evidence(unit), [])
+    assert again.decision == result.decision
 
 
 def test_safe_unit_is_not_vulnerable() -> None:

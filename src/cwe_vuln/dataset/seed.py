@@ -9,7 +9,7 @@ from typing import Literal
 
 from cwe_vuln.config import SEED_CWE_IDS, repo_root
 
-Split = Literal["train", "test"]
+Split = Literal["train", "test", "research_test"]
 Label = Literal["vulnerable", "not_vulnerable"]
 
 # Explicit 8/4 split. Order is stable and is the source of truth (not shuffled).
@@ -41,6 +41,8 @@ class SeedUnit:
     label: Label
     notes: str
     source: str
+    trap_type: str = "seed"
+    corpus: str = "seed"
 
     @property
     def is_vulnerable(self) -> bool:
@@ -69,7 +71,7 @@ def load_seed(root: Path | None = None, split: Split | Literal["all"] = "all") -
                 payload = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise DatasetError(f"Invalid JSON on labels.jsonl line {line_no}") from exc
-            unit = _unit_from_payload(payload, base)
+            unit = unit_from_payload(payload, base)
             if unit.unit_id in seen:
                 raise DatasetError(f"Duplicate unit_id: {unit.unit_id}")
             seen.add(unit.unit_id)
@@ -82,7 +84,11 @@ def load_seed(root: Path | None = None, split: Split | Literal["all"] = "all") -
     return [unit for unit in records if unit.split == split]
 
 
-def _unit_from_payload(payload: dict[str, object], root: Path) -> SeedUnit:
+def unit_from_payload(
+    payload: dict[str, object],
+    root: Path,
+    allowed_splits: tuple[str, ...] = ("train", "test"),
+) -> SeedUnit:
     required = ("unit_id", "cwe_id", "path", "split", "label", "notes")
     missing = [key for key in required if key not in payload]
     if missing:
@@ -90,7 +96,7 @@ def _unit_from_payload(payload: dict[str, object], root: Path) -> SeedUnit:
 
     split = payload["split"]
     label = payload["label"]
-    if split not in ("train", "test"):
+    if split not in allowed_splits:
         raise DatasetError(f"Invalid split for {payload.get('unit_id')!r}: {split!r}")
     if label not in ("vulnerable", "not_vulnerable"):
         raise DatasetError(f"Invalid label for {payload.get('unit_id')!r}: {label!r}")
@@ -108,6 +114,8 @@ def _unit_from_payload(payload: dict[str, object], root: Path) -> SeedUnit:
         label=label,
         notes=str(payload["notes"]),
         source=source_path.read_text(encoding="utf-8"),
+        trap_type=str(payload.get("trap_type") or "seed"),
+        corpus=str(payload.get("corpus") or "seed"),
     )
 
 

@@ -7,7 +7,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from cwe_vuln.config import repo_root
+from cwe_vuln.config import repo_root, settings
 from cwe_vuln.dataset import load_seed
 from cwe_vuln.models.metrics import binary_metrics
 from cwe_vuln.orchestrator import Pipeline
@@ -25,6 +25,7 @@ def run_split(split: str) -> dict:
     y_true = [unit.is_vulnerable for unit in units]
     y_pred = [row.result.decision == "vulnerable" for row in rows]
     scores = binary_metrics(y_true, y_pred)
+    embedder = getattr(pipeline.retriever, "embedder_name", "unknown")
     return {
         "assignment": "framework",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -33,7 +34,10 @@ def run_split(split: str) -> dict:
         "disclaimer": SEED_ONLY,
         "split": split,
         "n_units": len(units),
+        "embedder": embedder,
+        "llm_configured": bool(settings.llm_api_key()),
         "detector_path_counts": _path_counts(rows),
+        "reasoner_counts": _reasoner_counts(rows),
         "validation_pass": sum(1 for row in rows if row.report.passed),
         "metrics": scores.as_dict(),
         "units": [row.to_dict() for row in rows],
@@ -46,7 +50,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args(argv)
     report = run_split(args.split)
-    output = args.output or (repo_root() / "results" / "framework-seed.json")
+    names = {"test": "framework-seed.json", "all": "framework-seed-all.json", "train": "framework-seed-train.json"}
+    output = args.output or (repo_root() / "results" / names[args.split])
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     md = output.with_suffix(".md")
@@ -70,6 +75,14 @@ def _path_counts(rows) -> dict[str, int]:
     return counts
 
 
+def _reasoner_counts(rows) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        name = getattr(row, "reasoner", "template")
+        counts[name] = counts.get(name, 0) + 1
+    return counts
+
+
 def _markdown(report: dict) -> str:
     m = report["metrics"]
     return "\n".join(
@@ -81,8 +94,11 @@ def _markdown(report: dict) -> str:
             report["disclaimer"],
             "",
             f"- Split: `{report['split']}` ({report['n_units']} units)",
+            f"- Embedder: `{report.get('embedder')}`",
+            f"- LLM configured: `{report.get('llm_configured')}`",
             f"- Validation pass: {report['validation_pass']}/{report['n_units']}",
             f"- Paths: `{report['detector_path_counts']}`",
+            f"- Reasoners: `{report.get('reasoner_counts')}`",
             "",
             f"| Precision | Recall | F1 | TP | FP | TN | FN |",
             f"| ---: | ---: | ---: | ---: | ---: | ---: | ---: |",

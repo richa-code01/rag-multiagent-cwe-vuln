@@ -1,7 +1,7 @@
 [project]
 name = "cwe-vuln"
-version = "0.4.0"
-description = "Thesis repo: seed-only RAG-style multi-agent CWE vulnerability detection pipeline (Assignments 1–4 plus wired agents)."
+version = "0.6.0"
+description = "Thesis repo: RAG-style multi-agent CWE vulnerability detection with authored-corpus research evaluation."
 readme = "README.md"
 authors = [
     { name = "Richa Verma" },
@@ -9,11 +9,14 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "jsonschema>=4.26.0",
+    "openai>=3.14.1",
+    "python-dotenv>=1.2.3",
+    "sentence-transformers>=6.0.1",
 ]
 
 [project.scripts]
 cwe-vuln = "cwe_vuln.cli.baseline:main"
-cwe-vuln-eval = "cwe_vuln.cli.baseline:main"
+cwe-vuln-eval = "cwe_vuln.framework.eval:main"
 cwe-vuln-kb = "cwe_vuln.cli.knowledge:main"
 cwe-vuln-retrieve = "cwe_vuln.cli.retrieval:main"
 cwe-vuln-schema = "cwe_vuln.cli.schema:main"
