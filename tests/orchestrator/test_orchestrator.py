@@ -1,4 +1,4 @@
-from cwe_vuln.config import Settings
+from cwe_vuln.config import MissingLLMKeyError, Settings
 from cwe_vuln.dataset import load_seed
 from cwe_vuln.orchestrator import Pipeline
 from cwe_vuln.reasoner import TemplateReasoner
@@ -7,9 +7,9 @@ from cwe_vuln.sast import RegexEvidenceExtractor
 from cwe_vuln.validator import ResultValidator
 
 
-def test_pipeline_logs_sast_first_on_vuln_unit() -> None:
+def test_offline_pipeline_logs_sast_first_on_vuln_unit() -> None:
     unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_concat")
-    pipeline = Pipeline.default()
+    pipeline = Pipeline.offline()
     out = pipeline.run(unit)
     assert out.path.startswith("sast_first")
     assert out.result.decision == "vulnerable"
@@ -19,13 +19,20 @@ def test_pipeline_logs_sast_first_on_vuln_unit() -> None:
     assert out.reasoner == "template"
 
 
-def test_pipeline_skips_llm_on_safe_unit() -> None:
+def test_offline_pipeline_skips_llm_on_safe_unit() -> None:
     unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_prepared")
-    out = Pipeline.default().run(unit)
+    out = Pipeline.offline().run(unit)
     assert "skip_llm" in out.path
     assert out.result.decision == "not_vulnerable"
     assert out.report.passed
     assert out.reasoner == "template"
+
+
+def test_default_pipeline_requires_api_key() -> None:
+    import pytest
+
+    with pytest.raises(MissingLLMKeyError, match="GROQ_API_KEY"):
+        Pipeline.default()
 
 
 def test_pipeline_routes_to_llm_when_key_present(monkeypatch) -> None:
@@ -78,6 +85,8 @@ def test_pipeline_can_skip_llm_when_sast_hits(monkeypatch) -> None:
         reasoner=TemplateReasoner(),
         validator=ResultValidator(),
         llm_reasoner=StubLLM(),
+        skip_llm_when_sast_hits=True,
+        use_llm_if_available=True,
     )
     out = pipeline.run(unit)
     assert out.path == "sast_first_skip_llm"

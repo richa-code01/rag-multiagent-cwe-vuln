@@ -1,6 +1,6 @@
 {
   "trial_id": "template_skip_llm_research_test",
-  "date": "2026-09-17T03:28:38Z",
+  "date": "2026-09-17T03:55:03Z",
   "suite": "research",
   "split": "research_test",
   "n_units": 24,
@@ -304,13 +304,15 @@
       "why": "sast_miss"
     }
   ],
-  "notes": "Template reasoner, no LLM. Decisions follow regex evidence.",
+  "notes": "Ablation: TemplateReasoner, no LLM. Decisions follow regex evidence. Not the system of record.",
   "error": null,
   "validation_pass": 24,
   "validation_pass_rate": 1.0,
   "cited_lines_grounded": 24,
   "cited_lines_n": 24,
   "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
   "detector_path_counts": {
     "sast_first_skip_llm": 12,
     "hybrid_retrieve_skip_llm": 12
@@ -325,168 +327,192 @@
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe89_t02_constant_concat",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe89_t03_stringbuilder",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe89_t04_split_concat",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe79_t01_encoded_then_concat",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe79_t02_constant_html",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe79_t03_getparameter",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe79_t04_concat_method",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe22_t01_const_concat",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe22_t02_comment_file",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe22_t03_twoarg_file",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe22_t04_paths_get",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe502_t01_javadoc_objectstream",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe502_t02_roundtrip",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe502_t03_helper_reflection",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe502_t04_xmldecoder_reflect",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe798_t01_sentinel_then_env",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe798_t02_password_log_literal",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe798_t03_char_array",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe798_t04_split_literal",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe327_t01_md5_comment_sha256",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe327_t02_banned_algo_message",
       "decision": "vulnerable",
       "path": "sast_first_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe327_t03_md5_variable",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe327_t04_md5_split_literal",
       "decision": "not_vulnerable",
       "path": "hybrid_retrieve_skip_llm",
       "reasoner": "template",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     }
   ]
 }

@@ -242,3 +242,15 @@ Research evaluation on an authored expanded corpus. Not Juliet / OWASP Benchmark
 - Explainability: then_llm validator 2/24 (SAST-tied contract); cited_lines 24/24 after normalize.
 - Trial-and-error logged: FN javadoc tokens, FP javadoc rewrite regression, first LLM run invalidated for gold-label leakage in class names.
 - `uv run pytest`: 54 passed. No `.env` / `gsk_` in git.
+
+## Executed (`live-research`, 2026-09-17)
+
+Live Groq is the default research path. Template/SAST remain ablations.
+
+- `Pipeline.default()` / `cwe-vuln-pipeline` / `cwe-vuln-eval --suite research` require `GROQ_API_KEY`. Missing key exits non-zero. `--offline` and `--ablation template` keep the F1=0 contrast for the paper.
+- Validator no longer requires `vulnerable` iff SAST evidence is non-empty. Checks: schema, CWE-in-KB, cited lines, JSON consistency. `sast_disagreement` is a warning.
+- SAST stays evidence extraction. Decision is schema-validated Groq `LLMReasoner` grounded in code + evidence + hybrid CWE hits.
+- Defendable contribution (not “100% novel” / not SOTA / not Juliet): RAG-augmented multi-agent detector for six Java CWEs on an authored 24-unit FP/FN trap split where regex/template fail and live LLM recovers most cases.
+- `uv run pytest`: 62 passed (Groq mocked; default CLI tests fail clearly without a key).
+- Live re-run: `uv run cwe-vuln-eval --suite research` + seed test n=4. then_llm P=0.857 R=1.000 F1=0.923, validator **24/24** (was 2/24). Seed test P=R=F1=1.000, validator 4/4. Metrics in `results/research-eval-summary.md`.
+- No UAV/compiler code. No `.env` / `gsk_` in git.

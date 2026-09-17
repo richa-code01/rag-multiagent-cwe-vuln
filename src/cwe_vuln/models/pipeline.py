@@ -21,13 +21,17 @@ class ValidationReport:
     unit_id: str
     passed: bool
     checks: tuple[CheckResult, ...]
+    warnings: tuple[CheckResult, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "unit_id": self.unit_id,
             "passed": self.passed,
             "checks": [check.__dict__ for check in self.checks],
         }
+        if self.warnings:
+            payload["warnings"] = [item.__dict__ for item in self.warnings]
+        return payload
 
 
 @dataclass(frozen=True)

@@ -2,24 +2,37 @@
 
 **Student:** Richa Verma (25MCSS02)
 **Advisor:** Dr. Akshay Pandey
-**Current milestone:** research evaluation on an authored expanded Java corpus (`cwe-vuln-eval`)
+**Current milestone:** live Groq research path (`live-research`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
 Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
 
+## Contribution (what this thesis actually claims)
+
+A RAG-augmented multi-agent detector for **six Java CWEs** in which:
+
+1. SAST-style regex rules emit **evidence** (not the final vulnerability decision)
+2. Hybrid MiniLM + SAST ids + CWE relationship/RRF retrieves CWE knowledge
+3. A Groq LLM produces Assignment-4 schema explanations grounded in the unit, evidence, and retrieval hits
+4. A validator checks schema, CWE-in-KB, cited lines, and JSON consistency — **not** SAST agreement
+5. On an authored 24-unit FP/FN trap split, regex SAST and TemplateReasoner fail (F1=0) and the live LLM recovers most cases
+
+This is **not** a claim of SOTA, Juliet/OWASP numbers, 100% novelty, or a public benchmark. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition and the honest trap-split contrast.
+
 ## Problem statement
 
-This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. Assignments 1–4 and the wired pipeline are complete. The research evaluation expands the authored Java corpus so regex SAST is imperfect. It is **not** a public benchmark. The default path is offline (template reasoner). A live LLM is used automatically when an API key is present.
+This thesis studies **explainable** vulnerability detection: map a Java unit to a CWE and ground that mapping in a CWE knowledge base. Assignments 1–4 and the wired pipeline are complete. The **system of record** is live Groq `LLMReasoner`. SAST-only and TemplateReasoner scored F1=0 on the 24-unit research split; they remain opt-in ablations for comparison tables, not the deployed default.
 
 ## Pipeline
 
 ```text
 Java SeedUnit
-    → SAST Evidence[]              sast (detector + evidence)
+    → SAST Evidence[]              evidence extraction only (regex rules)
     → hybrid RankedHit[]           MiniLM cosine (TF-IDF fallback) + SAST + CWE relationships (RRF)
-    → ReasoningResult              TemplateReasoner, or LLMReasoner when a key is set
-    → ValidationReport             schema / KB / cited lines / decision
-    → metrics vs seed labels
+    → ReasoningResult              Groq LLMReasoner (A4 schema); --offline uses TemplateReasoner
+    → ValidationReport             schema / KB / cited lines / JSON consistency
+                                   (sast_disagreement is a warning, not a fail)
+    → metrics vs labels
 ```
 
 End-to-end:
@@ -27,15 +40,21 @@ End-to-end:
 ```bash
 uv sync
 uv run pytest
+# requires GROQ_API_KEY in gitignored .env
 uv run cwe-vuln-pipeline
 uv run cwe-vuln-eval --suite research
 ```
 
 Default pipeline split is the **4 test units**. `uv run cwe-vuln-pipeline --split all` runs all 12. Writes `results/framework-seed.json`.
 
-Recorded **seed-only — not a benchmark** test-split metrics: precision=1.000 recall=1.000 F1=1.000 FP=0 FN=0. Validator passed 4/4. Paths: 2× `sast_then_llm`, 2× `hybrid_retrieve_then_llm`. Reasoner: `llm` (live Groq `openai/gpt-oss-20b`). Embedder: `minilm`. Full seed (`--split all`, 12 units): same scores, validator 12/12.
+Without `GROQ_API_KEY` the default CLI **exits non-zero** and tells you to set the key. Paper ablations:
 
-**Research split** (24 held-out authored traps, **authored corpus — not a public benchmark**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN); skip_llm P=0.500 R=1.000 F1=0.667. Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
+```bash
+uv run cwe-vuln-pipeline --offline
+uv run cwe-vuln-eval --suite research --ablation template
+```
+
+**Research split** (24 held-out authored traps, **authored corpus — not a public benchmark**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), validator **24/24** (was 2/24 under the old SAST-iff-vulnerable rule). Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
 
 ## MiniLM embeddings
 
@@ -51,7 +70,7 @@ Expanded authored queries (48, **not a public benchmark**): TF-IDF R@1=0.646 MRR
 
 ## Live LLM (Groq)
 
-The orchestrator does **not** construct `LLMReasoner` without a key. Copy `.env.example` to `.env` (gitignored) or export:
+Default `cwe-vuln-pipeline` and `cwe-vuln-eval --suite research` **require** a Groq key. Copy `.env.example` to `.env` (gitignored) or export:
 
 ```bash
 export GROQ_API_KEY=...                 # or CWE_VULN_LLM_API_KEY
@@ -63,12 +82,12 @@ uv run cwe-vuln-pipeline
 
 | Env | Role |
 | --- | --- |
-| `GROQ_API_KEY` | Primary key |
+| `GROQ_API_KEY` | Required for the default live path |
 | `CWE_VULN_LLM_API_KEY` | Optional override |
 | `CWE_VULN_LLM_MODEL` | Default `openai/gpt-oss-20b` (Groq free-tier replacement for retired `llama-3.1-8b-instant`) |
 | `CWE_VULN_LLM_BASE_URL` | Default `https://api.groq.com/openai/v1` |
 
-With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_hits=False`), paths become `sast_then_llm` / `hybrid_retrieve_then_llm`. Invalid JSON is retried once, then the template reasoner is used (`reasoner=llm_fallback_template`). No exploit generation.
+Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`. Paths are `sast_then_llm` / `hybrid_retrieve_then_llm`. Invalid JSON is retried once, then `reasoner=llm_fallback_template`. No exploit generation.
 
 ## Honest status
 
@@ -81,13 +100,14 @@ With a key and default knobs (`use_llm_if_available=True`, `skip_llm_when_sast_h
 | Neural embeddings / MiniLM | Done (`all-MiniLM-L6-v2`, TF-IDF fallback) |
 | Reasoning output JSON Schema | Done ([PR #4](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/4)) |
 | SAST evidence objects | Done ([PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5)) |
-| Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) |
-| Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)) |
-| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)) |
+| Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) — **ablation only** |
+| Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)); SAST-iff-vulnerable rule **removed** on `live-research` |
+| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)); default is live Groq |
 | Framework CLI on the seed | Done ([PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9)) |
 | Layered packages (`models`, `dataset`, `sast`, …) | Done ([PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10)) |
-| Live LLM reasoner | Done — Groq `LLMReasoner`; skipped without `GROQ_API_KEY` |
-| Research evaluation (authored 36-unit corpus) | **This PR** — `uv run cwe-vuln-eval --suite research` |
+| Live LLM reasoner | Done — Groq `LLMReasoner`; default path **fails** without `GROQ_API_KEY` |
+| Research evaluation (authored 36-unit corpus) | Done — `uv run cwe-vuln-eval --suite research` |
+| Live research default (this PR) | Groq required; validator no longer tied to SAST |
 
 No Juliet / OWASP Benchmark / Big-Vul numbers.
 
@@ -102,7 +122,7 @@ No Juliet / OWASP Benchmark / Big-Vul numbers.
 
 A1 regex-only overall (**seed-only**): P=1.000 R=1.000 F1=1.000 FP=0 FN=0.
 
-## Research corpus (this PR)
+## Research corpus
 
 `data/research/java/` + `data/research/labels.jsonl`. Assignment 8/4 is unchanged.
 

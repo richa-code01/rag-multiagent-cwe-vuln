@@ -9,6 +9,12 @@ Work executed this pass: [`implementation-plan.md`](implementation-plan.md)
 
 Cost-aware routing is an orchestrator component. It is **not** in the thesis title.
 
+## Contribution (defendable)
+
+A RAG-augmented multi-agent detector for six Java CWEs: SAST emits evidence, hybrid MiniLM + relationship/RRF retrieves CWE knowledge, Groq writes A4-schema explanations, and the validator checks schema/lines/KB — not SAST agreement. On an authored 24-unit FP/FN trap split, regex and template fail; live LLM recovers most cases.
+
+Do **not** tell the advisor this is SOTA, Juliet/OWASP numbers, 100% novel, or the first RAG-CWE detector. Related work already combines retrieval, agents, and CWE catalogs. The claim is this specific composition plus an honest trap-split evaluation.
+
 ## Assignments 1–4
 
 | # | Assignment | Status | Doc | How to run |
@@ -24,16 +30,19 @@ Cost-aware routing is an orchestrator component. It is **not** in the thesis tit
 | --- | --- | --- | --- | --- |
 | SAST evidence extraction | **Done** [PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5) | `sast-evidence` | [sast-evidence.md](sast-evidence.md) | `uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat` |
 | Reasoning agent | **Done** [PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6) | `reasoning-agent` | [reasoning-agent.md](reasoning-agent.md) | `uv run pytest tests/reasoner/test_reasoner.py` |
-| Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/validator/test_validator.py` |
-| Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/orchestrator/test_orchestrator.py` |
+| Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7); SAST-iff-vulnerable **removed** | `live-research` | [validator.md](validator.md) | `uv run pytest tests/validator/test_validator.py` |
+| Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8); default is live Groq | `live-research` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/orchestrator/test_orchestrator.py` |
 | Complete multi-agent framework | **Done** [PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9) | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
 | Layered package layout | **Done** [PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10) | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
-| Neural embeddings + LLM reasoner | **Done** on `embeddings-llm` | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; LLM via env key; template fallback |
-| Research evaluation (authored corpus) | **This PR** | `research-eval` | [research-evaluation.md](research-evaluation.md) | `uv run cwe-vuln-eval --suite research` |
+| Neural embeddings + LLM reasoner | **Done** | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; Groq required on default path |
+| Research evaluation (authored corpus) | **Done** | `research-eval` | [research-evaluation.md](research-evaluation.md) | `uv run cwe-vuln-eval --suite research` |
+| Live research default | **This PR** | `live-research` | [research-evaluation.md](research-evaluation.md) | Requires `GROQ_API_KEY`; `--ablation template` for F1=0 contrast |
 
 ## Honesty
 
 - Assignment 1–4 and seed pipeline scores remain **seed-only — not a benchmark** (12 units / 18 queries)
 - Research evaluation is on an **authored expanded corpus** (36 units, 24 held-out traps, 48 queries) — **not** Juliet / OWASP Benchmark / Big-Vul
 - A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
-- `TemplateReasoner` is the default offline composer; `LLMReasoner` runs only when `GROQ_API_KEY` is set
+- `LLMReasoner` is the default live composer; `TemplateReasoner` is `--offline` / `--ablation template` only
+- SAST and template F1=0 on research_test is the **contrast**, not the deployed system
+- Trial-and-error kept: label leak, javadoc regex, retired `llama-3.1-8b-instant`

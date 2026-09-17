@@ -7,7 +7,7 @@ from cwe_vuln.retrieval import HybridRetriever
 from cwe_vuln.sast import Detection, detect, extract_evidence
 from cwe_vuln.schema import is_valid, validate_output
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     "BinaryMetrics",

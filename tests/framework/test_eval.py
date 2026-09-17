@@ -1,4 +1,5 @@
 from cwe_vuln.dataset import load_research_corpus
+from cwe_vuln.framework.eval import main as eval_main
 from cwe_vuln.framework.eval import trial_sast, write_summary
 
 
@@ -21,3 +22,18 @@ def test_write_summary_roundtrip(tmp_path) -> None:
     assert json_path.is_file()
     assert md_path.is_file()
     assert "not a public benchmark" in md_path.read_text(encoding="utf-8")
+
+
+def test_eval_cli_without_key_fails(capsys) -> None:
+    code = eval_main(["--suite", "research"])
+    assert code == 1
+    captured = capsys.readouterr()
+    assert "GROQ_API_KEY" in captured.err
+
+
+def test_eval_template_ablation_does_not_require_key(tmp_path) -> None:
+    code = eval_main(["--suite", "research", "--ablation", "template", "--output-dir", str(tmp_path)])
+    assert code == 0
+    assert (tmp_path / "sast_regex_research_test.json").is_file()
+    assert (tmp_path / "template_skip_llm_research_test.json").is_file()
+    assert not (tmp_path / "llm_then_research_test.json").is_file()

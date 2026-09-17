@@ -13,15 +13,22 @@ Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
 
 Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
-seed-only eval on the original 12 units / 18 queries; research eval on an
-authored 36-unit corpus (24 held-out traps). Java units are teaching samples,
-not exploits.
+no “100% novel” / “first ever RAG-CWE detector”; seed-only eval on the
+original 12 units / 18 queries; research eval on an authored 36-unit corpus
+(24 held-out traps). Java units are teaching samples, not exploits.
+
+Defendable contribution: a RAG-augmented multi-agent detector for six Java
+CWEs in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM +
+relationship/RRF retrieves CWE knowledge, (3) a Groq LLM produces A4-schema
+explanations, (4) a validator checks schema/lines/KB not SAST agreement,
+(5) on an authored 24-unit FP/FN trap split, regex/template fail and live
+LLM recovers most cases.
 
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: research-eval
-Branch: research-eval
+Last phase in this file: live-research
+Branch: live-research
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -31,27 +38,28 @@ Branch: research-eval
 | A4 output schema | DONE PR #4 | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
 | SAST evidence | DONE PR #5 | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
 | Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/reasoner/test_reasoner.py |
-| Validator | DONE PR #7 | validator | docs/validator.md | uv run pytest tests/validator/test_validator.py |
-| Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
+| Validator | DONE; SAST-iff-vulnerable removed | live-research | docs/validator.md | uv run pytest tests/validator/test_validator.py |
+| Orchestrator | DONE; default is live Groq | live-research | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
 | Framework | DONE PR #9 | framework | docs/framework.md | uv run cwe-vuln-pipeline |
 | Layered packages | DONE PR #10 | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
-| Neural embeddings + LLM reasoner | DONE | embeddings-llm | docs/architecture.md | MiniLM local; Groq LLM if GROQ_API_KEY |
-| Research evaluation | THIS PR | research-eval | docs/research-evaluation.md | uv run cwe-vuln-eval --suite research |
+| Neural embeddings + LLM reasoner | DONE | embeddings-llm | docs/architecture.md | MiniLM local; Groq required on default path |
+| Research evaluation | DONE | research-eval | docs/research-evaluation.md | uv run cwe-vuln-eval --suite research |
+| Live research default | THIS PR | live-research | docs/research-evaluation.md | GROQ_API_KEY required; --ablation template for F1=0 contrast |
 
 ============================================================
 PACKAGE TREE
 ============================================================
 src/cwe_vuln/
-  config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS
+  config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS, require_llm_api_key
   models/             Evidence, RankedHit, ReasoningResult, ValidationReport, PipelineResult, binary_metrics
   dataset/            SeedUnit, load_seed (8/4), load_research_corpus (36), RESEARCH_TEST_UNIT_IDS (24)
   knowledge/          CWEKnowledgeBase
-  sast/               regex RULES, detect(), extract_evidence()
+  sast/               regex RULES, detect(), extract_evidence()  — evidence only, not the decision
   retrieval/          Embedder, MiniLMEmbedder, TfidfEmbedder, DenseIndex, HybridRetriever, RRF
   schema/             load/validate Assignment 4 JSON Schema
-  reasoner/           TemplateReasoner + LLMReasoner; Reasoner.reason
-  validator/          ResultValidator.check
-  orchestrator/       Pipeline.run; SAST-first LLM routing; skip_llm override knobs
+  reasoner/           LLMReasoner (live default) + TemplateReasoner (ablation); Reasoner.reason
+  validator/          ResultValidator.check — schema, KB, cited lines, JSON consistency
+  orchestrator/       Pipeline.default (requires Groq); Pipeline.offline (ablation)
   framework/          cwe-vuln-pipeline + cwe-vuln-eval
   cli/                baseline, knowledge, retrieval, schema, evidence
 
@@ -69,21 +77,25 @@ Hybrid: RRF of neural cosine + SAST CWE ids + one-hop CWE relationships.
 ============================================================
 LLM (no OpenAI account)
 ============================================================
-Primary key: GROQ_API_KEY
+Primary key: GROQ_API_KEY   REQUIRED for default cwe-vuln-pipeline and
+                             cwe-vuln-eval --suite research
 Override: CWE_VULN_LLM_API_KEY
 Do not tell Richa to create an OpenAI account.
+Missing key → exit non-zero with a message to set GROQ_API_KEY.
+Do not silently construct TemplateReasoner on the default path.
 
 Default model: openai/gpt-oss-20b
 Optional model: CWE_VULN_LLM_MODEL=openai/gpt-oss-120b
 Default base URL: https://api.groq.com/openai/v1
 Override: CWE_VULN_LLM_BASE_URL
+Retired: llama-3.1-8b-instant (Groq free-tier 404). Do not use it.
 
 Client: openai.OpenAI(api_key=..., base_url=...) OpenAI-compatible.
 Load repo-root .env via python-dotenv. Never commit .env. Never print gsk_.
 
-No key → orchestrator does not construct LLMReasoner; TemplateReasoner; paths
-  sast_first_skip_llm / hybrid_retrieve_skip_llm
-Key present → sast_then_llm / hybrid_retrieve_then_llm unless skip_llm_when_sast_hits
+Default path → sast_then_llm / hybrid_retrieve_then_llm
+--offline / --ablation template → TemplateReasoner (paper contrast; F1=0)
+--ablation skip-llm → SAST hits use template; misses use LLM (opt-in)
 Invalid JSON: retry once, then reasoner=llm_fallback_template
 Tests mock the client. No live LLM calls in pytest.
 
@@ -109,13 +121,13 @@ DATA FLOW
 SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
 
   dataset      load labels/split/source only
-  sast         regex rules + binary detect() + Evidence spans (CWE hints, not encyclopedia)
+  sast         regex rules + binary detect() + Evidence spans (CWE hints; not the decision)
   knowledge    CWE JSON store + query API
   retrieval    MiniLM or TF-IDF + SAST + relationship RRF; rank_for_unit; no reasoner
   schema       Draft 2020-12 validate helpers
-  reasoner     TemplateReasoner / LLMReasoner (no dataset I/O)
-  validator    schema + KB + cited lines + decision vs evidence
-  orchestrator Pipeline.run; SAST-first; LLM only if key present
+  reasoner     LLMReasoner / TemplateReasoner (no dataset I/O)
+  validator    schema + KB + cited lines + JSON consistency; sast_disagreement warning
+  orchestrator Pipeline.default requires Groq; SAST is evidence for the LLM
   framework    cwe-vuln-pipeline + cwe-vuln-eval
   cli          thin A1 / KB / retrieve / schema / evidence
   models       one Evidence, one ReasoningResult, one binary_metrics
@@ -133,14 +145,16 @@ A3 retrieval (18 queries, embedder=minilm, seed-only):
   hybrid_rrf     R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
 
 Framework pipeline (test split, 4 units, live Groq openai/gpt-oss-20b, seed-only):
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0
   paths: sast_then_llm=2, hybrid_retrieve_then_llm=2
   reasoner=llm  embedder=minilm
 
 Research detection (24 held-out authored traps — not a public benchmark):
-  SAST/template     P=0.000 R=0.000 F1=0.000 fp=12 fn=12
-  Groq then_llm     P=0.857 R=1.000 F1=0.923 fp=2 fn=0  validator 2/24  cited_lines 24/24
-  skip_llm          P=0.500 R=1.000 F1=0.667 fp=12 fn=0 validator 12/24
+  SAST/template     P=0.000 R=0.000 F1=0.000 fp=12 fn=12   (ablation)
+  Groq then_llm     P=0.857 R=1.000 F1=0.923 fp=2 fn=0     (system of record)
+                    validator 24/24  cited_lines 24/24  sast_disagreement 22/24
+  Groq seed_test    P=1.000 R=1.000 F1=1.000 fp=0 fn=0 n=4 validator 4/4
+  skip_llm          P=0.500 R=1.000 F1=0.667 fp=12 fn=0    (prior ablation JSON; old validator 12/24)
   model=openai/gpt-oss-20b probe_ok
 
 Research retrieval (48 authored queries, embedder=minilm — not a public benchmark):
@@ -161,7 +175,9 @@ uv sync
 uv run pytest
 uv run cwe-vuln-pipeline
 uv run cwe-vuln-pipeline --split all
+uv run cwe-vuln-pipeline --offline          # ablation, not the system of record
 uv run cwe-vuln-eval --suite research
+uv run cwe-vuln-eval --suite research --ablation template
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve --eval
@@ -188,19 +204,22 @@ data/retrieval/labeled_queries.jsonl
 data/retrieval/research_queries.jsonl
 src/cwe_vuln/framework/eval.py
 src/cwe_vuln/dataset/research.py
+src/cwe_vuln/validator/checks.py
+src/cwe_vuln/orchestrator/pipeline.py
 results/research-eval-summary.json
 results/experiments/
 Thesis Progress Report_RichaVerma_25MCSS02.docx
 
 Do not commit: ApproachDoc.pdf, secrets, .env, .cache/, research-papers/ PDFs unless asked
+This repo is Richa Verma CWE/RAG work only. Do not add UAV/compiler code.
 
 ============================================================
 LIMITATIONS
 ============================================================
 - Seed-only 12-unit scores are distinct from research-split 24-unit scores.
 - Research corpus is authored, small N, traps written against our regex.
-- Validator requires decision to match SAST evidence, so LLM overrides fail A4 validation.
 - MiniLM may be tfidf_fallback if the model is not cached / download failed.
-- Live Groq waits on GROQ_API_KEY; default offline path is TemplateReasoner.
+- Default live path requires GROQ_API_KEY; missing key fails clearly.
 - CWE store is a curated subset, not a full MITRE dump.
 - No Juliet / OWASP Benchmark / Big-Vul numbers.
+- Not a claim of 100% novelty or SOTA.

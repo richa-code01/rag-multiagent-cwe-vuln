@@ -9,7 +9,18 @@ units under `data/seed/java/` and `data/research/java/` with labels in the
 manifests. Related-work names, if mentioned, are papers already in
 `research-papers/` or well-known public system names without invented venues.
 
-Repro: `uv run pytest` (54 passed) then `uv run cwe-vuln-eval --suite research`.
+**Claim we can defend:** a RAG-augmented multi-agent detector for six Java CWEs
+in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM + relationship/RRF
+retrieves CWE knowledge, (3) a Groq LLM produces A4-schema explanations, (4) a
+validator checks schema/lines/KB not SAST agreement, (5) on this 24-unit FP/FN
+trap split, regex/template fail and live LLM recovers most cases.
+
+**Do not claim:** SOTA, Juliet/OWASP numbers, 100% novelty, that template/SAST
+are the deployed system, or that this evaluation is a public benchmark.
+
+Repro: `uv run pytest` (62 passed, Groq mocked / keys cleared) then
+`uv run cwe-vuln-eval --suite research` (requires `GROQ_API_KEY`).
+Ablation without a key: `uv run cwe-vuln-eval --suite research --ablation template`.
 Advisor short table: [`results/research-eval-summary.md`](../results/research-eval-summary.md).
 
 ## Protocol
@@ -20,14 +31,18 @@ to support a research claim. This study keeps that seed as the assignment
 baseline and adds a held-out **research test** of FP and FN traps for CWE-89,
 79, 22, 502, 798, and 327.
 
+The **system of record** is live Groq `LLMReasoner` (`openai/gpt-oss-20b`).
+SAST-only and TemplateReasoner scored F1=0 on research_test; they are kept as
+opt-in ablations (`--ablation template`), not the default CLI path.
+
 Comparisons on the same held-out research test (n=24) unless noted:
 
-1. SAST / regex only
-2. Template reasoner, no LLM
-3. Live Groq LLM reasoner (`openai/gpt-oss-20b`; probe recorded)
+1. SAST / regex only (ablation; F1=0 by construction)
+2. Template reasoner, no LLM (ablation; follows SAST 1:1)
+3. Live Groq LLM reasoner (`openai/gpt-oss-20b`; probe recorded) — **system of record**
 4. Retrieval: TF-IDF vs MiniLM vs hybrid RRF on 48 authored queries
 5. Top-K ∈ {1, 3, 5, 10} (Recall@K, MRR)
-6. Cost paths: `skip_llm` vs `then_llm`
+6. Cost path `skip_llm` kept as an opt-in ablation (`--ablation skip-llm`), not the default
 
 Each trial is a JSON file in `results/experiments/`. Failures are kept.
 
@@ -65,8 +80,10 @@ Confusion: `unit_id`, true label, predicted, SAST hit, trap type, why.
 Retrieval: R@1/R@3/R@5/R@10, MRR on 18 assignment queries plus
 `data/retrieval/research_queries.jsonl` (48 total).
 
-Explainability: % of reasoner outputs that pass the Assignment 4 validator;
-% of `cited_lines` checks that pass after LLM snippet normalize.
+Explainability: % of reasoner outputs that pass the Assignment 4 validator
+(schema, CWE-in-KB, cited lines, JSON consistency). SAST disagreement is a
+**warning** and does not fail the unit. Also % of `cited_lines` checks that
+pass after LLM snippet normalize.
 
 ## Trial log
 
@@ -76,14 +93,16 @@ Explainability: % of reasoner outputs that pass the Assignment 4 validator;
 | `sast_fp_traps_javadoc_rewrite_regression` | failed | After stripping gold labels, two FP hits lived only in javadoc. Fix: comment tokens without gold labels. |
 | `llm_then_research_test_label_leak` | invalid | First live Groq run P=R=F1=1.0 with `Safe`/`Vulnerable` in class names and javadocs. Not used as a detection claim. |
 | `llm_skip_when_sast_research_test_label_leak` | invalid | Same leakage on the skip_llm path. Discarded. |
-| `sast_regex_research_test` | ok | 12 FP + 12 FN by construction. |
-| `template_skip_llm_research_test` | ok | Template follows SAST 1:1. |
-| `llm_then_research_test` | ok | Live Groq `openai/gpt-oss-20b` (probe_ok). |
-| `llm_skip_when_sast_research_test` | ok | SAST hits → template; misses → LLM. |
+| `sast_regex_research_test` | ok | 12 FP + 12 FN by construction. Ablation, not the system of record. |
+| `template_skip_llm_research_test` | ok | Template follows SAST 1:1. Ablation. |
+| `llm_then_research_test` | ok | Live Groq `openai/gpt-oss-20b` (probe_ok). **System of record.** |
+| `llm_then_seed_test` | ok | Live Groq on the 4-unit assignment test split (seed-only). |
+| `llm_skip_when_sast_research_test` | ok | Kept as cost-path ablation JSON. Not the default orchestrator policy. |
 | `retrieval_*_expanded` | ok | 48 queries, embedder=`minilm`. |
 
 Default Groq model `openai/gpt-oss-20b` probed successfully; no 404 fallback was
-needed on this run. Rate limits did not fire.
+needed on the recorded run. `llama-3.1-8b-instant` was retired on Groq’s free
+tier and is not used. Rate limits did not fire on the recorded run.
 
 ## Detection tables (authored corpus — not a public benchmark)
 
@@ -91,12 +110,12 @@ Held-out **research test (24 units)**. Seed-only 12-unit scores stay in
 `results/assignment-1-baseline.json` (P=R=F1=1.000) and
 `results/framework-seed*.json`.
 
-| System | Precision | Recall | F1 | FP | FN | n |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| SAST / regex only | 0.000 | 0.000 | 0.000 | 12 | 12 | 24 |
-| Template reasoner, no LLM | 0.000 | 0.000 | 0.000 | 12 | 12 | 24 |
-| Live Groq then_llm | 0.857 | 1.000 | 0.923 | 2 | 0 | 24 |
-| Cost path skip_llm | 0.500 | 1.000 | 0.667 | 12 | 0 | 24 |
+| System | Precision | Recall | F1 | FP | FN | n | Role |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| SAST / regex only | 0.000 | 0.000 | 0.000 | 12 | 12 | 24 | ablation |
+| Template reasoner, no LLM | 0.000 | 0.000 | 0.000 | 12 | 12 | 24 | ablation |
+| Live Groq then_llm | 0.857 | 1.000 | 0.923 | 2 | 0 | 24 | **system of record** |
+| Cost path skip_llm | 0.500 | 1.000 | 0.667 | 12 | 0 | 24 | ablation |
 
 Per-CWE SAST on research_test is 2 FP + 2 FN for every family (support 4).
 
@@ -121,7 +140,8 @@ Assignment-only 18-query MiniLM numbers remain in `results/assignment-3-retrieva
 ## Error analysis
 
 SAST/template errors are exactly the trap design: every FP trap is a false
-positive, every FN trap is a false negative.
+positive, every FN trap is a false negative. That is why they are not the
+system of record.
 
 then_llm (live Groq, 24/24 `reasoner=llm`, paths 12 `sast_then_llm` / 12
 `hybrid_retrieve_then_llm`):
@@ -131,14 +151,17 @@ then_llm (live Groq, 24/24 `reasoner=llm`, paths 12 `sast_then_llm` / 12
   relative file name concatenated into `new File`) and
   `java_cwe798_t01_sentinel_then_env` (sentinel `password="use-env"` overwritten
   from the environment).
-- Validator pass **2/24 (8.3%)**. The Assignment 7 check requires `vulnerable`
-  iff SAST evidence is non-empty, so a correct SAST override fails validation.
-  That is a protocol finding, not hidden.
-- Cited lines after normalize: **24/24 (100%)**.
+- Validator previously **2/24 (8.3%)** because Assignment 7 required
+  `vulnerable` iff SAST evidence is non-empty. That contract punished Groq for
+  correctly catching SAST FNs. After the live-research fix, then_llm validator
+  pass is **24/24 (100%)**. `sast_disagreement` warnings fired on **22/24**
+  units (12 FN overrides + 10 correctly rejected FP traps). Those warnings do
+  not fail the unit. Cited lines after normalize: **24/24 (100%)**.
 
-skip_llm: recall 1.0 because FN traps have no SAST hit and therefore reach the
-LLM; precision 0.5 because all 12 FP traps keep the template/SAST decision.
-Validator **12/24 (50%)**. Reasoners: 12 template + 12 llm.
+skip_llm (prior ablation JSON, not re-run under the new validator): recall 1.0
+because FN traps have no SAST hit and therefore reach the LLM; precision 0.5
+because all 12 FP traps keep the template/SAST decision. Validator **12/24**
+on that file still reflects the old SAST-tied contract.
 
 ## Limitations
 
@@ -148,14 +171,13 @@ Validator **12/24 (50%)**. Reasoners: 12 template + 12 llm.
 - Residual cues (CWE id in `unit_id`, notes used as retrieval queries) remain;
   class-name gold labels were removed after the leaked trial.
 - Curated CWE store, not a full MITRE dump.
-- Validator is SAST-tied, so detection gains from LLM overrides are not
-  “validated explanations” under the current A4/A7 contract.
-- Live Groq free-tier: this run used `openai/gpt-oss-20b` without 404/rate-limit;
-  that is not guaranteed.
+- Live Groq free-tier: recorded runs used `openai/gpt-oss-20b` without
+  404/rate-limit; `llama-3.1-8b-instant` is retired and must not be the default.
 - No claim of industry-benchmark performance.
 
 ## Advisor summary
 
 See `results/research-eval-summary.json` and `results/research-eval-summary.md`.
-Pipeline e2e remains `uv run cwe-vuln-pipeline` on the original 12-unit seed.
+Live pipeline: `uv run cwe-vuln-pipeline` (requires `GROQ_API_KEY`).
 Research evaluation: `uv run cwe-vuln-eval --suite research`.
+Paper contrast without a live call: `uv run cwe-vuln-eval --ablation template`.

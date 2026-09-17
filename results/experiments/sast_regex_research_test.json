@@ -1,6 +1,6 @@
 {
   "trial_id": "sast_regex_research_test",
-  "date": "2026-09-17T03:28:37Z",
+  "date": "2026-09-17T03:55:03Z",
   "suite": "research",
   "split": "research_test",
   "n_units": 24,

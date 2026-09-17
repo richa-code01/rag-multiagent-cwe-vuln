@@ -1,6 +1,6 @@
 [project]
 name = "cwe-vuln"
-version = "0.6.0"
+version = "0.7.0"
 description = "Thesis repo: RAG-style multi-agent CWE vulnerability detection with authored-corpus research evaluation."
 readme = "README.md"
 authors = [

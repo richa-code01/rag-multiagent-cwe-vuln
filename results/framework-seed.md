@@ -6,8 +6,10 @@ seed-only — not a benchmark. Metrics are the authored Java seed (test split de
 
 - Split: `test` (4 units)
 - Embedder: `minilm`
+- Offline ablation: `False`
 - LLM configured: `True`
 - Validation pass: 4/4
+- SAST disagreement warnings: 0
 - Paths: `{'sast_then_llm': 2, 'hybrid_retrieve_then_llm': 2}`
 - Reasoners: `{'llm': 4}`
 

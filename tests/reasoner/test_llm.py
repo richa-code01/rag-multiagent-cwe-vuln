@@ -27,6 +27,18 @@ def _valid_payload(unit_id: str = "java_cwe89_sqli_concat") -> dict:
     }
 
 
+def test_require_llm_api_key_raises_without_key(monkeypatch) -> None:
+    from cwe_vuln.config import MissingLLMKeyError, require_llm_api_key
+
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.delenv("CWE_VULN_LLM_API_KEY", raising=False)
+    try:
+        require_llm_api_key()
+        raise AssertionError("expected MissingLLMKeyError")
+    except MissingLLMKeyError as exc:
+        assert "GROQ_API_KEY" in str(exc)
+
+
 def test_from_env_without_key_returns_none(monkeypatch) -> None:
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("CWE_VULN_LLM_API_KEY", raising=False)

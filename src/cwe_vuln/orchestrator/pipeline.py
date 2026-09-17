@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from cwe_vuln.config import settings
+from cwe_vuln.config import require_llm_api_key, settings
 from cwe_vuln.dataset import SeedUnit
 from cwe_vuln.models.pipeline import PipelineResult
 from cwe_vuln.orchestrator.ports import EvidenceExtractor, UnitReasoner, UnitRetriever, UnitValidator
@@ -37,14 +37,30 @@ class Pipeline:
 
     @classmethod
     def default(cls) -> Pipeline:
+        """Live research path: Groq LLMReasoner is required. SAST is evidence only."""
+        llm = LLMReasoner(api_key=require_llm_api_key())
+        return cls(
+            extractor=RegexEvidenceExtractor(),
+            retriever=HybridRetriever.load(),
+            reasoner=TemplateReasoner(),
+            validator=ResultValidator(),
+            llm_reasoner=llm,
+            skip_llm_when_sast_hits=False,
+            use_llm_if_available=True,
+        )
+
+    @classmethod
+    def offline(cls) -> Pipeline:
+        """Opt-in TemplateReasoner ablation. Not the system of record."""
         template = TemplateReasoner()
-        llm = LLMReasoner.from_env() if settings.use_llm_if_available else None
         return cls(
             extractor=RegexEvidenceExtractor(),
             retriever=HybridRetriever.load(),
             reasoner=template,
             validator=ResultValidator(),
-            llm_reasoner=llm,
+            llm_reasoner=None,
+            skip_llm_when_sast_hits=True,
+            use_llm_if_available=False,
         )
 
     def run(self, unit: SeedUnit) -> PipelineResult:
@@ -69,11 +85,7 @@ class Pipeline:
         )
 
     def _route(self, has_evidence: bool) -> tuple[str, UnitReasoner]:
-        can_llm = (
-            self.llm_reasoner is not None
-            and self.use_llm_if_available
-            and bool(settings.llm_api_key())
-        )
+        can_llm = self.llm_reasoner is not None and self.use_llm_if_available
         if has_evidence:
             if can_llm and not self.skip_llm_when_sast_hits and self.llm_reasoner is not None:
                 return "sast_then_llm", self.llm_reasoner

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T03:39:04Z",
+  "generated_at": "2026-09-17T03:59:03Z",
   "evaluation_scope": "authored_corpus_not_a_public_benchmark",
   "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
   "research_split": {
@@ -9,71 +9,79 @@
   },
   "trials": [
     {
-      "trial_id": "llm_skip_when_sast_research_test",
+      "trial_id": "sast_regex_research_test",
       "status": "ok",
       "split": "research_test",
       "metrics": {
-        "tp": 12,
+        "tp": 0,
         "fp": 12,
         "tn": 0,
-        "fn": 0,
-        "precision": 0.5,
-        "recall": 1.0,
-        "f1": 0.6666666666666666,
+        "fn": 12,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
         "support": 24
       },
-      "notes": "Cost path skip_llm: SAST hits use template; no-hit units use LLM. probe_ok model=openai/gpt-oss-20b",
+      "notes": "Regex SAST only. On research_test this should be imperfect by construction.",
       "error": null
     },
     {
-      "trial_id": "llm_skip_when_sast_research_test_label_leak",
-      "status": "invalid_label_leak",
-      "split": "research_test",
-      "metrics": {
-        "tp": 10,
-        "fp": 12,
-        "tn": 0,
-        "fn": 2,
-        "precision": 0.45454545454545453,
-        "recall": 0.8333333333333334,
-        "f1": 0.5882352941176471,
-        "support": 24
-      },
-      "notes": "INVALID: same gold-label leakage as llm_then_research_test_label_leak. Re-ran after neutralizing class names and javadocs. Cost path skip_llm: SAST hits use template; no-hit units use LLM. probe_ok model=openai/gpt-oss-20b",
-      "error": null
-    },
-    {
-      "trial_id": "llm_then_research_test",
+      "trial_id": "template_skip_llm_research_test",
       "status": "ok",
       "split": "research_test",
       "metrics": {
-        "tp": 12,
-        "fp": 2,
-        "tn": 10,
-        "fn": 0,
-        "precision": 0.8571428571428571,
-        "recall": 1.0,
-        "f1": 0.923076923076923,
+        "tp": 0,
+        "fp": 12,
+        "tn": 0,
+        "fn": 12,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
         "support": 24
       },
-      "notes": "Live Groq then_llm (SAST/retrieve then LLM). probe_ok model=openai/gpt-oss-20b",
+      "notes": "Ablation: TemplateReasoner, no LLM. Decisions follow regex evidence. Not the system of record.",
       "error": null
     },
     {
-      "trial_id": "llm_then_research_test_label_leak",
-      "status": "invalid_label_leak",
-      "split": "research_test",
+      "trial_id": "retrieval_tfidf_expanded",
+      "status": "ok",
+      "split": "expanded_queries",
       "metrics": {
-        "tp": 12,
-        "fp": 0,
-        "tn": 12,
-        "fn": 0,
-        "precision": 1.0,
-        "recall": 1.0,
-        "f1": 1.0,
-        "support": 24
+        "recall@1": 0.6458,
+        "recall@3": 0.9167,
+        "recall@5": 0.9375,
+        "recall@10": 1.0,
+        "mrr": 0.7936
       },
-      "notes": "INVALID for detection claims: Java sources leaked gold labels via class names (Safe/Vulnerable) and javadocs ('labeled vulnerable'). Detection P=R=F1=1.0 is not trusted. Neutralized sources and re-ran. Validator was 0/24 because the LLM overrode SAST. cited_lines=24/24 after normalize. Live Groq then_llm (SAST/retrieve then LLM). probe_ok model=openai/gpt-oss-20b",
+      "notes": "Expanded authored queries \u2014 not a public benchmark.",
+      "error": null
+    },
+    {
+      "trial_id": "retrieval_minilm_expanded",
+      "status": "ok",
+      "split": "expanded_queries",
+      "metrics": {
+        "recall@1": 0.8125,
+        "recall@3": 0.9792,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.8941
+      },
+      "notes": "Expanded authored queries \u2014 not a public benchmark.",
+      "error": null
+    },
+    {
+      "trial_id": "retrieval_hybrid_rrf_expanded",
+      "status": "ok",
+      "split": "expanded_queries",
+      "metrics": {
+        "recall@1": 0.8542,
+        "recall@3": 0.9583,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.9167
+      },
+      "notes": "Expanded authored queries \u2014 not a public benchmark.",
       "error": null
     },
     {
@@ -114,45 +122,88 @@
       "error": null
     },
     {
-      "trial_id": "retrieval_hybrid_rrf_expanded",
+      "trial_id": "llm_then_research_test",
       "status": "ok",
-      "split": "expanded_queries",
+      "split": "research_test",
       "metrics": {
-        "recall@1": 0.8542,
-        "recall@3": 0.9583,
-        "recall@5": 1.0,
-        "recall@10": 1.0,
-        "mrr": 0.9167
+        "tp": 12,
+        "fp": 2,
+        "tn": 10,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.923076923076923,
+        "support": 24
       },
-      "notes": "Expanded authored queries \u2014 not a public benchmark.",
+      "notes": "System of record: live Groq LLMReasoner grounded in code + SAST evidence + hybrid CWE hits. probe_ok model=openai/gpt-oss-20b",
       "error": null
     },
     {
-      "trial_id": "retrieval_minilm_expanded",
+      "trial_id": "llm_then_seed_test",
       "status": "ok",
-      "split": "expanded_queries",
+      "split": "test",
       "metrics": {
-        "recall@1": 0.8125,
-        "recall@3": 0.9792,
-        "recall@5": 1.0,
-        "recall@10": 1.0,
-        "mrr": 0.8941
+        "tp": 2,
+        "fp": 0,
+        "tn": 2,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 4
       },
-      "notes": "Expanded authored queries \u2014 not a public benchmark.",
+      "notes": "Live Groq on the assignment seed test split (n=4). seed-only \u2014 not a benchmark. probe_ok model=openai/gpt-oss-20b",
       "error": null
     },
     {
-      "trial_id": "retrieval_tfidf_expanded",
+      "trial_id": "llm_skip_when_sast_research_test",
       "status": "ok",
-      "split": "expanded_queries",
+      "split": "research_test",
       "metrics": {
-        "recall@1": 0.6458,
-        "recall@3": 0.9167,
-        "recall@5": 0.9375,
-        "recall@10": 1.0,
-        "mrr": 0.7936
+        "tp": 12,
+        "fp": 12,
+        "tn": 0,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "support": 24
       },
-      "notes": "Expanded authored queries \u2014 not a public benchmark.",
+      "notes": "Cost path skip_llm: SAST hits use template; no-hit units use LLM. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_skip_when_sast_research_test_label_leak",
+      "status": "invalid_label_leak",
+      "split": "research_test",
+      "metrics": {
+        "tp": 10,
+        "fp": 12,
+        "tn": 0,
+        "fn": 2,
+        "precision": 0.45454545454545453,
+        "recall": 0.8333333333333334,
+        "f1": 0.5882352941176471,
+        "support": 24
+      },
+      "notes": "INVALID: same gold-label leakage as llm_then_research_test_label_leak. Re-ran after neutralizing class names and javadocs. Cost path skip_llm: SAST hits use template; no-hit units use LLM. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_research_test_label_leak",
+      "status": "invalid_label_leak",
+      "split": "research_test",
+      "metrics": {
+        "tp": 12,
+        "fp": 0,
+        "tn": 12,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24
+      },
+      "notes": "INVALID for detection claims: Java sources leaked gold labels via class names (Safe/Vulnerable) and javadocs ('labeled vulnerable'). Detection P=R=F1=1.0 is not trusted. Neutralized sources and re-ran. Validator was 0/24 because the LLM overrode SAST. cited_lines=24/24 after normalize. Live Groq then_llm (SAST/retrieve then LLM). probe_ok model=openai/gpt-oss-20b",
       "error": null
     },
     {
@@ -170,40 +221,6 @@
       "metrics": null,
       "notes": "After neutralizing gold-label javadocs, two FP traps stopped matching (CWE-798 log literal and CWE-327 banned-algorithm message) because the original hits lived in javadoc text, not in Java string literals with escaped quotes. Fix: put the regex tokens in code comments that are not gold labels. Restored 12 FP + 12 FN.",
       "error": "fp_count dropped from 12 to 10 after javadoc neutralization"
-    },
-    {
-      "trial_id": "sast_regex_research_test",
-      "status": "ok",
-      "split": "research_test",
-      "metrics": {
-        "tp": 0,
-        "fp": 12,
-        "tn": 0,
-        "fn": 12,
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "support": 24
-      },
-      "notes": "Regex SAST only. On research_test this should be imperfect by construction.",
-      "error": null
-    },
-    {
-      "trial_id": "template_skip_llm_research_test",
-      "status": "ok",
-      "split": "research_test",
-      "metrics": {
-        "tp": 0,
-        "fp": 12,
-        "tn": 0,
-        "fn": 12,
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1": 0.0,
-        "support": 24
-      },
-      "notes": "Template reasoner, no LLM. Decisions follow regex evidence.",
-      "error": null
     }
   ],
   "detection_table": [
@@ -214,7 +231,9 @@
       "f1": 0.0,
       "fp": 12,
       "fn": 12,
-      "n": 24
+      "n": 24,
+      "validation_pass": null,
+      "validation_pass_rate": null
     },
     {
       "system": "template_skip_llm_research_test",
@@ -223,7 +242,9 @@
       "f1": 0.0,
       "fp": 12,
       "fn": 12,
-      "n": 24
+      "n": 24,
+      "validation_pass": 24,
+      "validation_pass_rate": 1.0
     },
     {
       "system": "llm_then_research_test",
@@ -232,7 +253,20 @@
       "f1": 0.923076923076923,
       "fp": 2,
       "fn": 0,
-      "n": 24
+      "n": 24,
+      "validation_pass": 24,
+      "validation_pass_rate": 1.0
+    },
+    {
+      "system": "llm_then_seed_test",
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fp": 0,
+      "fn": 0,
+      "n": 4,
+      "validation_pass": 4,
+      "validation_pass_rate": 1.0
     },
     {
       "system": "llm_skip_when_sast_research_test",
@@ -241,7 +275,9 @@
       "f1": 0.6666666666666666,
       "fp": 12,
       "fn": 0,
-      "n": 24
+      "n": 24,
+      "validation_pass": 12,
+      "validation_pass_rate": 0.5
     }
   ],
   "retrieval_table": [

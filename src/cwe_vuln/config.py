@@ -29,6 +29,27 @@ class ConfigError(RuntimeError):
     """Raised when shared paths cannot be resolved."""
 
 
+class MissingLLMKeyError(ConfigError):
+    """Raised when the default live pipeline is used without a Groq key."""
+
+
+MISSING_LLM_KEY_MESSAGE = (
+    "GROQ_API_KEY is required for the default live research pipeline. "
+    "Set GROQ_API_KEY in the gitignored .env file or export it. "
+    "Use --offline (cwe-vuln-pipeline) or --ablation template (cwe-vuln-eval) "
+    "only for paper comparison tables. SAST-only and TemplateReasoner scored "
+    "F1=0 on the 24-unit research split and are not the system of record."
+)
+
+
+def require_llm_api_key() -> str:
+    """Return the Groq (or override) key, or raise MissingLLMKeyError."""
+    key = settings.llm_api_key()
+    if not key:
+        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+    return key
+
+
 def repo_root(start: Path | None = None) -> Path:
     """Walk parents until `data/seed/labels.jsonl` is found."""
     cursor = (start or Path(__file__).resolve()).parent

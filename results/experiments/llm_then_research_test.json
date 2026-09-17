@@ -1,6 +1,6 @@
 {
   "trial_id": "llm_then_research_test",
-  "date": "2026-09-17T03:32:04Z",
+  "date": "2026-09-17T03:58:26Z",
   "suite": "research",
   "split": "research_test",
   "n_units": 24,
@@ -9,7 +9,7 @@
   "status": "ok",
   "config": {
     "suite": "research",
-    "reasoner": "llm_or_template",
+    "reasoner": "llm",
     "skip_llm_when_sast_hits": false,
     "use_llm_if_available": true,
     "model": "openai/gpt-oss-20b"
@@ -106,13 +106,15 @@
       "why": "follows_sast_false_positive"
     }
   ],
-  "notes": "Live Groq then_llm (SAST/retrieve then LLM). probe_ok model=openai/gpt-oss-20b",
+  "notes": "System of record: live Groq LLMReasoner grounded in code + SAST evidence + hybrid CWE hits. probe_ok model=openai/gpt-oss-20b",
   "error": null,
-  "validation_pass": 2,
-  "validation_pass_rate": 0.08333333333333333,
+  "validation_pass": 24,
+  "validation_pass_rate": 1.0,
   "cited_lines_grounded": 24,
   "cited_lines_n": 24,
   "cited_lines_rate": 1.0,
+  "sast_disagreement": 22,
+  "sast_disagreement_rate": 0.9166666666666666,
   "detector_path_counts": {
     "sast_then_llm": 12,
     "hybrid_retrieve_then_llm": 12
@@ -127,168 +129,192 @@
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe89_t02_constant_concat",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe89_t03_stringbuilder",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe89_t04_split_concat",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe79_t01_encoded_then_concat",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe79_t02_constant_html",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe79_t03_getparameter",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe79_t04_concat_method",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe22_t01_const_concat",
       "decision": "vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe22_t02_comment_file",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe22_t03_twoarg_file",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe22_t04_paths_get",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe502_t01_javadoc_objectstream",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe502_t02_roundtrip",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe502_t03_helper_reflection",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe502_t04_xmldecoder_reflect",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe798_t01_sentinel_then_env",
       "decision": "vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": true
+      "validator_passed": true,
+      "sast_disagreement": false
     },
     {
       "unit_id": "java_cwe798_t02_password_log_literal",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe798_t03_char_array",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe798_t04_split_literal",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe327_t01_md5_comment_sha256",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe327_t02_banned_algo_message",
       "decision": "not_vulnerable",
       "path": "sast_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe327_t03_md5_variable",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     },
     {
       "unit_id": "java_cwe327_t04_md5_split_literal",
       "decision": "vulnerable",
       "path": "hybrid_retrieve_then_llm",
       "reasoner": "llm",
-      "validator_passed": false
+      "validator_passed": true,
+      "sast_disagreement": true
     }
   ]
 }

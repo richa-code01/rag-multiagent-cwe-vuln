@@ -50,8 +50,10 @@ def main() -> None:
         "then MiniLM embeddings and a Groq LLM reasoner (embeddings-llm). Research "
         "evaluation is complete on an authored expanded Java corpus (36 units: original "
         "12 plus 24 held-out FP/FN traps) — not a public benchmark (not Juliet, OWASP "
-        "Benchmark, or Big-Vul). Live Groq openai/gpt-oss-20b was used in trials. "
-        "Without GROQ_API_KEY the default path is offline. No OpenAI account is required.",
+        "Benchmark, or Big-Vul). The system of record is live Groq openai/gpt-oss-20b. "
+        "SAST-only and TemplateReasoner scored F1=0 on the 24-unit split and are "
+        "opt-in ablations, not the default path. GROQ_API_KEY is required. "
+        "No OpenAI account is required.",
     )
 
     set_para(
@@ -68,9 +70,11 @@ def main() -> None:
         39,
         "The implemented architecture combines regex SAST evidence, hybrid CWE retrieval "
         "(MiniLM cosine with TF-IDF fallback, SAST ids, CWE relationships, RRF), a cost-aware "
-        "orchestrator, a template reasoner, an LLMReasoner behind the same port, and a "
-        "validator. Without GROQ_API_KEY (or CWE_VULN_LLM_API_KEY override) the LLM is not "
-        "constructed. No OpenAI account is required; OPENAI_API_KEY is unused.",
+        "orchestrator, a Groq LLMReasoner that emits Assignment-4 schema JSON, an optional "
+        "template reasoner for paper ablations, and a validator. GROQ_API_KEY (or "
+        "CWE_VULN_LLM_API_KEY override) is required on the default path. No OpenAI account "
+        "is required; OPENAI_API_KEY is unused. This is not claimed as SOTA or as the first "
+        "RAG-CWE detector; the contribution is this specific composition on an authored trap split.",
     )
 
     set_para(
@@ -94,10 +98,11 @@ def main() -> None:
     set_para(
         doc,
         44,
-        "The cost-aware orchestrator runs SAST first. If no GROQ_API_KEY or CWE_VULN_LLM_API_KEY "
-        "is set, the LLM is skipped and TemplateReasoner runs. With a key, the "
-        "path is sast_then_llm or hybrid_retrieve_then_llm unless skip_llm_when_sast_hits is set. "
-        "Default model is Groq openai/gpt-oss-20b at https://api.groq.com/openai/v1. "
+        "The cost-aware orchestrator always extracts SAST evidence first, then Groq decides. "
+        "Pipeline.default() requires GROQ_API_KEY or CWE_VULN_LLM_API_KEY; missing key fails "
+        "clearly. Default paths are sast_then_llm / hybrid_retrieve_then_llm. TemplateReasoner "
+        "is --offline / --ablation template only (F1=0 on research_test). Default model is Groq "
+        "openai/gpt-oss-20b at https://api.groq.com/openai/v1. "
         "No OpenAI account is required; OPENAI_API_KEY is unused.",
     )
 
@@ -105,18 +110,21 @@ def main() -> None:
         doc,
         45,
         "The validator checks schema validity, that the cited CWE exists in the knowledge store, "
-        "that supporting source lines exist in the Java unit, and that the decision is consistent "
-        "with SAST evidence. Framework metrics compare decisions to seed labels.",
+        "that supporting source lines exist in the Java unit, and that the JSON is internally "
+        "consistent. It does not require the decision to match SAST: empty SAST evidence with a "
+        "vulnerable Groq decision is a sast_disagreement warning, not a failed unit. Framework "
+        "metrics compare decisions to labels.",
     )
 
     set_para(
         doc,
         55,
-        "The seed pipeline is implemented and runnable: uv sync && uv run pytest && "
-        "uv run cwe-vuln-pipeline. Assignment 1 detection on 12 units P=R=F1=1.000 "
-        "(seed-only). Research evaluation on 24 held-out authored traps: SAST/template "
-        "P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923; "
-        "skip_llm P=0.500 R=1.000 F1=0.667. Retrieval on 48 authored queries: hybrid "
+        "The live pipeline is implemented and runnable: uv sync && uv run pytest && "
+        "uv run cwe-vuln-pipeline (requires GROQ_API_KEY). Assignment 1 detection on 12 units "
+        "P=R=F1=1.000 (seed-only). Research evaluation on 24 held-out authored traps: "
+        "SAST/template P=R=F1=0.000 (12 FP / 12 FN, ablation); live Groq then_llm "
+        "P=0.857 R=1.000 F1=0.923, validator 24/24 (was 2/24 under the old SAST-iff-vulnerable "
+        "rule). Retrieval on 48 authored queries: hybrid "
         "R@1=0.854 MRR=0.917 vs MiniLM 0.812 / 0.894 vs TF-IDF 0.646 / 0.794. "
         "Public-benchmark evaluation is not claimed.",
     )
@@ -126,9 +134,9 @@ def main() -> None:
     set_para(doc, 58, "Optional later: expand the curated CWE store without scraping an unofficial full dump.")
     set_para(doc, 59, "MiniLM embeddings are implemented with TF-IDF fallback if the local model is missing.")
     set_para(doc, 60, "Keep SAST as evidence extraction (CWE hints); knowledge layer owns descriptions.")
-    set_para(doc, 61, "Keep SAST-first LLM routing in the orchestrator (GROQ_API_KEY).")
-    set_para(doc, 62, "Live LLM reasoner is implemented; research trials used Groq openai/gpt-oss-20b.")
-    set_para(doc, 63, "Validator already checks schema, CWE id, cited lines, and decision vs evidence — it currently fails when the LLM correctly overrides SAST.")
+    set_para(doc, 61, "Keep SAST as evidence extraction; Groq LLMReasoner is the default decision path (GROQ_API_KEY required).")
+    set_para(doc, 62, "Live LLM reasoner is the system of record; research trials used Groq openai/gpt-oss-20b (llama-3.1-8b-instant retired).")
+    set_para(doc, 63, "Validator checks schema, CWE id, cited lines, and JSON consistency. SAST disagreement is a warning, not a fail.")
     set_para(doc, 64, "Optional later: richer confidence fusion beyond template confidence fields.")
     set_para(doc, 65, "Public-benchmark experiments remain out of scope until a labeled external dataset is adopted.")
 
@@ -136,10 +144,10 @@ def main() -> None:
         doc,
         70,
         "The thesis has progressed from study of Explainable AI, RAG and agentic systems to a "
-        "runnable seed-only pipeline for explainable CWE-oriented vulnerability detection. The "
+        "runnable live Groq pipeline for explainable CWE-oriented vulnerability detection. The "
         "implemented path combines a curated CWE knowledge store, MiniLM/TF-IDF hybrid retrieval, "
-        "regex SAST evidence, a template reasoner, an LLM path gated on GROQ_API_KEY or "
-        "CWE_VULN_LLM_API_KEY, validation, and cost-aware orchestrator routing.",
+        "regex SAST evidence, Groq LLMReasoner (GROQ_API_KEY required; CWE_VULN_LLM_API_KEY "
+        "override), validation that is not tied to SAST agreement, and cost-aware orchestrator routing.",
     )
 
     set_para(
@@ -162,9 +170,9 @@ def main() -> None:
         ("Vulnerability detection problem", "Defined", "Focused on precision, false positives, false negatives and explainability."),
         ("Static analysis role", "Implemented", "Regex SAST + Evidence spans (PRs #1, #5). Seed-only baseline P=R=F1=1.000."),
         ("Hybrid retrieval", "Implemented", "MiniLM cosine + SAST + CWE relationships, RRF. TF-IDF fallback if MiniLM missing."),
-        ("Cost-aware routing", "Implemented", "Orchestrator SAST-first; Groq LLM only if GROQ_API_KEY is set (CWE_VULN_LLM_API_KEY override)."),
-        ("Multi-agent workflow", "Implemented", "Template + LLM reasoner, validator, framework CLI."),
-        ("Implementation / evaluation", "Research eval done", "Authored 36-unit corpus. Live Groq trials recorded. Not a public benchmark."),
+        ("Cost-aware routing", "Implemented", "Orchestrator SAST-as-evidence then Groq; GROQ_API_KEY required (CWE_VULN_LLM_API_KEY override)."),
+        ("Multi-agent workflow", "Implemented", "Groq LLMReasoner default; template ablation; validator (schema/lines/KB)."),
+        ("Implementation / evaluation", "Live research", "Authored 36-unit corpus. Live Groq is the system of record. Not a public benchmark."),
     ]
     for i, (a, b, c) in enumerate(rows):
         set_cell(t4.rows[i].cells[0], a)
@@ -182,7 +190,7 @@ def main() -> None:
         "  schema/          JSON Schema validate helpers\n"
         "  reasoner/        TemplateReasoner + LLMReasoner\n"
         "  validator/       ResultValidator\n"
-        "  orchestrator/    Pipeline, LLM routing if API key present\n"
+        "  orchestrator/    Pipeline.default requires Groq; Pipeline.offline ablation\n"
         "  framework/       cwe-vuln-pipeline + cwe-vuln-eval\n"
         "  cli/             baseline, kb, retrieve, schema, evidence\n"
         "data/  docs/  results/  schemas/  tests/ (mirrors packages)"
@@ -197,9 +205,9 @@ def main() -> None:
         ("CWE knowledge layer", "Implemented", "Optional: enlarge the curated subset; do not scrape a messy dump."),
         ("Static analysis", "Implemented", "Regex evidence extraction on the 12-unit Java seed."),
         ("Hybrid retrieval", "Implemented", "MiniLM with TF-IDF fallback; seed-only metrics in results/."),
-        ("Cost-aware orchestrator", "Implemented", "SAST-first; LLM path when GROQ_API_KEY or CWE_VULN_LLM_API_KEY is set."),
-        ("Reasoning agent", "Implemented", "Template offline; LLMReasoner (default openai/gpt-oss-20b)."),
-        ("Validator agent", "Implemented", "Schema, CWE id, cited lines, decision vs evidence."),
+        ("Cost-aware orchestrator", "Implemented", "SAST evidence then Groq; missing GROQ_API_KEY fails clearly."),
+        ("Reasoning agent", "Implemented", "LLMReasoner default (openai/gpt-oss-20b); TemplateReasoner is ablation."),
+        ("Validator agent", "Implemented", "Schema, CWE id, cited lines, JSON consistency. SAST disagreement is a warning."),
         ("Layered packages", "Implemented", "models, dataset, knowledge, sast, retrieval, schema, reasoner, validator, orchestrator, framework, cli."),
         ("Reporting", "Implemented", "Assignment 4 JSON Schema + framework results JSON/MD."),
         ("Evaluation", "Authored corpus", "36 units / 24 held-out traps. No Juliet / OWASP Benchmark / Big-Vul numbers."),
@@ -214,15 +222,15 @@ def main() -> None:
         "Progress summary: XAI → RAG → CWE knowledge → agentic AI → Java seed + SAST baseline "
         "→ hybrid retrieval → schema → evidence → template reasoner → validator → "
         "orchestrator → framework CLI → layered packages → MiniLM embeddings + LLM "
-        "reasoner → research evaluation on an authored expanded corpus. Live Groq used "
-        "in trials. Public-benchmark evaluation remains later.",
+        "reasoner → research evaluation on an authored expanded corpus → live Groq default "
+        "with validator uncoupled from SAST. Public-benchmark evaluation remains later.",
     )
 
     set_cell(
         doc.tables[0].rows[0].cells[0],
-        "Research focus: RAG-augmented multi-agent CWE vulnerability detection. Runnable path is "
-        "seed-only (regex SAST, MiniLM/TF-IDF hybrid retrieval, template reasoner, optional "
-        "LLM). Cost-aware routing lives in the orchestrator.",
+        "Research focus: RAG-augmented multi-agent CWE vulnerability detection. The live path is "
+        "regex SAST evidence, MiniLM/TF-IDF hybrid retrieval, Groq LLMReasoner, and a validator "
+        "that checks schema/lines/KB rather than SAST agreement. Template/SAST are paper ablations.",
     )
 
     doc.save(str(SRC))

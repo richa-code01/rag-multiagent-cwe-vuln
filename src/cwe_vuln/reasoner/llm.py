@@ -1,6 +1,7 @@
 """OpenAI-compatible LLM reasoner behind the same Reasoner port as TemplateReasoner.
 
-Never constructed by the orchestrator when no API key is set. Import is always safe.
+Pipeline.default() requires a Groq key. Import is always safe; from_env() returns None
+without a key so tests and --offline can skip construction.
 """
 
 from __future__ import annotations

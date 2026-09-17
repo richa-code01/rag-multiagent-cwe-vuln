@@ -5,13 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from cwe_vuln.config import repo_root, settings
+from cwe_vuln.config import MissingLLMKeyError, MISSING_LLM_KEY_MESSAGE, repo_root, settings
 from cwe_vuln.dataset import SeedUnit, load_research_corpus, load_seed
 from cwe_vuln.models.metrics import binary_metrics
 from cwe_vuln.orchestrator import Pipeline
@@ -177,12 +178,20 @@ def trial_pipeline(
             cited_n += 1
             if check.passed:
                 cited_ok += 1
+    disagreement = 0
+    for row in rows:
+        if row is None:
+            continue
+        if any(item.name == "sast_disagreement" for item in row.report.warnings):
+            disagreement += 1
     extra = {
         "validation_pass": validator_pass,
         "validation_pass_rate": (validator_pass / len(units)) if units else 0.0,
         "cited_lines_grounded": cited_ok,
         "cited_lines_n": cited_n,
         "cited_lines_rate": (cited_ok / cited_n) if cited_n else 0.0,
+        "sast_disagreement": disagreement,
+        "sast_disagreement_rate": (disagreement / len(units)) if units else 0.0,
         "detector_path_counts": _counts(getattr(row, "path", None) for row in rows if row is not None),
         "reasoner_counts": _counts(getattr(row, "reasoner", None) for row in rows if row is not None),
         "embedder": getattr(pipeline.retriever, "embedder_name", "unknown"),
@@ -193,6 +202,9 @@ def trial_pipeline(
                 "path": None if row is None else row.path,
                 "reasoner": None if row is None else row.reasoner,
                 "validator_passed": None if row is None else row.report.passed,
+                "sast_disagreement": None
+                if row is None
+                else any(item.name == "sast_disagreement" for item in row.report.warnings),
             }
             for unit, row in zip(units, rows, strict=True)
         ],
@@ -204,7 +216,7 @@ def trial_pipeline(
         y_pred=y_pred,
         config={
             "suite": suite,
-            "reasoner": "template" if pipeline.llm_reasoner is None else "llm_or_template",
+            "reasoner": "template" if pipeline.llm_reasoner is None else "llm",
             "skip_llm_when_sast_hits": pipeline.skip_llm_when_sast_hits,
             "use_llm_if_available": pipeline.use_llm_if_available,
             "model": getattr(pipeline.llm_reasoner, "model", None),
@@ -345,7 +357,10 @@ def _candidate_models() -> list[str]:
     return ordered
 
 
-def run_research_suite(skip_llm: bool = False) -> list[dict[str, Any]]:
+def run_research_suite(ablation: str = "none") -> list[dict[str, Any]]:
+    if ablation != "template" and not settings.llm_api_key():
+        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+
     units = load_research_corpus(split="research_test")
     retriever = HybridRetriever.load(allow_download=True)
     trials: list[dict[str, Any]] = [
@@ -356,45 +371,12 @@ def run_research_suite(skip_llm: bool = False) -> list[dict[str, Any]]:
             "research_test",
             "research",
             _make_pipeline(retriever, None, skip_llm_when_sast_hits=True, use_llm=False),
-            notes="Template reasoner, no LLM. Decisions follow regex evidence.",
+            notes="Ablation: TemplateReasoner, no LLM. Decisions follow regex evidence. Not the system of record.",
         ),
     ]
     trials.extend(trial_retrieval(retriever, "research"))
 
-    if skip_llm:
-        trials.append(
-            _failed_trial(
-                "llm_then_research_test",
-                "research_test",
-                "research",
-                "Skipped by --skip-llm.",
-                "skipped",
-                {"reasoner": "llm", "skip_llm_when_sast_hits": False},
-            )
-        )
-        return trials
-
-    if not settings.llm_api_key():
-        trials.append(
-            _failed_trial(
-                "llm_then_research_test",
-                "research_test",
-                "research",
-                "No GROQ_API_KEY / CWE_VULN_LLM_API_KEY; live LLM trial not run.",
-                "missing_api_key",
-                {"reasoner": "llm"},
-            )
-        )
-        trials.append(
-            _failed_trial(
-                "llm_skip_when_sast_research_test",
-                "research_test",
-                "research",
-                "No API key; cost-path skip_llm not run live.",
-                "missing_api_key",
-                {"reasoner": "llm", "skip_llm_when_sast_hits": True},
-            )
-        )
+    if ablation == "template":
         return trials
 
     llm, model_notes = _llm_with_fallback()
@@ -419,21 +401,35 @@ def run_research_suite(skip_llm: bool = False) -> list[dict[str, Any]]:
             "research_test",
             "research",
             then_pipe,
-            notes="Live Groq then_llm (SAST/retrieve then LLM). " + model_notes,
+            notes="System of record: live Groq LLMReasoner grounded in code + SAST evidence + hybrid CWE hits. "
+            + model_notes,
         )
     )
+    seed_test = load_seed(split="test")
     time.sleep(1)
-    skip_pipe = _make_pipeline(retriever, llm, skip_llm_when_sast_hits=True, use_llm=True)
     trials.append(
         trial_pipeline(
-            "llm_skip_when_sast_research_test",
-            units,
-            "research_test",
-            "research",
-            skip_pipe,
-            notes="Cost path skip_llm: SAST hits use template; no-hit units use LLM. " + model_notes,
+            "llm_then_seed_test",
+            seed_test,
+            "test",
+            "seed",
+            then_pipe,
+            notes="Live Groq on the assignment seed test split (n=4). seed-only — not a benchmark. " + model_notes,
         )
     )
+    if ablation == "skip-llm":
+        time.sleep(1)
+        skip_pipe = _make_pipeline(retriever, llm, skip_llm_when_sast_hits=True, use_llm=True)
+        trials.append(
+            trial_pipeline(
+                "llm_skip_when_sast_research_test",
+                units,
+                "research_test",
+                "research",
+                skip_pipe,
+                notes="Ablation cost path skip_llm: SAST hits use template; no-hit units use LLM. " + model_notes,
+            )
+        )
     return trials
 
 
@@ -470,8 +466,9 @@ def run_seed_suite() -> list[dict[str, Any]]:
     return [trial_sast(units, "seed_all", "seed")]
 
 
-def write_summary(trials: list[dict[str, Any]], root: Path | None = None) -> tuple[Path, Path]:
-    base = root or repo_root()
+def write_summary(trials: list[dict[str, Any]], root: Path | None = None, summary_dir: Path | None = None) -> tuple[Path, Path]:
+    dest = summary_dir if summary_dir is not None else ((root or repo_root()) / "results")
+    dest.mkdir(parents=True, exist_ok=True)
     detection = [
         item
         for item in trials
@@ -483,6 +480,7 @@ def write_summary(trials: list[dict[str, Any]], root: Path | None = None) -> tup
         "sast_regex_research_test",
         "template_skip_llm_research_test",
         "llm_then_research_test",
+        "llm_then_seed_test",
         "llm_skip_when_sast_research_test",
     )
     detection.sort(key=lambda item: order.index(item["trial_id"]) if item["trial_id"] in order else 99)
@@ -521,6 +519,8 @@ def write_summary(trials: list[dict[str, Any]], root: Path | None = None) -> tup
                 "fp": item["metrics"]["fp"],
                 "fn": item["metrics"]["fn"],
                 "n": item["metrics"]["support"],
+                "validation_pass": item.get("validation_pass"),
+                "validation_pass_rate": item.get("validation_pass_rate"),
             }
             for item in detection
         ],
@@ -534,10 +534,9 @@ def write_summary(trials: list[dict[str, Any]], root: Path | None = None) -> tup
             if item["trial_id"] != "retrieval_expanded_all_systems"
         ],
     }
-    json_path = base / "results" / "research-eval-summary.json"
-    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path = dest / "research-eval-summary.json"
     json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    md_path = base / "results" / "research-eval-summary.md"
+    md_path = dest / "research-eval-summary.md"
     md_path.write_text(_summary_markdown(summary), encoding="utf-8")
     return json_path, md_path
 
@@ -555,13 +554,16 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
         "",
         "## Detection (research trials)",
         "",
-        "| System | Precision | Recall | F1 | FP | FN | n |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| System | Precision | Recall | F1 | FP | FN | n | Validator |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in summary["detection_table"]:
+        val = row.get("validation_pass")
+        n = row["n"]
+        val_cell = "—" if val is None else f"{val}/{n}"
         lines.append(
             f"| {row['system']} | {row['precision']:.3f} | {row['recall']:.3f} | "
-            f"{row['f1']:.3f} | {row['fp']} | {row['fn']} | {row['n']} |"
+            f"{row['f1']:.3f} | {row['fp']} | {row['fn']} | {n} | {val_cell} |"
         )
     lines.extend(
         [
@@ -591,17 +593,39 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run authored-corpus research evaluation trials.")
     parser.add_argument("--suite", choices=["research", "seed", "all"], default="research")
-    parser.add_argument("--skip-llm", action="store_true")
+    parser.add_argument(
+        "--ablation",
+        choices=["none", "template", "skip-llm"],
+        default="none",
+        help="none = live Groq (default). template = SAST/template contrast only. skip-llm = cost-path ablation.",
+    )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Alias for --ablation template (paper comparison; not the system of record).",
+    )
+    parser.add_argument(
+        "--skip-llm",
+        action="store_true",
+        help="Deprecated alias for --ablation template.",
+    )
     parser.add_argument("--output-dir", type=Path, default=None)
     args = parser.parse_args(argv)
+    ablation = args.ablation
+    if args.offline or args.skip_llm:
+        ablation = "template"
 
     out = args.output_dir or experiments_dir()
     out.mkdir(parents=True, exist_ok=True)
     trials: list[dict[str, Any]] = []
-    if args.suite in {"research", "all"}:
-        trials.extend(run_research_suite(skip_llm=args.skip_llm))
-    if args.suite in {"seed", "all"}:
-        trials.extend(run_seed_suite())
+    try:
+        if args.suite in {"research", "all"}:
+            trials.extend(run_research_suite(ablation=ablation))
+        if args.suite in {"seed", "all"}:
+            trials.extend(run_seed_suite())
+    except MissingLLMKeyError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
     for trial in trials:
         path = write_trial(trial, out)
@@ -614,11 +638,15 @@ def main(argv: list[str] | None = None) -> int:
         if trial_id and trial_id not in known:
             extras.append(payload)
             known.add(trial_id)
-    json_path, md_path = write_summary(trials + extras)
+    json_path, md_path = write_summary(
+        trials + extras,
+        summary_dir=args.output_dir if args.output_dir is not None else None,
+    )
     print(f"wrote {json_path}")
     print(f"wrote {md_path}")
     print(DISCLAIMER)
-    return 0
+    failed = [item for item in trials if item.get("status") == "failed"]
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

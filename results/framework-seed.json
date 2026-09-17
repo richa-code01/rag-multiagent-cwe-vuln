@@ -1,12 +1,13 @@
 {
   "assignment": "framework",
-  "generated_at": "2026-09-17T02:54:10Z",
+  "generated_at": "2026-09-17T03:59:51Z",
   "evaluation_scope": "authored_seed_only",
   "seed_only_not_a_benchmark": true,
   "disclaimer": "seed-only \u2014 not a benchmark. Metrics are the authored Java seed (test split default; pass --split all for all 12 units).",
   "split": "test",
   "n_units": 4,
   "embedder": "minilm",
+  "offline": false,
   "llm_configured": true,
   "detector_path_counts": {
     "sast_then_llm": 2,
@@ -16,6 +17,7 @@
     "llm": 4
   },
   "validation_pass": 4,
+  "sast_disagreement": 0,
   "metrics": {
     "tp": 2,
     "fp": 0,
@@ -85,10 +87,10 @@
           "end_line": 14,
           "snippet": "        String password = \"password\";"
         },
-        "root_cause": "Hardcoded credentials are embedded directly in the source code.",
-        "explanation": "The code assigns a literal username and password to variables, exposing them in the codebase. This allows anyone with access to the source to discover valid credentials, enabling unauthorized access or credential reuse across systems.",
-        "remediation": "Remove hardcoded credentials from source code. Store credentials in secure configuration files, environment variables, or a secrets management service, and load them at runtime. Ensure credentials are not committed to version control.",
-        "confidence": 0.95,
+        "root_cause": "Hardcoded password literal in source code",
+        "explanation": "The code assigns a literal password value directly in the source, exposing credentials that can be easily discovered by anyone with access to the codebase. This violates secure coding practices and increases the risk of credential compromise.",
+        "remediation": "Move credentials out of source code. Store them in secure configuration files, environment variables, or a secrets management system, and load them at runtime. Ensure that the application does not log or expose these values.",
+        "confidence": 0.9,
         "evidence_ids": [
           "java_cwe798_hardcoded:hardcoded_secret_literal:14"
         ]
@@ -113,7 +115,7 @@
             "detail": "ok"
           },
           {
-            "name": "decision_consistency",
+            "name": "internal_consistency",
             "passed": true,
             "detail": "ok"
           }
@@ -163,13 +165,13 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe798EnvConfigSafe.java",
-          "start_line": 11,
-          "end_line": 13,
-          "snippet": "    public String connect() {\n        String username = System.getenv(\"APP_USERNAME\");\n        String password = System.getenv(\"APP_PASSWORD\");"
+          "start_line": 12,
+          "end_line": 14,
+          "snippet": "        String username = System.getenv(\"APP_USERNAME\");\n        String password = System.getenv(\"APP_PASSWORD\");\n        return username + \":\" + password;"
         },
-        "root_cause": "Credentials are obtained from environment variables rather than being hard-coded in the source code.",
-        "explanation": "The code retrieves the username and password via System.getenv, which is a secure practice for handling credentials. No hard-coded credentials are present, so the sample does not exhibit CWE-798 vulnerability.",
-        "remediation": "No remediation required; ensure that the environment variables APP_USERNAME and APP_PASSWORD are securely managed and not exposed in logs or error messages.",
+        "root_cause": "The credentials are retrieved from environment variables rather than being hard\u2011coded in the source code, which mitigates the risk associated with CWE\u2011798.",
+        "explanation": "CWE\u2011798 concerns the use of hard\u2011coded credentials. In this implementation the username and password are obtained via System.getenv(), meaning they are supplied externally at runtime and are not embedded in the code. Therefore the code does not exhibit the vulnerability described by CWE\u2011798.",
+        "remediation": "No remediation is required for this pattern. Ensure that the environment variables are protected and not exposed in logs or error messages.",
         "confidence": 1.0
       },
       "validation": {
@@ -192,7 +194,7 @@
             "detail": "ok"
           },
           {
-            "name": "decision_consistency",
+            "name": "internal_consistency",
             "passed": true,
             "detail": "ok"
           }
@@ -257,10 +259,10 @@
           "end_line": 14,
           "snippet": "        MessageDigest digest = MessageDigest.getInstance(\"MD5\");"
         },
-        "root_cause": "The code uses MD5 as the hash algorithm via MessageDigest.getInstance(\"MD5\"), which is a known weak and broken cryptographic algorithm.",
-        "explanation": "MD5 has been proven vulnerable to collision attacks and is no longer considered secure for cryptographic purposes. Using it for hashing sensitive data exposes the system to potential forgery and collision attacks, undermining data integrity and authenticity.",
-        "remediation": "Replace MD5 with a modern, secure hash function such as SHA-256 or SHA-3. For example: MessageDigest digest = MessageDigest.getInstance(\"SHA-256\");",
-        "confidence": 1.0,
+        "root_cause": "The code uses MD5 as the hash algorithm, which is cryptographically broken and considered insecure for any security-sensitive purpose.",
+        "explanation": "MD5 produces 128\u2011bit digests that are vulnerable to collision attacks and preimage attacks. Modern cryptographic practice requires stronger hash functions such as SHA\u2011256 or SHA\u20113. Using MD5 in this context exposes the application to potential hash collision attacks, undermining data integrity and authenticity guarantees.",
+        "remediation": "Replace the MD5 algorithm with a secure hash function, e.g., SHA\u2011256: MessageDigest digest = MessageDigest.getInstance(\"SHA-256\"); Ensure that the rest of the application handles the larger digest size appropriately.",
+        "confidence": 0.9,
         "evidence_ids": [
           "java_cwe327_md5:weak_crypto_algorithm:14"
         ]
@@ -285,7 +287,7 @@
             "detail": "ok"
           },
           {
-            "name": "decision_consistency",
+            "name": "internal_consistency",
             "passed": true,
             "detail": "ok"
           }
@@ -335,13 +337,13 @@
         },
         "supporting_source_lines": {
           "path": "data/seed/java/Cwe327Sha256Safe.java",
-          "start_line": 13,
-          "end_line": 15,
-          "snippet": "    public byte[] digest(byte[] data) throws Exception {\n        MessageDigest digest = MessageDigest.getInstance(\"SHA-256\");\n        return digest.digest(data);"
+          "start_line": 10,
+          "end_line": 13,
+          "snippet": " * Teaching sample for a detector. Not an exploit or attack procedure.\n */\npublic class Cwe327Sha256Safe {\n    public byte[] digest(byte[] data) throws Exception {"
         },
-        "root_cause": "The code uses SHA-256, a modern and secure hash function, and does not employ any deprecated or weak algorithms.",
-        "explanation": "SHA-256 is considered cryptographically strong for hashing purposes. The implementation correctly obtains a MessageDigest instance for SHA-256 and applies it to the input data. No known weaknesses or improper usage patterns are present in this snippet.",
-        "remediation": "No remediation required; the implementation follows best practices for hashing with SHA-256.",
+        "root_cause": "The code uses SHA-256, a secure hash algorithm, and does not involve any insecure practices.",
+        "explanation": "SHA-256 is a modern, collision-resistant hash function. The implementation correctly obtains a MessageDigest instance for SHA-256 and processes the input data. No deprecated or weak algorithms are used, and there is no misuse of the API.",
+        "remediation": "No remediation needed; the implementation follows best practices for hashing.",
         "confidence": 0.95
       },
       "validation": {
@@ -364,7 +366,7 @@
             "detail": "ok"
           },
           {
-            "name": "decision_consistency",
+            "name": "internal_consistency",
             "passed": true,
             "detail": "ok"
           }
