@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.local/cwe-vuln/reasoning-output.schema.json",
   "title": "ReasoningAgentOutput",
-  "description": "Assignment 4 structured output for the future reasoning agent. Schema first; the complete agent is not implemented in this assignment.",
+  "description": "Assignment 4 structured output for the reasoning agent. Schema first in this assignment; template and Groq LLM reasoners landed later.",
   "type": "object",
   "additionalProperties": false,
   "required": [

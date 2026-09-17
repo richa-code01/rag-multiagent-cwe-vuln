@@ -27,10 +27,11 @@ Cost-aware routing is an orchestrator component. It is **not** in the thesis tit
 | Validator | **Done** [PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7) | `validator` | [validator.md](validator.md) | `uv run pytest tests/validator/test_validator.py` |
 | Cost-aware orchestrator | **Done** [PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8) | `orchestrator` | [orchestrator.md](orchestrator.md) | `uv run pytest tests/orchestrator/test_orchestrator.py` |
 | Complete multi-agent framework | **Done** [PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9) | `framework` | [framework.md](framework.md) | `uv run cwe-vuln-pipeline` → [results/framework-seed.json](../results/framework-seed.json) |
-| Layered package layout | **This PR** | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
+| Layered package layout | **Done** [PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10) | `modular-layout` | [architecture.md](architecture.md) | `uv sync && uv run pytest && uv run cwe-vuln-pipeline` |
+| Neural embeddings + LLM reasoner | **This PR** | `embeddings-llm` | [architecture.md](architecture.md) · [reasoning-agent.md](reasoning-agent.md) | MiniLM local; LLM via env key; template fallback |
 
 ## Honesty
 
 - All detection/retrieval/framework scores are **seed-only — not a benchmark**
-- A3 retrieval is lexical TF-IDF, not neural embeddings
-- Reasoner is a template composer; LLM is skipped without a key and is not implemented
+- A3 retrieval now has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
+- `TemplateReasoner` is the default offline composer; `LLMReasoner` runs only when `GROQ_API_KEY` is set

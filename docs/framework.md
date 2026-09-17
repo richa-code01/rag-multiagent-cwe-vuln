@@ -8,8 +8,8 @@ Thin CLI over `Pipeline.run` (`src/cwe_vuln/framework/`). Agents and data flow: 
 ```text
 Java unit
   → SAST Evidence[]          (regex rules)
-  → RankedHit[]              (hybrid TF-IDF + SAST + CWE relationships)
-  → ReasoningResult          (template reasoner, A4 schema)
+  → RankedHit[]              (hybrid MiniLM or TF-IDF fallback + SAST + CWE relationships)
+  → ReasoningResult          (template, or LLM when a key is set; A4 schema)
   → ValidationReport
   → binary metrics vs seed labels
 ```
@@ -21,6 +21,6 @@ uv run cwe-vuln-pipeline
 uv run cwe-vuln-pipeline --split all
 ```
 
-Writes `results/framework-seed.json` (and `.md`). Recorded test-split run: P=1.000 R=1.000 F1=1.000 FP=0 FN=0, 4/4 validator pass, paths `sast_first_skip_llm=2` / `hybrid_retrieve_skip_llm=2`.
+Writes `results/framework-seed.json` (and `.md`). Recorded test-split run (**seed-only**, live Groq `openai/gpt-oss-20b`, embedder=`minilm`): P=1.000 R=1.000 F1=1.000 FP=0 FN=0, 4/4 validator pass, paths `sast_then_llm=2` / `hybrid_retrieve_then_llm=2`, reasoner `llm`. `--split all` (12 units): same scores, 12/12 validator pass, paths 6/6.
 
-Still not a public benchmark. Neural embeddings and a live LLM reasoner are not implemented; the default path is offline.
+Still not a public benchmark. MiniLM is local. Live Groq uses `GROQ_API_KEY`; without a key the pipeline stays offline.

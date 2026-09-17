@@ -49,4 +49,4 @@ uv run cwe-vuln-schema data/schema_samples/vulnerable.json data/schema_samples/n
 
 ## Later work (not Assignment 4 itself)
 
-SAST evidence, template reasoner, validator, orchestrator, and `cwe-vuln-pipeline` landed in PRs #5–#9. Layout: [`architecture.md`](architecture.md).
+SAST evidence, template reasoner, validator, orchestrator, and `cwe-vuln-pipeline` landed in PRs #5–#9. MiniLM embeddings + Groq `LLMReasoner` (offline `TemplateReasoner` fallback) landed on `embeddings-llm`. Layout: [`architecture.md`](architecture.md).
