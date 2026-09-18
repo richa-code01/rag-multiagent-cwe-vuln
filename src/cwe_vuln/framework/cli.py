@@ -10,6 +10,7 @@ from pathlib import Path
 
 from cwe_vuln.config import MissingLLMKeyError, repo_root, settings
 from cwe_vuln.dataset import load_seed
+from cwe_vuln.dataset.sanitize import sanitize_unit
 from cwe_vuln.models.metrics import binary_metrics
 from cwe_vuln.orchestrator import Pipeline
 
@@ -22,7 +23,7 @@ SEED_ONLY = (
 def run_split(split: str, *, offline: bool = False) -> dict:
     units = load_seed(split=split) if split in {"train", "test"} else load_seed()
     pipeline = Pipeline.offline() if offline else Pipeline.default()
-    rows = [pipeline.run(unit) for unit in units]
+    rows = [pipeline.run(sanitize_unit(unit)) for unit in units]
     y_true = [unit.is_vulnerable for unit in units]
     y_pred = [row.result.decision == "vulnerable" for row in rows]
     scores = binary_metrics(y_true, y_pred)

@@ -16,6 +16,7 @@ from cwe_vuln.dataset.research import (
     load_research_corpus,
     research_labels_path,
 )
+from cwe_vuln.dataset.sanitize import find_gold_tokens, opaque_unit_id, sanitize_unit
 from cwe_vuln.dataset.seed import (
     TEST_UNIT_IDS,
     TRAIN_UNIT_IDS,
@@ -42,14 +43,17 @@ __all__ = [
     "SeedUnit",
     "Split",
     "ensure_juliet",
+    "find_gold_tokens",
     "labels_path",
     "load_juliet_units",
     "load_research_corpus",
     "load_sample_units",
     "load_seed",
+    "opaque_unit_id",
     "repo_root",
     "research_labels_path",
     "sample_manifest_path",
+    "sanitize_unit",
     "stratified_sample",
     "unit_from_payload",
     "write_sample_manifest",

@@ -46,3 +46,6 @@ data/benchmarks/downloads/
 # Local thesis drafts (do not commit)
 ApproachDoc.pdf
 RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx
+
+# Raw LLM responses / prompts captured during trials (error analysis only)
+raw_llm/

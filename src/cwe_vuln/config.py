@@ -88,6 +88,8 @@ load_project_env()
 class Settings:
     top_k: int = 5
     rrf_k: int = 60
+    prompt_max_chars: int = 4000
+    retrieval_query_chars: int = 1500
     llm_env_vars: tuple[str, ...] = LLM_KEY_ENV_VARS
     use_llm_if_available: bool = True
     skip_llm_when_sast_hits: bool = False

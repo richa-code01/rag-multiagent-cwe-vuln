@@ -115,11 +115,13 @@ class HybridRetriever:
         ]
 
     def rank_for_unit(self, unit: SeedUnit) -> list[RankedHit]:
-        """Unit-level retrieve: notes as query, source as SAST signal, truncated to config.top_k."""
+        """Unit-level retrieve: sanitized source excerpt as the query, source as the
+        SAST signal, truncated to config.top_k. ``unit.notes`` is never used here:
+        benchmark adapters put gold labels (``real=true``, CWE ids) in notes."""
         self.units_by_id[unit.unit_id] = unit
         query = RetrievalQuery(
             query_id=unit.unit_id,
-            query=unit.notes,
+            query=unit.source[: settings.retrieval_query_chars],
             relevant_cwes=(),
             unit_id=unit.unit_id,
         )

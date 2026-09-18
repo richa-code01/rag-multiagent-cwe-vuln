@@ -44,9 +44,19 @@ class PipelineResult:
     report: ValidationReport
     reasoner: str = "template"
     embedder: str = "tfidf_fallback"
+    # LLM diagnostics (None/0 for the deterministic template path).
+    model: str | None = None
+    fallback_reason: str | None = None
+    n_attempts: int = 0
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    latency_ms: int | None = None
+    prompt_chars: int | None = None
+    truncated: bool | None = None
+    slice_strategy: str | None = None
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "unit_id": self.unit_id,
             "path": self.path,
             "reasoner": self.reasoner,
@@ -56,3 +66,16 @@ class PipelineResult:
             "reasoning": self.result.to_dict(),
             "validation": self.report.to_dict(),
         }
+        diagnostics = {
+            "model": self.model,
+            "fallback_reason": self.fallback_reason,
+            "n_attempts": self.n_attempts,
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "latency_ms": self.latency_ms,
+            "prompt_chars": self.prompt_chars,
+            "truncated": self.truncated,
+            "slice_strategy": self.slice_strategy,
+        }
+        payload["diagnostics"] = {key: value for key, value in diagnostics.items() if value is not None}
+        return payload

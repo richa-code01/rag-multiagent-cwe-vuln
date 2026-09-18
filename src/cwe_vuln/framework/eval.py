@@ -14,6 +14,8 @@ from typing import Any
 
 from cwe_vuln.config import MissingLLMKeyError, MISSING_LLM_KEY_MESSAGE, repo_root, settings
 from cwe_vuln.dataset import SeedUnit, load_research_corpus, load_seed
+from cwe_vuln.dataset.sanitize import find_gold_tokens, opaque_unit_id, sanitize_unit
+from cwe_vuln.knowledge import CWEKnowledgeBase
 from cwe_vuln.dataset.common import (
     DEFAULT_SUITE_SAMPLE_N,
     SuiteError,
@@ -61,12 +63,17 @@ JULIET_DISCLAIMER = (
     "Nearby CWE folders keep their Juliet ids (no silent relabel to 79/22/798/327)."
 )
 
+# Verified live on this Groq free-tier key 2026-09-18 (GET /openai/v1/models).
+# Dead names removed: llama-3.3-70b-versatile (404), llama-4-scout (404), gemma2-9b-it (decommissioned).
 FALLBACK_MODELS = (
     "openai/gpt-oss-20b",
-    "llama-3.3-70b-versatile",
-    "meta-llama/llama-4-scout-17b-16e-instruct",
-    "gemma2-9b-it",
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.8-27b",
 )
+
+# Set by main(); raw LLM responses land in <output_dir>/raw_llm/<trial_id>/*.json.
+# Gitignored. None disables capture (unit tests call trial_pipeline directly).
+RAW_LLM_DIR: Path | None = None
 
 
 def experiments_dir(root: Path | None = None) -> Path:
@@ -199,57 +206,53 @@ def trial_pipeline(
     evaluation_scope: str | None = None,
     disclaimer: str | None = None,
 ) -> dict[str, Any]:
-    rows = []
+    """Run the pipeline on sanitized prompt copies; score against original gold.
+
+    Every unit is sanitized before the LLM sees it (opaque id, neutral path,
+    FLAW/FIX comments blanked, bad/good identifiers renamed). Scoring uses the
+    original unit labels. Units that error (non-rate-limit) are excluded from
+    scoring and listed under failed_units — never silently scored as benign.
+    """
+    kb = CWEKnowledgeBase.load()
+    rows: list[Any] = []
     y_pred: list[bool] = []
     errors: list[str] = []
     used: list[SeedUnit] = []
+    failed: list[dict[str, str]] = []
+    prompt_leaks: list[str] = []
     rate_limited = False
     skipped = 0
     for index, unit in enumerate(units):
         if delay_seconds and index:
             time.sleep(delay_seconds)
+        prompt_unit = sanitize_unit(unit)
         try:
-            row = pipeline.run(unit)
-            rows.append(row)
-            y_pred.append(row.result.decision == "vulnerable")
-            used.append(unit)
+            row = pipeline.run(prompt_unit)
         except Exception as exc:
             text = redact(f"{unit.unit_id}: {exc}")
             if stop_on_rate_limit and _is_rate_limit(text):
-                retried = False
-                for wait in (12, 30, 60):
-                    time.sleep(wait)
-                    try:
-                        row = pipeline.run(unit)
-                        rows.append(row)
-                        y_pred.append(row.result.decision == "vulnerable")
-                        used.append(unit)
-                        retried = True
-                        break
-                    except Exception as retry_exc:
-                        text = redact(f"{unit.unit_id}: {retry_exc}")
-                        if not _is_rate_limit(text):
-                            errors.append(text)
-                            break
-                if retried:
-                    continue
-                rate_limited = True
+                row = _retry_after_backoff(pipeline, prompt_unit)
+                if row is None:
+                    rate_limited = True
+                    errors.append(text)
+                    skipped = len(units) - index
+                    break
+            else:
                 errors.append(text)
-                skipped = len(units) - index
-                break
-            errors.append(text)
-            y_pred.append(False)
-            rows.append(None)
-            used.append(unit)
-    scored_units = used if used else units
-    scored_pred = y_pred
-    n_scored = len(scored_units)
-    validator_pass = sum(1 for row in rows if row is not None and row.report.passed)
+                failed.append({"unit_id": unit.unit_id, "error": text})
+                continue
+        rows.append(row)
+        y_pred.append(row.result.decision == "vulnerable")
+        used.append(unit)
+        leaks = _prompt_gold_tokens(pipeline)
+        if leaks:
+            prompt_leaks.append(f"{unit.unit_id}:{','.join(leaks)}")
+        _write_raw_llm(trial_id, unit, pipeline)
+    n_scored = len(used)
+    validator_pass = sum(1 for row in rows if row.report.passed)
     cited_ok = 0
     cited_n = 0
     for row in rows:
-        if row is None:
-            continue
         for check in row.report.checks:
             if check.name != "cited_lines":
                 continue
@@ -258,33 +261,30 @@ def trial_pipeline(
                 cited_ok += 1
     disagreement = 0
     for row in rows:
-        if row is None:
-            continue
         if any(item.name == "sast_disagreement" for item in row.report.warnings):
             disagreement += 1
+    cwe_exact, cwe_family = _cwe_match(rows, used, kb)
     extra = {
         "validation_pass": validator_pass,
         "validation_pass_rate": (validator_pass / n_scored) if n_scored else 0.0,
         "cited_lines_grounded": cited_ok,
         "cited_lines_n": cited_n,
         "cited_lines_rate": (cited_ok / cited_n) if cited_n else 0.0,
+        "cited_lines_note": "raw pass rate; no span substitution is applied to LLM citations",
         "sast_disagreement": disagreement,
         "sast_disagreement_rate": (disagreement / n_scored) if n_scored else 0.0,
-        "detector_path_counts": _counts(getattr(row, "path", None) for row in rows if row is not None),
-        "reasoner_counts": _counts(getattr(row, "reasoner", None) for row in rows if row is not None),
+        "cwe_exact_match": cwe_exact,
+        "cwe_family_match": cwe_family,
+        "detector_path_counts": _counts(row.path for row in rows),
+        "reasoner_counts": _counts(row.reasoner for row in rows),
         "embedder": getattr(pipeline.retriever, "embedder_name", "unknown"),
+        "prompt_sanitized": True,
+        "prompt_audit_leaks": prompt_leaks,
+        "failed_units": failed,
+        "token_usage": _token_usage(rows),
         "unit_decisions": [
-            {
-                "unit_id": unit.unit_id,
-                "decision": None if row is None else row.result.decision,
-                "path": None if row is None else row.path,
-                "reasoner": None if row is None else row.reasoner,
-                "validator_passed": None if row is None else row.report.passed,
-                "sast_disagreement": None
-                if row is None
-                else any(item.name == "sast_disagreement" for item in row.report.warnings),
-            }
-            for unit, row in zip(scored_units, rows, strict=True)
+            _unit_decision(unit, row, kb)
+            for unit, row in zip(used, rows, strict=True)
         ],
         "n_planned": len(units),
         "n_scored": n_scored,
@@ -294,8 +294,8 @@ def trial_pipeline(
     payload = _detection_trial(
         trial_id=trial_id,
         split=split,
-        units=scored_units,
-        y_pred=scored_pred,
+        units=used,
+        y_pred=y_pred,
         config={
             "suite": suite,
             "reasoner": "template" if pipeline.llm_reasoner is None else "llm",
@@ -306,12 +306,12 @@ def trial_pipeline(
         notes=notes if not errors else notes + " Partial unit errors: " + "; ".join(errors[:8]),
         extra=extra,
     )
-    if errors and all(row is None for row in rows):
+    if not used:
         payload["status"] = "failed"
-        payload["error"] = redact("; ".join(errors[:5]))
-    elif errors:
+        payload["error"] = redact("; ".join(errors[:5]) or "no units scored")
+    elif errors or failed:
         payload["status"] = "partial"
-        payload["error"] = redact("; ".join(errors[:5]))
+        payload["error"] = redact("; ".join(errors[:5]) or f"{len(failed)} unit errors")
     if rate_limited:
         payload["status"] = "partial" if used else "failed"
         payload["error"] = redact("; ".join(errors[:5]) or "rate_limited")
@@ -320,6 +320,126 @@ def trial_pipeline(
     if disclaimer:
         payload["disclaimer"] = disclaimer
     return payload
+
+
+def _retry_after_backoff(pipeline: Pipeline, prompt_unit: SeedUnit) -> Any | None:
+    """Backoff on 429: 12s, 30s, 60s. Returns the row or None if still limited."""
+    for wait in (12, 30, 60):
+        time.sleep(wait)
+        try:
+            return pipeline.run(prompt_unit)
+        except Exception as retry_exc:
+            if not _is_rate_limit(redact(str(retry_exc))):
+                return None
+    return None
+
+
+def _prompt_gold_tokens(pipeline: Pipeline) -> list[str]:
+    """Tripwire: gold tokens found in the rendered prompt (should be empty)."""
+    reasoner = pipeline.llm_reasoner
+    prompt = getattr(reasoner, "last_prompt", None) if reasoner is not None else None
+    if prompt is None:
+        return []
+    return find_gold_tokens(prompt.text)
+
+
+def _write_raw_llm(trial_id: str, unit: SeedUnit, pipeline: Pipeline) -> None:
+    """Persist the raw LLM response + diagnostics for the error taxonomy."""
+    if RAW_LLM_DIR is None:
+        return
+    reasoner = pipeline.llm_reasoner
+    if reasoner is None or not str(getattr(reasoner, "last_backend", "")).startswith("llm"):
+        return
+    prompt = getattr(reasoner, "last_prompt", None)
+    dest = RAW_LLM_DIR / trial_id
+    dest.mkdir(parents=True, exist_ok=True)
+    prompt_id = opaque_unit_id(unit.unit_id)
+    payload = {
+        "unit_id": unit.unit_id,
+        "prompt_id": prompt_id,
+        "model": getattr(reasoner, "model", None),
+        "backend": getattr(reasoner, "last_backend", None),
+        "n_attempts": getattr(reasoner, "n_attempts", None),
+        "fallback_reason": getattr(reasoner, "fallback_reason", None),
+        "errors": getattr(reasoner, "last_errors", None),
+        "usage": getattr(reasoner, "last_usage", None),
+        "latency_ms": getattr(reasoner, "last_latency_ms", None),
+        "finish_reason": getattr(reasoner, "last_finish_reason", None),
+        "raw_response": getattr(reasoner, "last_raw", ""),
+        "prompt_text": prompt.text if prompt is not None else None,
+    }
+    path = dest / f"{prompt_id}.json"
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def _cwe_match(rows: list[Any], units: list[SeedUnit], kb: CWEKnowledgeBase) -> tuple[dict[str, int], dict[str, int]]:
+    """Exact and family (parent/child/peer via KB) CWE-id match over scored units."""
+    exact = {"correct": 0, "total": 0}
+    family = {"correct": 0, "total": 0}
+    for row, unit in zip(rows, units, strict=True):
+        if row is None:
+            continue
+        predicted = row.result.cwe.id
+        gold = unit.cwe_id
+        exact["total"] += 1
+        family["total"] += 1
+        if predicted == gold:
+            exact["correct"] += 1
+            family["correct"] += 1
+            continue
+        related: set[str] = set()
+        if gold in kb.entries:
+            related |= set(kb.relationships(gold).all_ids())
+        if predicted in kb.entries:
+            related |= set(kb.relationships(predicted).all_ids())
+        if predicted in related or gold in related:
+            family["correct"] += 1
+    return exact, family
+
+
+def _token_usage(rows: list[Any]) -> dict[str, Any]:
+    prompt = sum(row.prompt_tokens or 0 for row in rows)
+    completion = sum(row.completion_tokens or 0 for row in rows)
+    latencies = [row.latency_ms for row in rows if row.latency_ms is not None]
+    return {
+        "prompt_tokens": prompt,
+        "completion_tokens": completion,
+        "total_tokens": prompt + completion,
+        "latency_ms_mean": round(sum(latencies) / len(latencies), 1) if latencies else None,
+        "latency_ms_max": max(latencies) if latencies else None,
+    }
+
+
+def _unit_decision(unit: SeedUnit, row: Any, kb: CWEKnowledgeBase) -> dict[str, Any]:
+    predicted = row.result.cwe.id
+    gold = unit.cwe_id
+    related: set[str] = set()
+    if gold in kb.entries:
+        related |= set(kb.relationships(gold).all_ids())
+    if predicted in kb.entries:
+        related |= set(kb.relationships(predicted).all_ids())
+    return {
+        "unit_id": unit.unit_id,
+        "prompt_id": row.unit_id,
+        "decision": row.result.decision,
+        "predicted_cwe": predicted,
+        "gold_cwe": gold,
+        "cwe_exact": predicted == gold,
+        "cwe_family": predicted == gold or predicted in related or gold in related,
+        "path": row.path,
+        "reasoner": row.reasoner,
+        "model": row.model,
+        "fallback_reason": row.fallback_reason,
+        "n_attempts": row.n_attempts,
+        "prompt_tokens": row.prompt_tokens,
+        "completion_tokens": row.completion_tokens,
+        "latency_ms": row.latency_ms,
+        "prompt_chars": row.prompt_chars,
+        "truncated": row.truncated,
+        "slice_strategy": row.slice_strategy,
+        "validator_passed": row.report.passed,
+        "sast_disagreement": any(item.name == "sast_disagreement" for item in row.report.warnings),
+    }
 
 
 def trial_retrieval(retriever: HybridRetriever, suite: str) -> list[dict[str, Any]]:
@@ -1183,6 +1303,8 @@ def main(argv: list[str] | None = None) -> int:
     public = args.suite not in {"research", "seed", "all"}
     out = args.output_dir or (benchmarks_results_dir() if public else experiments_dir())
     out.mkdir(parents=True, exist_ok=True)
+    global RAW_LLM_DIR
+    RAW_LLM_DIR = out / "raw_llm"
     tree = args.suite_tree or args.juliet_tree
     trials: list[dict[str, Any]] = []
     try:

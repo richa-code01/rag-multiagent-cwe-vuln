@@ -73,6 +73,8 @@ class Pipeline:
         )
         report = self.validator.check(result, unit, evidence)
         embedder = getattr(self.retriever, "embedder_name", "unknown")
+        usage = getattr(active, "last_usage", None) or {}
+        prompt = getattr(active, "last_prompt", None)
         return PipelineResult(
             unit_id=unit.unit_id,
             path=path,
@@ -82,6 +84,15 @@ class Pipeline:
             report=report,
             reasoner=backend,
             embedder=embedder,
+            model=getattr(active, "model", None),
+            fallback_reason=getattr(active, "fallback_reason", None),
+            n_attempts=int(getattr(active, "n_attempts", 0) or 0),
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+            latency_ms=getattr(active, "last_latency_ms", None),
+            prompt_chars=getattr(prompt, "prompt_chars", None),
+            truncated=getattr(prompt, "truncated", None),
+            slice_strategy=getattr(prompt, "slice_strategy", None),
         )
 
     def _route(self, has_evidence: bool) -> tuple[str, UnitReasoner]:
