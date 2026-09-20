@@ -49,3 +49,5 @@ RAG_MultiAgent_Vulnerability_Thesis_Progress_Report.docx
 
 # Raw LLM responses / prompts captured during trials (error analysis only)
 raw_llm/
+results/**/raw_llm/
+results/thesis/eval.log

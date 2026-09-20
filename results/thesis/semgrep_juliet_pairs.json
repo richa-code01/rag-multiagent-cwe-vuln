@@ -1,0 +1,9 @@
+{
+  "trial_id": "semgrep_juliet_pairs",
+  "date": "2026-09-20T03:48:31Z",
+  "suite": "juliet-pairs",
+  "status": "skipped",
+  "metrics": null,
+  "notes": "C5 skipped \u2014 semgrep not installed. Not compared to CodeQL (not run).",
+  "error": null
+}

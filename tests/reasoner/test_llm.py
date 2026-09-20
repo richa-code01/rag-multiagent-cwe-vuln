@@ -45,10 +45,11 @@ def test_from_env_without_key_returns_none(monkeypatch) -> None:
     assert LLMReasoner.from_env() is None
 
 
-def test_openai_api_key_is_ignored(monkeypatch) -> None:
+def test_openai_api_key_is_ignored_on_default_groq_provider(monkeypatch) -> None:
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.delenv("CWE_VULN_LLM_API_KEY", raising=False)
     monkeypatch.setenv("OPENAI_API_KEY", "sk-should-not-count")
+    assert settings.llm_provider() == "groq"
     assert settings.llm_api_key() is None
     assert LLMReasoner.from_env() is None
 
@@ -66,6 +67,7 @@ def test_groq_defaults_and_override_key(monkeypatch) -> None:
     assert reasoner.model == "openai/gpt-oss-20b"
     assert reasoner.base_url == "https://api.groq.com/openai/v1"
     assert reasoner.api_key == "gsk-override"
+    assert reasoner.provider_name == "groq"
 
 
 def test_llm_reasoner_with_mocked_client_is_schema_valid() -> None:
@@ -168,6 +170,28 @@ def test_wrong_snippet_fails_cited_lines_instead_of_silent_rewrite() -> None:
     cited = next(check for check in report.checks if check.name == "cited_lines")
     assert not cited.passed
     assert not report.passed
+
+
+def test_unknown_cwe_is_clamped_to_top_hit() -> None:
+    from cwe_vuln.models.retrieval import RankedHit
+    from cwe_vuln.validator import ResultValidator
+
+    unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_concat")
+    payload = _valid_payload(unit.unit_id)
+    payload["cwe"] = {"id": "CWE-0", "name": "Unknown"}
+    hits = [RankedHit(cwe_id="CWE-89", score=1.0, name="SQL Injection", passage="")]
+
+    def complete(_messages: list[dict[str, str]]) -> str:
+        return json.dumps(payload)
+
+    reasoner = LLMReasoner(api_key="gsk-test", complete=complete)
+    result = reasoner.reason(unit, extract_evidence(unit), hits)
+    assert result.cwe.id == "CWE-89"
+    assert result.cwe.name
+    assert reasoner.last_cwe_clamped_from == "CWE-0"
+    report = ResultValidator().check(result, unit, extract_evidence(unit))
+    names = {check.name: check.passed for check in report.checks}
+    assert names["cwe_in_knowledge"] is True
 
 
 def test_rate_limit_is_reraised_not_template_fallback() -> None:

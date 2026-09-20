@@ -1,0 +1,832 @@
+{
+  "generated_at": "2026-09-20T03:51:58Z",
+  "evaluation_scope": "thesis_defendable_eval",
+  "disclaimer": "Sanitized prompts. Old public-suite LLM rows (gold-label leakage / silent Groq fallback) are retracted. Regex SAST on the six named corpora is kept. Fair SAST contrast is sast_regex_sanitized_*; sast_regex_* is raw disk.",
+  "trials": [
+    {
+      "trial_id": "llm_no_retrieval_juliet_pairs",
+      "status": "skipped",
+      "n_units": null,
+      "n_scored": null,
+      "metrics": null,
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "rate_limited",
+      "error": null
+    },
+    {
+      "trial_id": "llm_no_retrieval_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": 24,
+      "metrics": {
+        "tp": 12,
+        "fp": 2,
+        "tn": 10,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.923076923076923,
+        "fpr": 0.16666666666666666,
+        "support": 24
+      },
+      "metrics_exclude_abstain": {
+        "tp": 12,
+        "fp": 2,
+        "tn": 10,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.923076923076923,
+        "fpr": 0.16666666666666666,
+        "support": 24
+      },
+      "abstain_rate": 0.0,
+      "pair_metrics": null,
+      "cwe_exact_match": {
+        "correct": 18,
+        "total": 24
+      },
+      "cwe_parent_child_match": {
+        "correct": 18,
+        "total": 24
+      },
+      "cwe_peer_match": {
+        "correct": 0,
+        "total": 24
+      },
+      "cwe_family_match": {
+        "correct": 18,
+        "total": 24
+      },
+      "cited_lines_rate": 0.4166666666666667,
+      "cited_lines_normalized_rate": 0.9583333333333334,
+      "rate_limited": false,
+      "token_usage": {
+        "prompt_tokens": 16419,
+        "completion_tokens": 26742,
+        "total_tokens": 43161,
+        "latency_ms_mean": 5758.2,
+        "latency_ms_max": 19598
+      },
+      "resumed": null,
+      "notes": "C4 ablation: LLM + code + SAST, empty CWE hits. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_no_sast_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": 24,
+      "metrics": {
+        "tp": 12,
+        "fp": 1,
+        "tn": 11,
+        "fn": 0,
+        "precision": 0.9230769230769231,
+        "recall": 1.0,
+        "f1": 0.9600000000000001,
+        "fpr": 0.08333333333333333,
+        "support": 24
+      },
+      "metrics_exclude_abstain": {
+        "tp": 12,
+        "fp": 1,
+        "tn": 11,
+        "fn": 0,
+        "precision": 0.9230769230769231,
+        "recall": 1.0,
+        "f1": 0.9600000000000001,
+        "fpr": 0.08333333333333333,
+        "support": 24
+      },
+      "abstain_rate": 0.0,
+      "pair_metrics": null,
+      "cwe_exact_match": {
+        "correct": 16,
+        "total": 24
+      },
+      "cwe_parent_child_match": {
+        "correct": 23,
+        "total": 24
+      },
+      "cwe_peer_match": {
+        "correct": 0,
+        "total": 24
+      },
+      "cwe_family_match": {
+        "correct": 23,
+        "total": 24
+      },
+      "cited_lines_rate": 0.3333333333333333,
+      "cited_lines_normalized_rate": 0.875,
+      "rate_limited": false,
+      "token_usage": {
+        "prompt_tokens": 34189,
+        "completion_tokens": 22913,
+        "total_tokens": 57102,
+        "latency_ms_mean": 1558.4,
+        "latency_ms_max": 2507
+      },
+      "resumed": null,
+      "notes": "C4 ablation: LLM + retrieval only, empty SAST evidence. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_juliet_pairs",
+      "status": "partial",
+      "n_units": 35,
+      "n_scored": 35,
+      "metrics": {
+        "tp": 15,
+        "fp": 5,
+        "tn": 12,
+        "fn": 3,
+        "precision": 0.75,
+        "recall": 0.8333333333333334,
+        "f1": 0.7894736842105262,
+        "fpr": 0.29411764705882354,
+        "support": 35
+      },
+      "metrics_exclude_abstain": {
+        "tp": 15,
+        "fp": 5,
+        "tn": 10,
+        "fn": 1,
+        "precision": 0.75,
+        "recall": 0.9375,
+        "f1": 0.8333333333333334,
+        "fpr": 0.3333333333333333,
+        "support": 31
+      },
+      "abstain_rate": 0.11428571428571428,
+      "pair_metrics": {
+        "n_pairs": 17,
+        "n_incomplete": 1,
+        "correct": 9,
+        "accuracy": 0.5294117647058824,
+        "n_abstain": 3,
+        "abstain_rate": 0.17647058823529413,
+        "bootstrap_95": {
+          "mean": 0.5294,
+          "low": 0.2941,
+          "high": 0.7647,
+          "n": 17,
+          "n_boot": 1000
+        },
+        "cwe_502": "not present in Juliet Java 1.3",
+        "uncertain_policy": "A pair with any uncertain decision is incorrect. Pairs missing a decision (TPD) are incomplete and excluded from accuracy."
+      },
+      "cwe_exact_match": {
+        "correct": 14,
+        "total": 35
+      },
+      "cwe_parent_child_match": {
+        "correct": 28,
+        "total": 35
+      },
+      "cwe_peer_match": {
+        "correct": 0,
+        "total": 35
+      },
+      "cwe_family_match": {
+        "correct": 28,
+        "total": 35
+      },
+      "cited_lines_rate": 0.5142857142857142,
+      "cited_lines_normalized_rate": 0.8571428571428571,
+      "rate_limited": true,
+      "token_usage": {
+        "prompt_tokens": 62262,
+        "completion_tokens": 34278,
+        "total_tokens": 96540,
+        "latency_ms_mean": 2385.5,
+        "latency_ms_max": 15219
+      },
+      "resumed": null,
+      "notes": "C2 sanitized Juliet good/bad pairs (single-file variants only). probe_ok model=openai/gpt-oss-20b Partial unit errors: juliet_s04_CWE89_SQL_Injection__URLConnection_prepareStatement_14__method_goodG2B1: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kkjxq033ean84gxkg2vn4bxn` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197791, Requested 3390. Please try again in 8m30.191999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}",
+      "error": "juliet_s04_CWE89_SQL_Injection__URLConnection_prepareStatement_14__method_goodG2B1: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kkjxq033ean84gxkg2vn4bxn` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197791, Requested 3390. Please try again in 8m30.191999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "trial_id": "llm_then_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": 24,
+      "metrics": {
+        "tp": 12,
+        "fp": 2,
+        "tn": 10,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.923076923076923,
+        "fpr": 0.16666666666666666,
+        "support": 24
+      },
+      "metrics_exclude_abstain": {
+        "tp": 12,
+        "fp": 2,
+        "tn": 10,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1.0,
+        "f1": 0.923076923076923,
+        "fpr": 0.16666666666666666,
+        "support": 24
+      },
+      "abstain_rate": 0.0,
+      "pair_metrics": null,
+      "cwe_exact_match": {
+        "correct": 17,
+        "total": 24
+      },
+      "cwe_parent_child_match": {
+        "correct": 21,
+        "total": 24
+      },
+      "cwe_peer_match": {
+        "correct": 0,
+        "total": 24
+      },
+      "cwe_family_match": {
+        "correct": 21,
+        "total": 24
+      },
+      "cited_lines_rate": 0.4583333333333333,
+      "cited_lines_normalized_rate": 0.9166666666666666,
+      "rate_limited": false,
+      "token_usage": {
+        "prompt_tokens": 33352,
+        "completion_tokens": 20378,
+        "total_tokens": 53730,
+        "latency_ms_mean": 14383.4,
+        "latency_ms_max": 23048
+      },
+      "resumed": null,
+      "notes": "C1 replayed from raw_llm (no Groq). Validator/clamp/cited_lines_normalized on persisted completions.",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_vul4j_sliced",
+      "status": "skipped",
+      "n_units": null,
+      "n_scored": null,
+      "metrics": null,
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "rate_limited",
+      "error": null
+    },
+    {
+      "trial_id": "retrieval_units_juliet_pairs",
+      "status": "ok",
+      "n_units": null,
+      "n_scored": null,
+      "metrics": {
+        "lexical_tfidf": {
+          "recall@1": 0.1667,
+          "recall@3": 0.3611,
+          "recall@5": 0.6111,
+          "mrr": 0.3565
+        },
+        "neural": {
+          "recall@1": 0.1667,
+          "recall@3": 0.8333,
+          "recall@5": 1.0,
+          "mrr": 0.4801
+        },
+        "sast": {
+          "recall@1": 0.1944,
+          "recall@3": 0.1944,
+          "recall@5": 0.1944,
+          "mrr": 0.1944
+        },
+        "hybrid_rrf": {
+          "recall@1": 0.25,
+          "recall@3": 0.8333,
+          "recall@5": 0.9167,
+          "mrr": 0.5508
+        }
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "Per-unit retrieval on the same evidence/sink window the LLM sees; relevant id = gold CWE.",
+      "error": null
+    },
+    {
+      "trial_id": "retrieval_units_research_test",
+      "status": "ok",
+      "n_units": null,
+      "n_scored": null,
+      "metrics": {
+        "lexical_tfidf": {
+          "recall@1": 0.1667,
+          "recall@3": 0.5833,
+          "recall@5": 0.625,
+          "mrr": 0.3971
+        },
+        "neural": {
+          "recall@1": 0.7083,
+          "recall@3": 0.875,
+          "recall@5": 0.9167,
+          "mrr": 0.7932
+        },
+        "sast": {
+          "recall@1": 0.25,
+          "recall@3": 0.25,
+          "recall@5": 0.25,
+          "mrr": 0.25
+        },
+        "hybrid_rrf": {
+          "recall@1": 0.75,
+          "recall@3": 0.875,
+          "recall@5": 0.9583,
+          "mrr": 0.8299
+        }
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": true,
+      "notes": "Per-unit retrieval on the same evidence/sink window the LLM sees; relevant id = gold CWE.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_juliet_pairs",
+      "status": "ok",
+      "n_units": 36,
+      "n_scored": null,
+      "metrics": {
+        "tp": 8,
+        "fp": 5,
+        "tn": 13,
+        "fn": 10,
+        "precision": 0.6153846153846154,
+        "recall": 0.4444444444444444,
+        "f1": 0.5161290322580646,
+        "fpr": 0.2777777777777778,
+        "support": 36
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "Regex SAST on original units (raw disk). Not the fair LLM contrast; see sast_regex_sanitized_juliet_pairs for the apples-to-apples row.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": null,
+      "metrics": {
+        "tp": 0,
+        "fp": 12,
+        "tn": 0,
+        "fn": 12,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 1.0,
+        "support": 24
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": true,
+      "notes": "Regex SAST on original units (raw disk). Not the fair LLM contrast; see sast_regex_sanitized_research_test for the apples-to-apples row.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_sanitized_juliet_pairs",
+      "status": "ok",
+      "n_units": 36,
+      "n_scored": null,
+      "metrics": {
+        "tp": 8,
+        "fp": 5,
+        "tn": 13,
+        "fn": 10,
+        "precision": 0.6153846153846154,
+        "recall": 0.4444444444444444,
+        "f1": 0.5161290322580646,
+        "fpr": 0.2777777777777778,
+        "support": 36
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "Regex SAST on sanitized units (same input as template/LLM). Comment-only regex hits disappear when comments are blanked.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_sanitized_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": null,
+      "metrics": {
+        "tp": 0,
+        "fp": 6,
+        "tn": 6,
+        "fn": 12,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "fpr": 0.5,
+        "support": 24
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": true,
+      "notes": "Regex SAST on sanitized units (same input as template/LLM). Comment-only regex hits disappear when comments are blanked.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_vul4j_sliced",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": null,
+      "metrics": {
+        "tp": 2,
+        "fp": 2,
+        "tn": 10,
+        "fn": 10,
+        "precision": 0.5,
+        "recall": 0.16666666666666666,
+        "f1": 0.25,
+        "support": 24
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": true,
+      "notes": "Regex SAST only. On research_test this should be imperfect by construction.",
+      "error": null
+    },
+    {
+      "trial_id": "semgrep_juliet_pairs",
+      "status": "skipped",
+      "n_units": null,
+      "n_scored": null,
+      "metrics": null,
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": null,
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": null,
+      "cited_lines_rate": null,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": null,
+      "token_usage": null,
+      "resumed": null,
+      "notes": "C5 skipped \u2014 semgrep not installed. Not compared to CodeQL (not run).",
+      "error": null
+    },
+    {
+      "trial_id": "template_juliet_pairs",
+      "status": "ok",
+      "n_units": 36,
+      "n_scored": 36,
+      "metrics": {
+        "tp": 8,
+        "fp": 5,
+        "tn": 13,
+        "fn": 10,
+        "precision": 0.6153846153846154,
+        "recall": 0.4444444444444444,
+        "f1": 0.5161290322580646,
+        "fpr": 0.2777777777777778,
+        "support": 36
+      },
+      "metrics_exclude_abstain": {
+        "tp": 8,
+        "fp": 5,
+        "tn": 13,
+        "fn": 10,
+        "precision": 0.6153846153846154,
+        "recall": 0.4444444444444444,
+        "f1": 0.5161290322580646,
+        "fpr": 0.2777777777777778,
+        "support": 36
+      },
+      "abstain_rate": 0.0,
+      "pair_metrics": null,
+      "cwe_exact_match": {
+        "correct": 9,
+        "total": 36
+      },
+      "cwe_parent_child_match": {
+        "correct": 18,
+        "total": 36
+      },
+      "cwe_peer_match": {
+        "correct": 0,
+        "total": 36
+      },
+      "cwe_family_match": {
+        "correct": 18,
+        "total": 36
+      },
+      "cited_lines_rate": 1.0,
+      "cited_lines_normalized_rate": 1.0,
+      "rate_limited": false,
+      "token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "latency_ms_mean": null,
+        "latency_ms_max": null
+      },
+      "resumed": null,
+      "notes": "C2 template ablation on the Juliet pair sample.",
+      "error": null
+    },
+    {
+      "trial_id": "template_research_test",
+      "status": "ok",
+      "n_units": 24,
+      "n_scored": 24,
+      "metrics": {
+        "tp": 0,
+        "fp": 6,
+        "tn": 6,
+        "fn": 12,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 24
+      },
+      "metrics_exclude_abstain": null,
+      "abstain_rate": null,
+      "pair_metrics": null,
+      "cwe_exact_match": {
+        "correct": 18,
+        "total": 24
+      },
+      "cwe_parent_child_match": null,
+      "cwe_peer_match": null,
+      "cwe_family_match": {
+        "correct": 20,
+        "total": 24
+      },
+      "cited_lines_rate": 1.0,
+      "cited_lines_normalized_rate": null,
+      "rate_limited": false,
+      "token_usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "latency_ms_mean": null,
+        "latency_ms_max": null
+      },
+      "resumed": true,
+      "notes": "C4 ablation: TemplateReasoner on authored traps. Not the system of record.",
+      "error": null
+    }
+  ],
+  "detection_table": [
+    {
+      "system": "llm_no_retrieval_research_test",
+      "status": "ok",
+      "precision": 0.8571428571428571,
+      "recall": 1.0,
+      "f1": 0.923076923076923,
+      "fp": 2,
+      "fn": 0,
+      "n": 24,
+      "cwe_exact": {
+        "correct": 18,
+        "total": 24
+      },
+      "validation_pass": 9,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_no_sast_research_test",
+      "status": "ok",
+      "precision": 0.9230769230769231,
+      "recall": 1.0,
+      "f1": 0.9600000000000001,
+      "fp": 1,
+      "fn": 0,
+      "n": 24,
+      "cwe_exact": {
+        "correct": 16,
+        "total": 24
+      },
+      "validation_pass": 8,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_juliet_pairs",
+      "status": "partial",
+      "precision": 0.75,
+      "recall": 0.8333333333333334,
+      "f1": 0.7894736842105262,
+      "fp": 5,
+      "fn": 3,
+      "n": 35,
+      "cwe_exact": {
+        "correct": 14,
+        "total": 35
+      },
+      "validation_pass": 18,
+      "rate_limited": true
+    },
+    {
+      "system": "llm_then_research_test",
+      "status": "ok",
+      "precision": 0.8571428571428571,
+      "recall": 1.0,
+      "f1": 0.923076923076923,
+      "fp": 2,
+      "fn": 0,
+      "n": 24,
+      "cwe_exact": {
+        "correct": 17,
+        "total": 24
+      },
+      "validation_pass": 11,
+      "rate_limited": false
+    },
+    {
+      "system": "sast_regex_juliet_pairs",
+      "status": "ok",
+      "precision": 0.6153846153846154,
+      "recall": 0.4444444444444444,
+      "f1": 0.5161290322580646,
+      "fp": 5,
+      "fn": 10,
+      "n": 36,
+      "cwe_exact": null,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_research_test",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 12,
+      "fn": 12,
+      "n": 24,
+      "cwe_exact": null,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_sanitized_juliet_pairs",
+      "status": "ok",
+      "precision": 0.6153846153846154,
+      "recall": 0.4444444444444444,
+      "f1": 0.5161290322580646,
+      "fp": 5,
+      "fn": 10,
+      "n": 36,
+      "cwe_exact": null,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_sanitized_research_test",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 6,
+      "fn": 12,
+      "n": 24,
+      "cwe_exact": null,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_vul4j_sliced",
+      "status": "ok",
+      "precision": 0.5,
+      "recall": 0.16666666666666666,
+      "f1": 0.25,
+      "fp": 2,
+      "fn": 10,
+      "n": 24,
+      "cwe_exact": null,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "template_juliet_pairs",
+      "status": "ok",
+      "precision": 0.6153846153846154,
+      "recall": 0.4444444444444444,
+      "f1": 0.5161290322580646,
+      "fp": 5,
+      "fn": 10,
+      "n": 36,
+      "cwe_exact": {
+        "correct": 9,
+        "total": 36
+      },
+      "validation_pass": 36,
+      "rate_limited": false
+    },
+    {
+      "system": "template_research_test",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 6,
+      "fn": 12,
+      "n": 24,
+      "cwe_exact": {
+        "correct": 18,
+        "total": 24
+      },
+      "validation_pass": 24,
+      "rate_limited": false
+    }
+  ]
+}

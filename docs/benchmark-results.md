@@ -63,7 +63,11 @@ Per Juliet gold CWE:
 
 Raw: `results/benchmarks/sast_regex_juliet.json`. Seed-oriented regexes fire on some SQL/path/crypto patterns and miss XSS / hardcoded-password / absolute-path Juliet style. That is a measured limitation, not a paper claim of SOTA.
 
-## 2) Stratified Groq sample
+## 2) Stratified Groq sample — **RETRACTED**
+
+**Do not cite** Juliet LLM F1=0.733 (or template F1=0.552 on that sample) as a thesis result. The 2026-09-17 n=72 run sent gold tokens (`/* POTENTIAL FLAW */`, `bad`/`good*` methods, CWE folder names) into prompts and is invalid under leakage. Replacement: sanitized Juliet **pair** metric in `results/thesis/` (`uv run cwe-vuln-eval --suite thesis`). Historical numbers below are kept only as an audit trail.
+
+The full-suite **regex SAST** table in section 1 is kept.
 
 **Juliet Java v1.3, LLM on stratified sample Z: seed=13, 12 units × 6 CWE ids (6 bad / 6 good each), n=72.** Protocol target was 20/CWE; this run used **12** to stay on Groq free-tier (six families × 12 = 72 calls plus a template pass). **No HTTP 429** on the recorded run.
 
@@ -108,8 +112,7 @@ CWE-80 XSS stays F1=0 (regex does not match Juliet XSS; LLM did not recover the 
 - Not CWE-79 / 22 / 502 / 798 file folders (missing in Juliet Java 1.3; nearby ids kept).
 - Not OWASP Benchmark / Big-Vul **in this Juliet-only note**. Those suites (plus Securibench Micro, find-sec-bugs, Vul4J, CVEfixes-Java-slice) are in [`six-benchmark-results.md`](six-benchmark-results.md).
 - Not retrieval@Juliet.
-- LLM table is **n=72**, not n=20728.
-- Authored 36-unit F1=0.923 is a **different** corpus ([`research-evaluation.md`](research-evaluation.md)).
+- LLM table is **retracted** (n=72 leakage). Do not mix with authored 36-unit numbers.
 
 ## Repro
 

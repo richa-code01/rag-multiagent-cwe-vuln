@@ -15,6 +15,10 @@ _CWE_ID = re.compile(r"^CWE-\d+$")
 _ALLOWED_DECISIONS = {"vulnerable", "not_vulnerable", "uncertain"}
 
 
+def _indent_normalize(text: str) -> str:
+    return "\n".join(line.strip() for line in text.splitlines())
+
+
 class ResultValidator:
     """No retrieval here — only checks against unit, KB, and JSON consistency.
 
@@ -36,6 +40,7 @@ class ResultValidator:
             self._schema(result),
             self._cwe_in_kb(result),
             self._cited_lines(result, unit),
+            self._cited_lines_normalized(result, unit),
             self._internal_consistency(result, unit),
         )
         warning = self._sast_disagreement(result, evidence)
@@ -65,6 +70,31 @@ class ResultValidator:
         excerpt = "\n".join(lines[span.start_line - 1 : span.end_line])
         ok = span.snippet.strip() in excerpt or span.snippet.strip() in unit.source
         return CheckResult("cited_lines", ok, "ok" if ok else "snippet not in cited line range")
+
+    def _cited_lines_normalized(self, result: ReasoningResult, unit: SeedUnit) -> CheckResult:
+        """Same range check as ``cited_lines``, but leading whitespace per line is ignored.
+
+        Spans are never rewritten. A pass here with a raw fail is indent-only mismatch.
+        """
+        span = result.supporting_source_lines
+        lines = unit.source.splitlines()
+        if span.path != unit.path:
+            return CheckResult("cited_lines_normalized", False, f"path {span.path} != {unit.path}")
+        if not (1 <= span.start_line <= span.end_line <= max(len(lines), 1)):
+            return CheckResult(
+                "cited_lines_normalized",
+                False,
+                f"lines {span.start_line}-{span.end_line} out of range",
+            )
+        excerpt = _indent_normalize("\n".join(lines[span.start_line - 1 : span.end_line]))
+        snippet = _indent_normalize(span.snippet)
+        source_n = _indent_normalize(unit.source)
+        ok = bool(snippet) and (snippet in excerpt or snippet in source_n)
+        return CheckResult(
+            "cited_lines_normalized",
+            ok,
+            "ok" if ok else "snippet not in cited line range after indent normalize",
+        )
 
     def _internal_consistency(self, result: ReasoningResult, unit: SeedUnit) -> CheckResult:
         errors: list[str] = []

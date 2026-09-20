@@ -100,6 +100,27 @@ def test_prompt_render_clean_on_juliet_fixture() -> None:
         assert unit.cwe_id not in clean.source, unit.unit_id
 
 
+def test_slice_unit_keeps_sink() -> None:
+    from cwe_vuln.dataset.sanitize import slice_unit
+    from cwe_vuln.dataset.seed import SeedUnit
+
+    pad = ["int filler%04d = 0;" % n for n in range(200)]
+    sink = '        stmt.executeQuery("SELECT * FROM t WHERE x=" + value);'
+    source = "\n".join(["package x;", "class Big {"] + pad + [sink, "}"])
+    unit = SeedUnit(
+        unit_id="big",
+        cwe_id="CWE-89",
+        path="Big.java",
+        split="juliet",
+        label="vulnerable",
+        notes="",
+        source=source,
+    )
+    sliced = slice_unit(unit, pad=5)
+    assert "executeQuery" in sliced.source
+    assert len(sliced.source) < len(unit.source)
+
+
 def test_long_source_is_windowed_with_absolute_line_numbers() -> None:
     from cwe_vuln.dataset.seed import SeedUnit
 
@@ -124,3 +145,13 @@ def test_long_source_is_windowed_with_absolute_line_numbers() -> None:
     assert rendered.window_start <= sink_line <= rendered.window_end
     # Absolute line prefixes are present and match the original numbering.
     assert f"{sink_line:>4}| " in rendered.text
+
+
+def test_sast_on_sanitized_units_drops_comment_only_hits() -> None:
+    from cwe_vuln.sast import detect
+
+    units = load_research_corpus(split="research_test")
+    raw_fp = sum(1 for unit in units if detect(unit).is_vulnerable and not unit.is_vulnerable)
+    san_fp = sum(1 for unit in units if detect(sanitize_unit(unit)).is_vulnerable and not unit.is_vulnerable)
+    assert raw_fp == 12
+    assert san_fp < raw_fp

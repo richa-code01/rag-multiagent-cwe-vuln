@@ -11,22 +11,22 @@ Measuring six public suites **does not prove 100% novelty** and is **not** a cla
 
 **Claim we can defend:** this thesis’s **method** — regex SAST **evidence** (not SAST-as-decision) + hybrid MiniLM/TF-IDF + CWE-relationship RRF + schema-bound Groq `LLMReasoner` + validator that does not require SAST agreement — scored **against these corpora and regex/template baselines**.
 
-Regex SAST ≠ CodeQL / FindSecBugs / commercial SAST. LLM tables are **stratified samples**, not full suites.
+Regex SAST ≠ CodeQL / FindSecBugs / commercial SAST. **Public-suite LLM tables from 2026-09-17 are retracted** (gold-label leakage in prompts + silent Groq 429→template fallback). Replacement LLM numbers are the sanitized thesis eval (`uv run cwe-vuln-eval --suite thesis`, `results/thesis/`). Full-suite **regex SAST** rows below are kept.
 
 ## Advisor summary table
 
 | Suite | Ingested n | Regex SAST F1 | LLM sample n | Template F1 | Live Groq F1 | HTTP 429 |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| NIST Juliet Java v1.3 | 20728 | 0.316 | 72 | 0.552 | 0.733 | no |
-| OWASP Benchmark (Java) | 2740 | 0.395 | 12 | 0.286 | 0.286 | no |
-| Stanford Securibench Micro | 119 | 0.072 | 12 | 0.500 | 0.500 | no |
-| Find Security Bugs test-code | 79 | 0.435 | 12 | 0.364 | 0.364 | no |
-| Vul4J | 62 | 0.244 | 12 | 0.000 | 0.000 | no |
-| CVEfixes-Java-slice | 92 | 0.207 | 12 | 0.000 | 0.000 | no |
+| NIST Juliet Java v1.3 | 20728 | 0.316 | — | — | **retracted** | yes (TPD 200k; also gold-label leakage) |
+| OWASP Benchmark (Java) | 2740 | 0.395 | — | — | **retracted** | silent fallback / leakage |
+| Stanford Securibench Micro | 119 | 0.072 | — | — | **retracted** | silent fallback / leakage |
+| Find Security Bugs test-code | 79 | 0.435 | — | — | **retracted** | silent fallback / leakage |
+| Vul4J | 62 | 0.244 | — | — | **retracted** | silent fallback / leakage |
+| CVEfixes-Java-slice | 92 | 0.207 | — | — | **retracted** | silent fallback / leakage |
 
-Raw JSON: `results/benchmarks/summary.json` and per-trial `results/benchmarks/*.json`.
+Historical (invalid) Groq sample F1s that must not be cited: Juliet 0.733, OWASP 0.286, Securibench 0.500, Find-sec-bugs 0.364, Vul4J 0.000, CVEfixes 0.000. Those runs mixed gold tokens (`/* POTENTIAL FLAW */`, `method_bad`, `_vuln`, `real=true`) into prompts and/or scored TemplateReasoner as live Groq after 429. Raw JSON remains in `results/benchmarks/` with this retraction. Template F1s on those contaminated samples are also not used as a thesis claim.
 
-On the five non-Juliet LLM samples, Groq often returned invalid Assignment-4 JSON and **fell back to TemplateReasoner** (`llm_fallback_template` is the majority reasoner). Live F1 matching template F1 on those samples is a measured limitation, not a hidden extra win. Juliet remains the sample where live Groq clearly beat template (0.733 vs 0.552).
+Raw JSON: `results/benchmarks/summary.json` and per-trial `results/benchmarks/*.json`. Sanitized replacement: `results/thesis/summary.json`.
 
 **No suite substitutions.** CVEfixes is a **documented GitHub Advisory maven slice**, not the full CVEfixes SQLite dump (too large to vendor).
 
@@ -55,7 +55,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | License note | NIST/CAS educational suite; FSB GitHub mirror used when NIST zip blocked |
 | Labels | Filename `*_bad` / `*_good*` or method-level `bad()` / `good*` (dispatcher `good()` skipped) |
 | SAST | n=20728 P=0.300 R=0.334 F1=0.316 FP=3736 FN=3193 |
-| LLM | seed=13, 12 units × 6 gold ids, n=72; Groq P=0.917 R=0.611 F1=0.733; template F1=0.552; 429=no |
+| LLM | **retracted** (gold-label leakage + silent Groq fallback). Replacement: sanitized Juliet pair metric in `results/thesis/`. Historical invalid F1=0.733 must not be cited. |
 
 ### 2. OWASP Benchmark (Java)
 
@@ -68,7 +68,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | Labels | `expectedresults-1.2.csv`: test name, category, real vulnerability, CWE. One `BenchmarkTest*.java` = one unit |
 | CWE | 89/79/22/327 present; 328 nearby hash (not relabeled); **502 and 798 not present** |
 | SAST | n=2740 P=0.660 R=0.282 F1=0.395 FP=206 FN=1016 |
-| LLM | n=12 seed=13; Groq F1=0.286 (reasoners llm=2, llm_fallback_template=10); template F1=0.286; 429=no |
+| LLM | **retracted** (leakage / silent fallback). Historical invalid F1=0.286 must not be cited. |
 
 ### 3. Stanford Securibench Micro
 
@@ -81,7 +81,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | Labels | `@servlet vuln_count` / `getVulnerabilityCount()`; 0 → not_vulnerable. CWE from description keywords else sink APIs (sql→89, File→22, PrintWriter→79). HTTP-splitting and other families skipped, not relabeled |
 | CWE | 89/79/22 present; **502/798/327 not present** |
 | SAST | n=119 P=0.667 R=0.038 F1=0.072 FP=2 FN=101 |
-| LLM | n=12; Groq F1=0.500 (all `llm_fallback_template`); template F1=0.500; 429=no |
+| LLM | **retracted** (all `llm_fallback_template` on the recorded run). Historical invalid F1=0.500 must not be cited. |
 
 ### 4. Find Security Bugs test-code
 
@@ -94,7 +94,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | Labels | File-level under `findsecbugs-samples-java/.../testcode`. Mapped folders only. Safe/FalsePositive/Ok names → not_vulnerable. Mixed methods in one class are not split |
 | CWE | **all six thesis ids present** (327 only WeakMessageDigest/DesKeyGeneration stems) |
 | SAST | n=79 P=0.833 R=0.294 F1=0.435 FP=4 FN=48 |
-| LLM | n=12; Groq F1=0.364 (all fallback); template F1=0.364; 429=no |
+| LLM | **retracted**. Historical invalid F1=0.364 must not be cited. |
 
 ### 5. Vul4J
 
@@ -107,7 +107,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | Labels | CSV `cwe_id` in the thesis set; GitHub patch parent blob = vulnerable, patch commit = fixed |
 | CWE | 79/22/502 present; **89/798/327 not present** in CSV |
 | SAST | n=62 P=0.500 R=0.161 F1=0.244 FP=5 FN=26 |
-| LLM | n=12; Groq F1=0.000 (all fallback); template F1=0.000; 429=no |
+| LLM | **retracted**. Historical invalid F1=0.000 must not be cited. |
 
 ### 6. CVEfixes-Java-slice
 
@@ -120,7 +120,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 | Labels | Advisory CWE list (thesis ids only); parent Java blob = vulnerable, patch blob = fixed |
 | CWE | 89/79/22/502 present; **798/327 not present** in this slice |
 | SAST | n=92 P=0.500 R=0.130 F1=0.207 FP=6 FN=40 |
-| LLM | n=12; Groq F1=0.000 (all fallback); template F1=0.000; 429=no |
+| LLM | **retracted**. Historical invalid F1=0.000 must not be cited. |
 
 ## What we do not claim
 
@@ -134,13 +134,7 @@ Thesis ids missing in Juliet are **filled from other suites** (79/22 from OWASP/
 
 ```bash
 uv run pytest
-uv run cwe-vuln-eval --suite juliet
-uv run cwe-vuln-eval --suite owasp-benchmark
-uv run cwe-vuln-eval --suite securibench-micro
-uv run cwe-vuln-eval --suite find-sec-bugs
-uv run cwe-vuln-eval --suite vul4j
-uv run cwe-vuln-eval --suite cvefixes-java-slice
-uv run cwe-vuln-eval --suite owasp-benchmark-llm-sample --ablation template
-# GROQ_API_KEY required:
-uv run cwe-vuln-eval --suite owasp-benchmark-llm-sample --sample-n 12
+uv run cwe-vuln-eval --suite all-sast
+# Sanitized LLM (Groq TPD ~200k tokens/day; expect a 1–2 calendar-day run):
+uv run cwe-vuln-eval --suite thesis
 ```

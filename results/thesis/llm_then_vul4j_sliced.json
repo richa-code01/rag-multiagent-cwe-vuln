@@ -1,0 +1,9 @@
+{
+  "trial_id": "llm_then_vul4j_sliced",
+  "date": "2026-09-20T03:48:31Z",
+  "status": "skipped",
+  "metrics": null,
+  "notes": "rate_limited",
+  "error": null,
+  "suite": "thesis"
+}

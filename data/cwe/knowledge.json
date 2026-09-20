@@ -1,404 +1,1100 @@
 {
   "meta": {
-    "schema_version": "1",
-    "title": "Curated CWE knowledge subset for Assignment 2",
-    "disclaimer": "This is a curated teaching subset derived from well-known public CWE/MITRE catalog facts (names, high-level descriptions, common mitigations, and published relationships). It is not an official MITRE dump, not a complete CWE database, and not a substitute for cwe.mitre.org."
+    "schema_version": "2",
+    "source": "MITRE CWE XML catalog",
+    "source_url": "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip",
+    "catalog_version": "4.20",
+    "catalog_date": "2026-04-30",
+    "relation_views": [
+      "1000",
+      "699"
+    ],
+    "n_entries": 27,
+    "seed_ids": [
+      "CWE-89",
+      "CWE-79",
+      "CWE-22",
+      "CWE-502",
+      "CWE-798",
+      "CWE-327",
+      "CWE-80",
+      "CWE-81",
+      "CWE-83",
+      "CWE-23",
+      "CWE-36",
+      "CWE-259",
+      "CWE-321",
+      "CWE-328"
+    ],
+    "disclaimer": "Parsed subset of the official MITRE CWE catalog covering the thesis CWE families and their relationship neighborhood. Not the full catalog."
   },
   "entries": [
     {
-      "id": "CWE-89",
-      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
-      "description": "The software constructs all or part of an SQL command using externally influenced input without neutralizing special elements that can modify the intended command.",
-      "relationships": {
-        "parents": ["CWE-943"],
-        "children": ["CWE-564"],
-        "peers": ["CWE-74", "CWE-20"]
-      },
-      "mitigations": [
-        {
-          "id": "cwe89-parameterized",
-          "title": "Use parameterized queries / prepared statements",
-          "text": "Bind user values as parameters instead of concatenating them into the SQL string."
-        },
-        {
-          "id": "cwe89-least-privilege",
-          "title": "Least-privilege database accounts",
-          "text": "The application account should only have the statements it needs (no DROP/admin)."
-        },
-        {
-          "id": "cwe89-allowlist",
-          "title": "Allowlist dynamic identifiers",
-          "text": "If table or column names must be dynamic, allowlist them rather than interpolating raw input."
-        }
-      ],
-      "detection_notes": "String-concatenated SQL passed to Statement.executeQuery / executeUpdate is a common teaching pattern."
-    },
-    {
-      "id": "CWE-79",
-      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
-      "description": "The software does not neutralize or incorrectly neutralizes user-controllable input before it is placed in output used as a web page.",
-      "relationships": {
-        "parents": ["CWE-74"],
-        "children": ["CWE-80"],
-        "peers": ["CWE-20"]
-      },
-      "mitigations": [
-        {
-          "id": "cwe79-output-encode",
-          "title": "Context-appropriate output encoding",
-          "text": "HTML-encode (or JSON/attribute/URL-encode, depending on sink) untrusted data before writing it into a page."
-        },
-        {
-          "id": "cwe79-framework-escape",
-          "title": "Use auto-escaping templates",
-          "text": "Prefer frameworks that escape by default; avoid writing raw markup from request parameters."
-        }
-      ],
-      "detection_notes": "HTML markup concatenated with a request/comment string without an encode helper is a common teaching pattern."
-    },
-    {
       "id": "CWE-22",
       "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
-      "description": "The software uses external input to construct a pathname that is intended to stay under a restricted parent directory, but does not properly neutralize special elements such as '..' sequences.",
+      "description": "The product uses external input to construct a pathname that is intended to identify a file or directory that is located underneath a restricted parent directory, but the product does not properly neutralize special elements within the pathname that can cause the pathname to resolve to a location that is outside of the restricted directory.",
+      "extended_description": "Many file operations are intended to take place within a restricted directory. By using special elements such as \"..\" and \"/\" separators, attackers can escape outside of the restricted location to access files or directories that are elsewhere on the system. One of the most common special elements is the \"../\" sequence, which in most modern operating systems is interpreted as the parent directory of the current location. This is referred to as relative path traversal. Path traversal also covers the use of absolute pathnames such as \"/usr/local/bin\" to access unexpected files. This is referred to as absolute path traversal.",
+      "consequences": "Integrity/Confidentiality/Availability: Execute Unauthorized Code or Commands; Integrity: Modify Files or Directories; Confidentiality: Read Files or Directories; Availability: DoS: Crash, Exit, or Restart",
+      "abstraction": "Base",
+      "status": "Stable",
       "relationships": {
-        "parents": ["CWE-706"],
-        "children": ["CWE-23", "CWE-36"],
+        "parents": [
+          "CWE-706"
+        ],
+        "children": [
+          "CWE-23",
+          "CWE-36"
+        ],
         "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe22-canonicalize",
-          "title": "Resolve and constrain the path",
-          "text": "Normalize/canonicalize the path and reject it if it does not remain under the intended base directory."
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Assume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use a list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. When performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if the input is only expected to contain colors such as \"red\" or \"blue.\" Do not rely exclusively on looking for malicious or malformed inputs. This is likely to miss at least one undesirable input, especially if the code's environment changes. This can give attackers enough room to bypass the intended validation. However, denylists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright. When validating filenames, use stringent allowlists that limit the character set to be used. If feasible, only allow a single \".\" character in the filename to avoid weaknesses such as CWE-23, and exclude directory separators such as \"/\" to avoid CWE-36. Use a list of allowable file extensions, which will help to avoid CWE-434. Do not rely exclusively on a filtering mechanism that removes potentially dangerous characters. This is equivalent to a denylist, which may be incomplete (CWE-184). For example, filtering \"/\" is insufficient protection if the filesystem also supports the use of \"\\\" as a directory separator. Another possible error could occur when the filtering is applied in a way that still produces dangerous data (CWE-182). For example, if \"../\" sequences are removed from the \".../...//\" string in a sequential fashion, two instances of \"../\" would be removed from the original string, but the remaining characters would still form the \"../\" string."
         },
         {
-          "id": "cwe22-allowlist",
-          "title": "Allowlist file identifiers",
-          "text": "Map user input to known file IDs rather than concatenating raw path segments."
-        }
-      ],
-      "detection_notes": "java.io.File constructed by concatenating a caller-supplied relative path is a common teaching pattern."
-    },
-    {
-      "id": "CWE-502",
-      "name": "Deserialization of Untrusted Data",
-      "description": "The application deserializes untrusted data without sufficiently verifying that the resulting data will be valid, which can lead to unexpected object graphs or control flow.",
-      "relationships": {
-        "parents": ["CWE-913"],
-        "children": [],
-        "peers": []
-      },
-      "mitigations": [
-        {
-          "id": "cwe502-avoid",
-          "title": "Do not deserialize untrusted Java objects",
-          "text": "Prefer data-only formats (JSON, protobuf) with explicit schemas over ObjectInputStream on untrusted input."
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server."
         },
         {
-          "id": "cwe502-allowlist",
-          "title": "Constrain types if deserialization is required",
-          "text": "Use look-ahead / type allowlists rather than unrestricted readObject on attacker-controlled streams."
-        }
-      ],
-      "detection_notes": "ObjectInputStream.readObject on an InputStream is a common teaching pattern. This catalog does not include gadget chains or exploit payloads."
-    },
-    {
-      "id": "CWE-798",
-      "name": "Use of Hard-coded Credentials",
-      "description": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data.",
-      "relationships": {
-        "parents": ["CWE-287"],
-        "children": ["CWE-259", "CWE-321"],
-        "peers": []
-      },
-      "mitigations": [
-        {
-          "id": "cwe798-secret-store",
-          "title": "Load secrets from the environment or a secret store",
-          "text": "Do not ship passwords or API keys as string literals; inject them at deployment time."
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "Inputs should be decoded and canonicalized to the application's current internal representation before being validated (CWE-180). Make sure that the application does not decode the same input twice (CWE-174). Such errors could be used to bypass allowlist validation schemes by introducing dangerous inputs after they have been checked. Use a built-in path canonicalization function (such as realpath() in C) that produces the canonical version of the pathname, which effectively removes \"..\" sequences and symbolic links (CWE-23, CWE-59). This includes: realpath() in C getCanonicalPath() in Java GetFullPath() in ASP.NET realpath() or abs_path() in Perl realpath() in PHP"
         },
         {
-          "id": "cwe798-rotate",
-          "title": "Rotate default credentials",
-          "text": "Default or sample passwords in source must never be used in a real system."
-        }
-      ],
-      "detection_notes": "Assignments of password/apiKey/secret to a string literal are the teaching pattern. Examples in this repo use fake values such as admin/password."
-    },
-    {
-      "id": "CWE-327",
-      "name": "Use of a Broken or Risky Cryptographic Algorithm",
-      "description": "The software stores or transmits sensitive data using a cryptographic algorithm that is known to be weak, obsolete, or otherwise inappropriate for the protection needed.",
-      "relationships": {
-        "parents": ["CWE-326"],
-        "children": ["CWE-328"],
-        "peers": []
-      },
-      "mitigations": [
-        {
-          "id": "cwe327-modern-algs",
-          "title": "Use currently recommended algorithms",
-          "text": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security."
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]."
         },
         {
-          "id": "cwe327-libraries",
-          "title": "Use vetted crypto libraries",
-          "text": "Call maintained platform APIs rather than implementing or selecting obsolete ciphers by name."
-        }
-      ],
-      "detection_notes": "MessageDigest.getInstance(\"MD5\") versus SHA-256 is the teaching contrast in the seed."
-    },
-    {
-      "id": "CWE-943",
-      "name": "Improper Neutralization of Special Elements in Data Query Logic",
-      "description": "The software constructs a data query using externally influenced input without neutralizing special elements that can modify the intended query logic.",
-      "relationships": {
-        "parents": ["CWE-74"],
-        "children": ["CWE-89"],
-        "peers": []
-      },
-      "mitigations": [
+          "id": "MIT-5",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481]."
+        },
         {
-          "id": "cwe943-bind",
-          "title": "Separate query structure from values",
-          "text": "Use bind variables / parameterized APIs for SQL, LDAP, and similar query languages."
-        }
-      ],
-      "detection_notes": "Parent class of SQL injection (CWE-89) in the CWE hierarchy used here."
-    },
-    {
-      "id": "CWE-564",
-      "name": "SQL Injection: Hibernate",
-      "description": "An ORM / Hibernate-style query is constructed with untrusted input in a way that can change the intended query.",
-      "relationships": {
-        "parents": ["CWE-89"],
-        "children": [],
-        "peers": []
-      },
-      "mitigations": [
+          "id": "MIT-6",
+          "title": "Architecture and Design, Operation",
+          "text": "Run your code using the lowest privileges that are required to accomplish the necessary tasks [REF-76]. If possible, create isolated accounts with limited privileges that are only used for a single task. That way, a successful attack will not immediately give the attacker access to the rest of the software or its environment. For example, database applications rarely need to run as the database administrator, especially in day-to-day operations."
+        },
         {
-          "id": "cwe564-named-params",
-          "title": "Use parameterized ORM queries",
-          "text": "Bind values through the ORM API rather than concatenating HQL/SQL."
-        }
-      ],
-      "detection_notes": "Related child of CWE-89; included so relationship walks have a target. Not represented as its own Java seed unit."
-    },
-    {
-      "id": "CWE-74",
-      "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')",
-      "description": "The software constructs all or part of a command, query, or other structured message using externally influenced input without neutralizing special elements.",
-      "relationships": {
-        "parents": ["CWE-20"],
-        "children": ["CWE-79", "CWE-943"],
-        "peers": []
-      },
-      "mitigations": [
+          "id": "MIT-7",
+          "title": "Architecture and Design",
+          "text": "When the set of acceptable objects, such as filenames or URLs, is limited or known, create a mapping from a set of fixed input values (such as numeric IDs) to the actual filenames or URLs, and reject all other inputs. For example, ID 1 could map to \"inbox.txt\" and ID 2 could map to \"profile.txt\". Features such as the ESAPI AccessReferenceMap [REF-185] provide this capability."
+        },
         {
-          "id": "cwe74-neutralize",
-          "title": "Neutralize for the downstream interpreter",
-          "text": "Encode or parameterize for the specific sink (SQL, HTML, OS, LDAP) rather than applying a generic sanitize."
-        }
-      ],
-      "detection_notes": "Injection class covering XSS and query neutralization parents used in this subset."
-    },
-    {
-      "id": "CWE-80",
-      "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
-      "description": "The software receives input from an upstream component but does not neutralize special characters that could be interpreted as web-scripting elements.",
-      "relationships": {
-        "parents": ["CWE-79"],
-        "children": [],
-        "peers": []
-      },
-      "mitigations": [
+          "id": "MIT-8",
+          "title": "Architecture and Design, Operation",
+          "text": "Run the code in a \"jail\" or similar sandbox environment that enforces strict boundaries between the process and the operating system. This may effectively restrict which files can be accessed in a particular directory or which commands can be executed by the software. OS-level examples include the Unix chroot jail, AppArmor, and SELinux. In general, managed code may provide some protection. For example, java.io.FilePermission in the Java SecurityManager allows the software to specify restrictions on file operations. This may not be a feasible solution, and it only limits the impact to the operating system; the rest of the application may still be subject to compromise. Be careful to avoid CWE-243 and other weaknesses related to jails."
+        },
         {
-          "id": "cwe80-html-encode",
-          "title": "HTML-encode untrusted page content",
-          "text": "Strip or encode script-related tags before reflecting input into HTML."
-        }
-      ],
-      "detection_notes": "More specific XSS variant under CWE-79."
-    },
-    {
-      "id": "CWE-20",
-      "name": "Improper Input Validation",
-      "description": "The product receives input or data but does not validate or incorrectly validates that the input has the properties required to process it safely.",
-      "relationships": {
-        "parents": [],
-        "children": ["CWE-74"],
-        "peers": ["CWE-89", "CWE-79"]
-      },
-      "mitigations": [
+          "id": "MIT-9",
+          "title": "Architecture and Design, Operation",
+          "text": "Store library, include, and utility files outside of the web document root, if possible. Otherwise, store them in a separate directory and use the web server's access control capabilities to prevent attackers from directly requesting them. One common practice is to define a fixed constant in each calling program, then check for the existence of the constant in the library/include file; if the constant does not exist, then the file was directly requested, and it can exit immediately. This significantly reduces the chance of an attacker being able to bypass any protection mechanisms that are in the base program but not in the include files. It will also reduce the attack surface."
+        },
         {
-          "id": "cwe20-validate",
-          "title": "Validate against a spec",
-          "text": "Check type, length, range, and encoding of inputs close to the trust boundary. Validation complements (does not replace) parameterized queries and output encoding."
-        }
-      ],
-      "detection_notes": "Broad ancestor used for relationship walks; not a seed-unit label by itself."
-    },
-    {
-      "id": "CWE-706",
-      "name": "Use of Incorrectly-Resolved Name or Reference",
-      "description": "The software uses a name or reference to access a resource, but the name/reference resolves to a resource that is outside the intended control sphere.",
-      "relationships": {
-        "parents": [],
-        "children": ["CWE-22"],
-        "peers": []
-      },
-      "mitigations": [
+          "id": "MIT-10",
+          "title": "Implementation",
+          "text": "Ensure that error messages only contain minimal details that are useful to the intended audience and no one else. The messages need to strike the balance between being too cryptic (which can confuse users) or being too detailed (which may reveal more than intended). The messages should not reveal the methods that were used to determine the error. Attackers can use detailed information to refine or optimize their original attack, thereby increasing their chances of success. If errors must be captured in some detail, record them in log messages, but consider what could occur if the log messages can be viewed by attackers. Highly sensitive information such as passwords should never be saved to log files. Avoid inconsistent messaging that might accidentally tip off an attacker about internal state, such as whether a user account exists or not. In the context of path traversal, error messages which disclose path information can help attackers craft the appropriate attack strings to move through the file system hierarchy."
+        },
         {
-          "id": "cwe706-resolve",
-          "title": "Resolve names before use",
-          "text": "Canonicalize identifiers and compare them against the intended namespace."
+          "id": "MIT-11",
+          "title": "Operation, Implementation",
+          "text": "When using PHP, configure the application so that it does not use register_globals. During implementation, develop the application so that it does not rely on this feature, but be wary of implementing a register_globals emulation that is subject to weaknesses such as CWE-95, CWE-621, and similar issues."
         }
       ],
-      "detection_notes": "Parent of path traversal (CWE-22) in this subset."
+      "detection_notes": "Automated Static Analysis: Automated techniques can find areas where path traversal weaknesses exist. However, tuning or customization may be required to remove or de-prioritize path-traversal problems that are only exploitable by the product's administrator - or other privileged users - and thus potentially valid behavior or, at worst, a bug instead of a vulnerability. | Manual Static Analysis: Manual white box techniques may be able to provide sufficient code coverage and reduction of false positives if all file access operations can be assessed within limited time constraints. | Automated Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Cost effective for partial coverage: Binary Weakness Analysis - including disassembler + source code weakness analysis | Manual Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies | Dynamic Analysis with Automated Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Web Application Scanner Web Services Scanner Database Scanners | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Fuzz Tester Framework-based Fuzzer | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Manual Source Code Review (not inspections) Cost effective for partial coverage: Focused Manual Spotcheck - Focused manual analysis of source | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Formal Methods / Correct-By-Construction Cost effective for partial coverage: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.)"
     },
     {
       "id": "CWE-23",
       "name": "Relative Path Traversal",
-      "description": "The software uses external input to construct a pathname that includes relative path sequences such as '..' sequences.",
+      "description": "The product uses external input to construct a pathname that should be within a restricted directory, but it does not properly neutralize sequences such as \"..\" that can resolve to a location that is outside of that directory.",
+      "extended_description": "",
+      "consequences": "Integrity/Confidentiality/Availability: Execute Unauthorized Code or Commands; Integrity: Modify Files or Directories; Confidentiality: Read Files or Directories; Availability: DoS: Crash, Exit, or Restart",
+      "abstraction": "Base",
+      "status": "Draft",
       "relationships": {
-        "parents": ["CWE-22"],
+        "parents": [
+          "CWE-22"
+        ],
         "children": [],
-        "peers": ["CWE-36"]
+        "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe23-normalize",
-          "title": "Reject parent-directory segments after normalize",
-          "text": "After resolving the path, ensure it still starts with the allowed root."
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Assume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use a list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. When performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if the input is only expected to contain colors such as \"red\" or \"blue.\" Do not rely exclusively on looking for malicious or malformed inputs. This is likely to miss at least one undesirable input, especially if the code's environment changes. This can give attackers enough room to bypass the intended validation. However, denylists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright. When validating filenames, use stringent allowlists that limit the character set to be used. If feasible, only allow a single \".\" character in the filename to avoid weaknesses such as CWE-23, and exclude directory separators such as \"/\" to avoid CWE-36. Use a list of allowable file extensions, which will help to avoid CWE-434. Do not rely exclusively on a filtering mechanism that removes potentially dangerous characters. This is equivalent to a denylist, which may be incomplete (CWE-184). For example, filtering \"/\" is insufficient protection if the filesystem also supports the use of \"\\\" as a directory separator. Another possible error could occur when the filtering is applied in a way that still produces dangerous data (CWE-182). For example, if \"../\" sequences are removed from the \".../...//\" string in a sequential fashion, two instances of \"../\" would be removed from the original string, but the remaining characters would still form the \"../\" string."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Inputs should be decoded and canonicalized to the application's current internal representation before being validated (CWE-180). Make sure that the application does not decode the same input twice (CWE-174). Such errors could be used to bypass allowlist validation schemes by introducing dangerous inputs after they have been checked. Use a built-in path canonicalization function (such as realpath() in C) that produces the canonical version of the pathname, which effectively removes \"..\" sequences and symbolic links (CWE-23, CWE-59). This includes: realpath() in C getCanonicalPath() in Java GetFullPath() in ASP.NET realpath() or abs_path() in Perl realpath() in PHP"
+        },
+        {
+          "id": "MIT-3",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481]."
         }
       ],
-      "detection_notes": "Child of CWE-22; teaching samples in the seed use generic path concatenation rather than a dedicated relative-path unit."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
     },
     {
       "id": "CWE-36",
       "name": "Absolute Path Traversal",
-      "description": "The software uses external input to construct a pathname that can resolve to an absolute location outside the intended directory.",
+      "description": "The product uses external input to construct a pathname that should be within a restricted directory, but it does not properly neutralize absolute path sequences such as \"/abs/path\" that can resolve to a location that is outside of that directory.",
+      "extended_description": "This allows attackers to traverse the file system to access files or directories that are outside of the restricted directory.",
+      "consequences": "Integrity/Confidentiality/Availability: Execute Unauthorized Code or Commands; Integrity: Modify Files or Directories; Confidentiality: Read Files or Directories; Availability: DoS: Crash, Exit, or Restart",
+      "abstraction": "Base",
+      "status": "Draft",
       "relationships": {
-        "parents": ["CWE-22"],
+        "parents": [
+          "CWE-22"
+        ],
         "children": [],
-        "peers": ["CWE-23"]
-      },
-      "mitigations": [
-        {
-          "id": "cwe36-reject-absolute",
-          "title": "Reject absolute paths from callers",
-          "text": "Treat user-supplied absolute paths as out of bounds unless explicitly allowed."
-        }
-      ],
-      "detection_notes": "Child of CWE-22."
-    },
-    {
-      "id": "CWE-913",
-      "name": "Improper Control of Dynamically-Managed Code Resources",
-      "description": "The software does not properly restrict the resources that can be loaded or executed dynamically, such as deserialized objects or reflective code.",
-      "relationships": {
-        "parents": [],
-        "children": ["CWE-502"],
         "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe913-restrict",
-          "title": "Restrict dynamic loading",
-          "text": "Allowlist types and avoid executing attacker-influenced serialized graphs."
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Assume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use a list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. When performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if the input is only expected to contain colors such as \"red\" or \"blue.\" Do not rely exclusively on looking for malicious or malformed inputs. This is likely to miss at least one undesirable input, especially if the code's environment changes. This can give attackers enough room to bypass the intended validation. However, denylists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright. When validating filenames, use stringent allowlists that limit the character set to be used. If feasible, only allow a single \".\" character in the filename to avoid weaknesses such as CWE-23, and exclude directory separators such as \"/\" to avoid CWE-36. Use a list of allowable file extensions, which will help to avoid CWE-434. Do not rely exclusively on a filtering mechanism that removes potentially dangerous characters. This is equivalent to a denylist, which may be incomplete (CWE-184). For example, filtering \"/\" is insufficient protection if the filesystem also supports the use of \"\\\" as a directory separator. Another possible error could occur when the filtering is applied in a way that still produces dangerous data (CWE-182). For example, if \"../\" sequences are removed from the \".../...//\" string in a sequential fashion, two instances of \"../\" would be removed from the original string, but the remaining characters would still form the \"../\" string."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Inputs should be decoded and canonicalized to the application's current internal representation before being validated (CWE-180). Make sure that the application does not decode the same input twice (CWE-174). Such errors could be used to bypass allowlist validation schemes by introducing dangerous inputs after they have been checked."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481]."
         }
       ],
-      "detection_notes": "Parent of CWE-502 in this subset."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
     },
     {
-      "id": "CWE-287",
-      "name": "Improper Authentication",
-      "description": "The software does not sufficiently verify that an actor claiming an identity is who they claim to be.",
+      "id": "CWE-74",
+      "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')",
+      "description": "The product constructs all or part of a command, data structure, or record using externally-influenced input from an upstream component, but it does not neutralize or incorrectly neutralizes special elements that could modify how it is parsed or interpreted when it is sent to a downstream component.",
+      "extended_description": "",
+      "consequences": "Confidentiality: Read Application Data; Access Control: Bypass Protection Mechanism; Other: Alter Execution Logic; Integrity/Other: Other; Non-Repudiation: Hide Activities",
+      "abstraction": "Class",
+      "status": "Incomplete",
       "relationships": {
-        "parents": [],
-        "children": ["CWE-798"],
+        "parents": [
+          "CWE-707"
+        ],
+        "children": [
+          "CWE-79",
+          "CWE-943"
+        ],
         "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe287-strong-auth",
-          "title": "Use a real authentication mechanism",
-          "text": "Do not bake identities or shared secrets into source; verify credentials through a dedicated store."
+          "id": "MIT-1",
+          "title": "Requirements",
+          "text": "Programming languages and supporting technologies might be chosen which are not subject to these issues."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Utilize an appropriate mix of allowlist and denylist parsing to filter control-plane syntax from all input."
         }
       ],
-      "detection_notes": "Parent used for CWE-798 relationship walks in this curated subset."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+      "description": "The product does not neutralize or incorrectly neutralizes user-controllable input before it is placed in output that is used as a web page that is served to other users.",
+      "extended_description": "There are many variants of cross-site scripting, characterized by a variety of terms or involving different attack topologies. However, they all indicate the same fundamental weakness: improper neutralization of dangerous input between the adversary and a victim.",
+      "consequences": "Access Control/Confidentiality: Bypass Protection Mechanism, Read Application Data; Integrity/Confidentiality/Availability: Execute Unauthorized Code or Commands; Confidentiality/Integrity/Availability/Access Control: Execute Unauthorized Code or Commands, Bypass Protection Mechanism, Read Application Data",
+      "abstraction": "Base",
+      "status": "Stable",
+      "relationships": {
+        "parents": [
+          "CWE-74"
+        ],
+        "children": [
+          "CWE-80",
+          "CWE-81",
+          "CWE-83"
+        ],
+        "peers": [
+          "CWE-352"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]. Examples of libraries and frameworks that make it easier to generate properly encoded output include Microsoft's Anti-XSS library, the OWASP ESAPI Encoding module, and Apache Wicket."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation, Architecture and Design",
+          "text": "Understand the context in which your data will be used and the encoding that will be expected. This is especially important when transmitting data between different components, or when generating outputs that can contain multiple encodings at the same time, such as web pages or multi-part mail messages. Study all expected communication protocols and data representations to determine the required encoding strategies. For any data that will be output to another web page, especially any data that was received from external inputs, use the appropriate encoding on all non-alphanumeric characters. Parts of the same output document may require different encodings, which will vary depending on whether the output is in the: HTML body Element attributes (such as src=\"XYZ\") URIs JavaScript sections Cascading Style Sheets and style property etc. Note that HTML Entity Encoding is only appropriate for the HTML body. Consult the XSS Prevention Cheat Sheet [REF-724] for more details on the types of encoding and escaping that are needed."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design, Implementation",
+          "text": "Understand all the potential areas where untrusted inputs can enter your software: parameters or arguments, cookies, anything read from the network, environment variables, reverse DNS lookups, query results, request headers, URL components, e-mail, files, filenames, databases, and any external systems that provide data to the application. Remember that such inputs may be obtained indirectly through API calls."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Architecture and Design",
+          "text": "If available, use structured mechanisms that automatically enforce the separation between data and code. These mechanisms may be able to provide the relevant quoting, encoding, and validation automatically, instead of relying on the developer to provide this capability at every point where output is generated."
+        },
+        {
+          "id": "MIT-6",
+          "title": "Implementation",
+          "text": "Use and specify an output encoding that can be handled by the downstream component that is reading the output. Common encodings include ISO-8859-1, UTF-7, and UTF-8. When an encoding is not specified, a downstream component may choose a different encoding, either by assuming a default encoding or automatically inferring which encoding is being used, which can be erroneous. When the encodings are inconsistent, the downstream component might treat some character or byte sequences as special, even if they are not special in the original encoding. Attackers might then be able to exploit this discrepancy and conduct injection attacks; they even might be able to bypass protection mechanisms that assume the original encoding is also being used by the downstream component. The problem of inconsistent output encodings often arises in web pages. If an encoding is not specified in an HTTP header, web browsers often guess about which encoding is being used. This can open up the browser to subtle XSS attacks."
+        },
+        {
+          "id": "MIT-7",
+          "title": "Implementation",
+          "text": "With Struts, write all data from form beans with the bean's filter attribute set to true."
+        },
+        {
+          "id": "MIT-8",
+          "title": "Implementation",
+          "text": "To help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XmlHttpRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set."
+        },
+        {
+          "id": "MIT-9",
+          "title": "Implementation",
+          "text": "Assume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use a list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. When performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if the input is only expected to contain colors such as \"red\" or \"blue.\" Do not rely exclusively on looking for malicious or malformed inputs. This is likely to miss at least one undesirable input, especially if the code's environment changes. This can give attackers enough room to bypass the intended validation. However, denylists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright. When dynamically constructing web pages, use stringent allowlists that limit the character set based on the expected value of the parameter in the request. All input should be validated and cleansed, not just parameters that the user is supposed to specify, but all data in the request, including hidden fields, cookies, headers, the URL itself, and so forth. A common mistake that leads to continuing XSS vulnerabilities is to validate only fields that are expected to be redisplayed by the site. It is common to see data from the request that is reflected by the application server or the application that the development team did not anticipate. Also, a field that is not currently reflected may be used by a future developer. Therefore, validating ALL parts of the HTTP request is recommended. Note that proper output encoding, escaping, and quoting is the most effective solution for preventing XSS, although input validation may provide some defense-in-depth. This is because it effectively limits what will appear in output. Input validation will not always prevent XSS, especially if you are required to support free-form text fields that could contain arbitrary characters. For example, in a chat application, the heart emoticon (\"<3\") would likely pass the validation step, since it is commonly used. However, it cannot be directly inserted into the web page because it contains the \"<\" character, which would need to be escaped or otherwise handled. In this case, stripping the \"<\" might reduce the risk of XSS, but it would produce incorrect behavior because the emoticon would not be recorded. This might seem to be a minor inconvenience, but it would be more important in a mathematical forum that wants to represent inequalities. Even if you make a mistake in your validation (such as forgetting one out of 100 input fields), appropriate encoding is still likely to protect you from injection-based attacks. As long as it is not done in isolation, input validation is still a useful technique, since it may significantly reduce your attack surface, allow you to detect some attacks, and provide other security benefits that proper encoding does not address. Ensure that you perform input validation at well-defined interfaces within the application. This will help protect the application even if a component is reused or moved elsewhere."
+        },
+        {
+          "id": "MIT-10",
+          "title": "Architecture and Design",
+          "text": "When the set of acceptable objects, such as filenames or URLs, is limited or known, create a mapping from a set of fixed input values (such as numeric IDs) to the actual filenames or URLs, and reject all other inputs."
+        },
+        {
+          "id": "MIT-11",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481]."
+        },
+        {
+          "id": "MIT-12",
+          "title": "Operation, Implementation",
+          "text": "When using PHP, configure the application so that it does not use register_globals. During implementation, develop the application so that it does not rely on this feature, but be wary of implementing a register_globals emulation that is subject to weaknesses such as CWE-95, CWE-621, and similar issues."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Use automated static analysis tools that target this type of weakness. Many modern techniques use data flow analysis to minimize the number of false positives. This is not a perfect solution, since 100% accuracy and coverage are not feasible, especially when multiple components are involved. | Black Box: Use the XSS Cheat Sheet [REF-714] or automated test-generation tools to help launch a wide variety of attacks against your web application. The Cheat Sheet contains many subtle XSS variations that are specifically targeted against weak XSS defenses."
+    },
+    {
+      "id": "CWE-80",
+      "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
+      "description": "The product receives input from an upstream component, but it does not neutralize or incorrectly neutralizes special characters such as \"<\", \">\", and \"&\" that could be interpreted as web-scripting elements when they are sent to a downstream component that processes web pages.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Integrity/Availability: Read Application Data, Execute Unauthorized Code or Commands",
+      "abstraction": "Variant",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-79"
+        ],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Carefully check each input parameter against a rigorous positive specification (allowlist) defining the specific characters and format allowed. All input should be neutralized, not just parameters that the user is supposed to specify, but all data in the request, including hidden fields, cookies, headers, the URL itself, and so forth. A common mistake that leads to continuing XSS vulnerabilities is to validate only fields that are expected to be redisplayed by the site. We often encounter data from the request that is reflected by the application server or the application that the development team did not anticipate. Also, a field that is not currently reflected may be used by a future developer. Therefore, validating ALL parts of the HTTP request is recommended."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Use and specify an output encoding that can be handled by the downstream component that is reading the output. Common encodings include ISO-8859-1, UTF-7, and UTF-8. When an encoding is not specified, a downstream component may choose a different encoding, either by assuming a default encoding or automatically inferring which encoding is being used, which can be erroneous. When the encodings are inconsistent, the downstream component might treat some character or byte sequences as special, even if they are not special in the original encoding. Attackers might then be able to exploit this discrepancy and conduct injection attacks; they even might be able to bypass protection mechanisms that assume the original encoding is also being used by the downstream component. The problem of inconsistent output encodings often arises in web pages. If an encoding is not specified in an HTTP header, web browsers often guess about which encoding is being used. This can open up the browser to subtle XSS attacks."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "With Struts, write all data from form beans with the bean's filter attribute set to true."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Implementation",
+          "text": "To help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XmlHttpRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-81",
+      "name": "Improper Neutralization of Script in an Error Message Web Page",
+      "description": "The product receives input from an upstream component, but it does not neutralize or incorrectly neutralizes special characters that could be interpreted as web-scripting elements when they are sent to an error page.",
+      "extended_description": "Error pages may include customized 403 Forbidden or 404 Not Found pages. When an attacker can trigger an error that contains script syntax within the attacker's input, then cross-site scripting attacks may be possible.",
+      "consequences": "Confidentiality/Integrity/Availability: Read Application Data, Execute Unauthorized Code or Commands",
+      "abstraction": "Variant",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-79"
+        ],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Do not write user-controlled input to error pages."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Carefully check each input parameter against a rigorous positive specification (allowlist) defining the specific characters and format allowed. All input should be neutralized, not just parameters that the user is supposed to specify, but all data in the request, including hidden fields, cookies, headers, the URL itself, and so forth. A common mistake that leads to continuing XSS vulnerabilities is to validate only fields that are expected to be redisplayed by the site. We often encounter data from the request that is reflected by the application server or the application that the development team did not anticipate. Also, a field that is not currently reflected may be used by a future developer. Therefore, validating ALL parts of the HTTP request is recommended."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "Use and specify an output encoding that can be handled by the downstream component that is reading the output. Common encodings include ISO-8859-1, UTF-7, and UTF-8. When an encoding is not specified, a downstream component may choose a different encoding, either by assuming a default encoding or automatically inferring which encoding is being used, which can be erroneous. When the encodings are inconsistent, the downstream component might treat some character or byte sequences as special, even if they are not special in the original encoding. Attackers might then be able to exploit this discrepancy and conduct injection attacks; they even might be able to bypass protection mechanisms that assume the original encoding is also being used by the downstream component. The problem of inconsistent output encodings often arises in web pages. If an encoding is not specified in an HTTP header, web browsers often guess about which encoding is being used. This can open up the browser to subtle XSS attacks."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Implementation",
+          "text": "With Struts, write all data from form beans with the bean's filter attribute set to true."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Implementation",
+          "text": "To help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XmlHttpRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-83",
+      "name": "Improper Neutralization of Script in Attributes in a Web Page",
+      "description": "The product does not neutralize or incorrectly neutralizes \"javascript:\" or other URIs from dangerous attributes within tags, such as onmouseover, onload, onerror, or style.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Integrity/Availability: Read Application Data, Execute Unauthorized Code or Commands",
+      "abstraction": "Variant",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-79"
+        ],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "Carefully check each input parameter against a rigorous positive specification (allowlist) defining the specific characters and format allowed. All input should be neutralized, not just parameters that the user is supposed to specify, but all data in the request, including tag attributes, hidden fields, cookies, headers, the URL itself, and so forth. A common mistake that leads to continuing XSS vulnerabilities is to validate only fields that are expected to be redisplayed by the site. We often encounter data from the request that is reflected by the application server or the application that the development team did not anticipate. Also, a field that is not currently reflected may be used by a future developer. Therefore, validating ALL parts of the HTTP request is recommended."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Use and specify an output encoding that can be handled by the downstream component that is reading the output. Common encodings include ISO-8859-1, UTF-7, and UTF-8. When an encoding is not specified, a downstream component may choose a different encoding, either by assuming a default encoding or automatically inferring which encoding is being used, which can be erroneous. When the encodings are inconsistent, the downstream component might treat some character or byte sequences as special, even if they are not special in the original encoding. Attackers might then be able to exploit this discrepancy and conduct injection attacks; they even might be able to bypass protection mechanisms that assume the original encoding is also being used by the downstream component. The problem of inconsistent output encodings often arises in web pages. If an encoding is not specified in an HTTP header, web browsers often guess about which encoding is being used. This can open up the browser to subtle XSS attacks."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "With Struts, write all data from form beans with the bean's filter attribute set to true."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Implementation",
+          "text": "To help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XmlHttpRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "description": "The product constructs all or part of an SQL command using externally-influenced input from an upstream component, but it does not neutralize or incorrectly neutralizes special elements that could modify the intended SQL command when it is sent to a downstream component. Without sufficient removal or quoting of SQL syntax in user-controllable inputs, the generated SQL query can cause those inputs to be interpreted as SQL instead of ordinary user data.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Integrity/Availability: Execute Unauthorized Code or Commands; Confidentiality: Read Application Data; Authentication: Gain Privileges or Assume Identity, Bypass Protection Mechanism; Access Control: Bypass Protection Mechanism; Integrity: Modify Application Data",
+      "abstraction": "Base",
+      "status": "Stable",
+      "relationships": {
+        "parents": [
+          "CWE-943"
+        ],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]. For example, consider using persistence layers such as Hibernate or Enterprise Java Beans, which can provide significant protection against SQL injection if used properly."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "If available, use structured mechanisms that automatically enforce the separation between data and code. These mechanisms may be able to provide the relevant quoting, encoding, and validation automatically, instead of relying on the developer to provide this capability at every point where output is generated. Process SQL queries using prepared statements, parameterized queries, or stored procedures. These features should accept parameters or variables and support strong typing. Do not dynamically construct and execute query strings within these features using \"exec\" or similar functionality, since this may re-introduce the possibility of SQL injection. [REF-867]"
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design, Operation",
+          "text": "Run your code using the lowest privileges that are required to accomplish the necessary tasks [REF-76]. If possible, create isolated accounts with limited privileges that are only used for a single task. That way, a successful attack will not immediately give the attacker access to the rest of the software or its environment. For example, database applications rarely need to run as the database administrator, especially in day-to-day operations. Specifically, follow the principle of least privilege when creating user accounts to a SQL database. The database users should only have the minimum privileges necessary to use their account. If the requirements of the system indicate that a user can read and modify their own data, then limit their privileges so they cannot read/write others' data. Use the strictest permissions possible on all database objects, such as execute-only for stored procedures."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "For any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Implementation",
+          "text": "While it is risky to use dynamically-generated query strings, code, or commands that mix control and data together, sometimes it may be unavoidable. Properly quote arguments and escape any special characters within those arguments. The most conservative approach is to escape or filter all characters that do not pass an extremely strict allowlist (such as everything that is not alphanumeric or white space). If some special characters are still needed, such as white space, wrap each argument in quotes after the escaping/filtering step. Be careful of argument injection (CWE-88). Instead of building a new implementation, such features may be available in the database or programming language. For example, the Oracle DBMS_ASSERT package can check or enforce that parameters have certain properties that make them less vulnerable to SQL injection. For MySQL, the mysql_real_escape_string() API function is available in both C and PHP."
+        },
+        {
+          "id": "MIT-6",
+          "title": "Implementation",
+          "text": "Assume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use a list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. When performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if the input is only expected to contain colors such as \"red\" or \"blue.\" Do not rely exclusively on looking for malicious or malformed inputs. This is likely to miss at least one undesirable input, especially if the code's environment changes. This can give attackers enough room to bypass the intended validation. However, denylists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright. When constructing SQL query strings, use stringent allowlists that limit the character set based on the expected value of the parameter in the request. This will indirectly limit the scope of an attack, but this technique is less important than proper output encoding and escaping. Note that proper output encoding, escaping, and quoting is the most effective solution for preventing SQL injection, although input validation may provide some defense-in-depth. This is because it effectively limits what will appear in output. Input validation will not always prevent SQL injection, especially if you are required to support free-form text fields that could contain arbitrary characters. For example, the name \"O'Reilly\" would likely pass the validation step, since it is a common last name in the English language. However, it cannot be directly inserted into the database because it contains the \"'\" apostrophe character, which would need to be escaped or otherwise handled. In this case, stripping the apostrophe might reduce the risk of SQL injection, but it would produce incorrect behavior because the wrong name would be recorded. When feasible, it may be safest to disallow meta-characters entirely, instead of escaping them. This will provide some defense in depth. After the data is entered into the database, later processes may neglect to escape meta-characters before use, and you may not have control over those processes."
+        },
+        {
+          "id": "MIT-7",
+          "title": "Architecture and Design",
+          "text": "When the set of acceptable objects, such as filenames or URLs, is limited or known, create a mapping from a set of fixed input values (such as numeric IDs) to the actual filenames or URLs, and reject all other inputs."
+        },
+        {
+          "id": "MIT-8",
+          "title": "Implementation",
+          "text": "Ensure that error messages only contain minimal details that are useful to the intended audience and no one else. The messages need to strike the balance between being too cryptic (which can confuse users) or being too detailed (which may reveal more than intended). The messages should not reveal the methods that were used to determine the error. Attackers can use detailed information to refine or optimize their original attack, thereby increasing their chances of success. If errors must be captured in some detail, record them in log messages, but consider what could occur if the log messages can be viewed by attackers. Highly sensitive information such as passwords should never be saved to log files. Avoid inconsistent messaging that might accidentally tip off an attacker about internal state, such as whether a user account exists or not. In the context of SQL Injection, error messages revealing the structure of a SQL query can help attackers tailor successful attack strings."
+        },
+        {
+          "id": "MIT-9",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481."
+        },
+        {
+          "id": "MIT-10",
+          "title": "Operation, Implementation",
+          "text": "When using PHP, configure the application so that it does not use register_globals. During implementation, develop the application so that it does not rely on this feature, but be wary of implementing a register_globals emulation that is subject to weaknesses such as CWE-95, CWE-621, and similar issues."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: This weakness can often be detected using automated static analysis tools. Many modern tools use data flow analysis or constraint-based techniques to minimize the number of false positives. Automated static analysis might not be able to recognize when proper input validation is being performed, leading to false positives - i.e., warnings that do not have any security consequences or do not require any code changes. Automated static analysis might not be able to detect the usage of custom API functions or third-party libraries that indirectly invoke SQL commands, leading to false negatives - especially if the API/library code is not available for analysis. | Automated Dynamic Analysis: This weakness can be detected using dynamic tools and techniques that interact with the software using large test suites with many diverse inputs, such as fuzz testing (fuzzing), robustness testing, and fault injection. The software's operation may slow down, but it should not become unstable, crash, or generate incorrect results. | Manual Analysis: Manual analysis can be useful for finding this weakness, but it might not achieve desired code coverage within limited time constraints. This becomes difficult for weaknesses that must be considered for all inputs, since the attack surface can be too large. | Automated Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Binary Weakness Analysis - including disassembler + source code weakness analysis | Dynamic Analysis with Automated Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Database Scanners Cost effective for partial coverage: Web Application Scanner Web Services Scanner | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Fuzz Tester Framework-based Fuzzer | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Manual Source Code Review (not inspections) Cost effective for partial coverage: Focused Manual Spotcheck - Focused manual analysis of source | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Formal Methods / Correct-By-Construction Cost effective for partial coverage: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.)"
+    },
+    {
+      "id": "CWE-257",
+      "name": "Storing Passwords in a Recoverable Format",
+      "description": "The storage of passwords in a recoverable format makes them subject to password reuse attacks by malicious users. In fact, it should be noted that recoverable encrypted passwords provide no significant benefit over plaintext passwords since they are subject not only to reuse by malicious attackers but also by malicious insiders. If a system administrator can recover a password directly, or use a brute force search on the available information, the administrator can use the password on other accounts.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Access Control: Gain Privileges or Assume Identity; Access Control: Gain Privileges or Assume Identity",
+      "abstraction": "Base",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-522"
+        ],
+        "children": [],
+        "peers": [
+          "CWE-259",
+          "CWE-798"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use strong, non-reversible encryption to protect stored passwords."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
     },
     {
       "id": "CWE-259",
       "name": "Use of Hard-coded Password",
-      "description": "The software contains a hard-coded password, which it uses for inbound authentication, outbound communication, or similar purposes.",
+      "description": "The product contains a hard-coded password, which it uses for its own inbound authentication or for outbound communication to external components.",
+      "extended_description": "There are two main variations of a hard-coded password: Inbound: the product contains an authentication mechanism that checks for a hard-coded password. Outbound: the product connects to another system or component, and it contains a hard-coded password for connecting to that component.",
+      "consequences": "Access Control: Gain Privileges or Assume Identity; Access Control: Gain Privileges or Assume Identity, Hide Activities, Reduce Maintainability",
+      "abstraction": "Variant",
+      "status": "Draft",
       "relationships": {
-        "parents": ["CWE-798"],
+        "parents": [
+          "CWE-798"
+        ],
         "children": [],
-        "peers": ["CWE-321"]
+        "peers": [
+          "CWE-321",
+          "CWE-257"
+        ]
       },
       "mitigations": [
         {
-          "id": "cwe259-env",
-          "title": "Remove password literals",
-          "text": "Read passwords from a secret manager or environment; never commit real passwords."
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "For outbound authentication: store passwords outside of the code in a strongly-protected, encrypted configuration file or database that is protected from access by all outsiders, including other local users on the same system. Properly protect the key (CWE-320). If you cannot use encryption to protect the file, then make sure that the permissions are as restrictive as possible."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "For inbound authentication: Rather than hard-code a default username and password for first time logins, utilize a \"first login\" mode that requires the user to enter a unique strong password."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design",
+          "text": "Perform access control checks and limit which entities can access the feature that requires the hard-coded password. For example, a feature might only be enabled through the system console instead of through a network connection."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "For inbound authentication: apply strong one-way hashes to your passwords and store those hashes in a configuration file or database with appropriate access control. That way, theft of the file/database still requires the attacker to try to crack the password. When receiving an incoming password during authentication, take the hash of the password and compare it to the hash that you have saved. Use randomly assigned salts for each separate hash that you generate. This increases the amount of computation that an attacker needs to conduct a brute-force attack, possibly limiting the effectiveness of the rainbow table method."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Architecture and Design",
+          "text": "For front-end to back-end connections: Three solutions are possible, although none are complete. The first suggestion involves the use of generated passwords which are changed automatically and must be entered at given time intervals by a system administrator. These passwords will be held in memory and only be valid for the time intervals. Next, the passwords used should be limited at the back end to only performing actions valid for the front end, as opposed to having full access. Finally, the messages sent should be tagged and checksummed with time sensitive values so as to prevent replay style attacks."
         }
       ],
-      "detection_notes": "Child of CWE-798. Seed units use fake teaching passwords only."
+      "detection_notes": "Manual Analysis: This weakness can be detected using tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session. | Black Box: Use monitoring tools that examine the software's process as it interacts with the operating system and the network. This technique is useful in cases when source code is unavailable, if the software was not developed by you, or if you want to verify that the build phase did not introduce any new weaknesses. Examples include debuggers that directly attach to the running process; system-call tracing utilities such as truss (Solaris) and strace (Linux); system activity monitors such as FileMon, RegMon, Process Monitor, and other Sysinternals utilities (Windows); and sniffers and protocol analyzers that monitor network traffic. Attach the monitor to the process and perform a login. Using disassembled code, look at the associated instructions and see if any of them appear to be comparing the input to a fixed string or value. | Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-311",
+      "name": "Missing Encryption of Sensitive Data",
+      "description": "The product does not encrypt sensitive or critical information before storage or transmission.",
+      "extended_description": "",
+      "consequences": "Confidentiality: Read Application Data; Confidentiality/Integrity: Modify Application Data",
+      "abstraction": "Class",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-693"
+        ],
+        "children": [],
+        "peers": [
+          "CWE-327"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Requirements",
+          "text": "Clearly specify which data or resources are valuable enough that they should be protected by encryption. Require that any transmission or storage of this data/resource should use well-vetted encryption algorithms."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "Ensure that encryption is properly integrated into the system design, including but not necessarily limited to: Encryption that is needed to store or transmit private data of the users of the system Encryption that is needed to protect the system itself from unauthorized disclosure or tampering Identify the separate needs and contexts for encryption: One-way (i.e., only the user or recipient needs to have the key). This can be achieved using public key cryptography, or other techniques in which the encrypting party (i.e., the product) does not need to have access to a private key. Two-way (i.e., the encryption can be automatically performed on behalf of a user, but the key must be available so that the plaintext can be automatically recoverable by that user). This requires storage of the private key in a format that is recoverable only by the user (or perhaps by the operating system) in a way that cannot be recovered by others. Using threat modeling or other techniques, assume that data can be compromised through a separate vulnerability or weakness, and determine where encryption will be most effective. Ensure that data that should be private is not being inadvertently exposed using weaknesses such as insecure permissions (CWE-732). [REF-7]"
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design",
+          "text": "When there is a need to store or transmit sensitive data, use strong, up-to-date cryptographic algorithms to encrypt that data. Select a well-vetted algorithm that is currently considered to be strong by experts in the field, and use well-tested implementations. As with all cryptographic mechanisms, the source code should be available for analysis. For example, US government systems require FIPS 140-2 certification. Do not develop custom or private cryptographic algorithms. They will likely be exposed to attacks that are well-understood by cryptographers. Reverse engineering techniques are mature. If the algorithm can be compromised if attackers find out how it works, then it is especially weak. Periodically ensure that the cryptography has not become obsolete. Some older algorithms, once thought to require a billion years of computing time, can now be broken in days or hours. This includes MD4, MD5, SHA1, DES, and other algorithms that were once regarded as strong. [REF-267]"
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "Compartmentalize the system to have \"safe\" areas where trust boundaries can be unambiguously drawn. Do not allow sensitive data to go outside of the trust boundary and always be careful when interfacing with a compartment outside of the safe area. Ensure that appropriate compartmentalization is built into the system design, and the compartmentalization allows for and reinforces privilege separation functionality. Architects and designers should rely on the principle of least privilege to decide the appropriate time to use privileges and the time to drop privileges."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Implementation, Architecture and Design",
+          "text": "When using industry-approved techniques, use them correctly. Don't cut corners by skipping resource-intensive steps (CWE-325). These steps are often essential for preventing common attacks."
+        },
+        {
+          "id": "MIT-6",
+          "title": "Implementation",
+          "text": "Use naming conventions and strong types to make it easier to spot when sensitive data is being used. When creating structures, objects, or other complex entities, separate the sensitive and non-sensitive data as much as possible."
+        }
+      ],
+      "detection_notes": "Manual Analysis: The characterizaton of sensitive data often requires domain-specific understanding, so manual methods are useful. However, manual efforts might not achieve desired code coverage within limited time constraints. Black box methods may produce artifacts (e.g. stored data or unencrypted network transfer) that require manual evaluation. | Automated Analysis: Automated measurement of the entropy of an input/output source may indicate the use or lack of encryption, but human analysis is still required to distinguish intentionally-unencrypted data (e.g. metadata) from sensitive data. | Manual Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies | Dynamic Analysis with Automated Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Web Application Scanner Web Services Scanner Database Scanners | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Network Sniffer Cost effective for partial coverage: Fuzz Tester Framework-based Fuzzer Automated Monitored Execution Man-in-the-middle attack tool | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Focused Manual Spotcheck - Focused manual analysis of source Manual Source Code Review (not inspections) | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Context-configured Source Code Weakness Analyzer | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.) Formal Methods / Correct-By-Construction Cost effective for partial coverage: Attack Modeling"
     },
     {
       "id": "CWE-321",
       "name": "Use of Hard-coded Cryptographic Key",
-      "description": "The software uses a hard-coded cryptographic key for authentication, encryption, or integrity protection.",
+      "description": "The product uses a hard-coded, unchangeable cryptographic key.",
+      "extended_description": "",
+      "consequences": "Access Control: Bypass Protection Mechanism, Gain Privileges or Assume Identity, Read Application Data",
+      "abstraction": "Variant",
+      "status": "Draft",
       "relationships": {
-        "parents": ["CWE-798"],
+        "parents": [
+          "CWE-798"
+        ],
         "children": [],
-        "peers": ["CWE-259"]
+        "peers": [
+          "CWE-259"
+        ]
       },
       "mitigations": [
         {
-          "id": "cwe321-key-mgmt",
-          "title": "Use a key-management path",
-          "text": "Load keys from a KMS or protected store rather than embedding them in source."
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Prevention schemes mirror that of hard-coded password storage."
         }
       ],
-      "detection_notes": "Child of CWE-798."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
     },
     {
       "id": "CWE-326",
       "name": "Inadequate Encryption Strength",
-      "description": "The software stores or transmits sensitive data using an encryption scheme that is theoretically sound but is not strong enough for the required protection.",
+      "description": "The product stores or transmits sensitive data using an encryption scheme that is theoretically sound, but is not strong enough for the level of protection required.",
+      "extended_description": "A weak encryption scheme can be subjected to brute force attacks that have a reasonable chance of succeeding using current attack methods and resources.",
+      "consequences": "Access Control/Confidentiality: Bypass Protection Mechanism, Read Application Data",
+      "abstraction": "Class",
+      "status": "Draft",
       "relationships": {
-        "parents": [],
-        "children": ["CWE-327"],
+        "parents": [
+          "CWE-693"
+        ],
+        "children": [
+          "CWE-328"
+        ],
         "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe326-strength",
-          "title": "Choose adequate key sizes and algorithms",
-          "text": "Follow current platform guidance; avoid known-broken ciphers and short keys."
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use an encryption scheme that is currently considered to be strong by experts in the field."
         }
       ],
-      "detection_notes": "Parent of CWE-327 in this subset."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-327",
+      "name": "Use of a Broken or Risky Cryptographic Algorithm",
+      "description": "The product uses a broken or risky cryptographic algorithm or protocol.",
+      "extended_description": "Cryptographic algorithms are the methods by which data is scrambled to prevent observation or influence by unauthorized actors. Insecure cryptography can be exploited to expose sensitive information, modify data in unexpected ways, spoof identities of other users or devices, or other impacts. It is very difficult to produce a secure algorithm, and even high-profile algorithms by accomplished cryptographic experts have been broken. Well-known techniques exist to break or weaken various kinds of cryptography. Accordingly, there are a small number of well-understood and heavily studied algorithms that should be used by most products. Using a non-standard or known-insecure algorithm is dangerous because a determined adversary may be able to break the algorithm and compromise whatever data has been protected. Since the state of cryptography advances so rapidly, it is common for an algorithm to be considered \"unsafe\" even if it was once thought to be strong. This can happen when new attacks are discovered, or if computing power increases so much that the cryptographic algorithm no longer provides the amount of protection that was originally thought. For a number of reasons, this weakness is even more challenging to manage with hardware deployment of cryptographic algorithms as opposed to software implementation. First, if a flaw is discovered with hardware-implemented cryptography, the flaw cannot be fixed in most cases without a recall of the product, because hardware is not easily replaceable like software. Second, because the hardware product is expected to work for years, the adversary's computing power will only increase over time.",
+      "consequences": "Confidentiality: Read Application Data; Integrity: Modify Application Data; Accountability/Non-Repudiation: Hide Activities",
+      "abstraction": "Class",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-693"
+        ],
+        "children": [
+          "CWE-328"
+        ],
+        "peers": [
+          "CWE-311"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "When there is a need to store or transmit sensitive data, use strong, up-to-date cryptographic algorithms to encrypt that data. Select a well-vetted algorithm that is currently considered to be strong by experts in the field, and use well-tested implementations. As with all cryptographic mechanisms, the source code should be available for analysis. For example, US government systems require FIPS 140-2 certification [REF-1192]. Do not develop custom or private cryptographic algorithms. They will likely be exposed to attacks that are well-understood by cryptographers. Reverse engineering techniques are mature. If the algorithm can be compromised if attackers find out how it works, then it is especially weak. Periodically ensure that the cryptography has not become obsolete. Some older algorithms, once thought to require a billion years of computing time, can now be broken in days or hours. This includes MD4, MD5, SHA1, DES, and other algorithms that were once regarded as strong. [REF-267]"
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "Ensure that the design allows one cryptographic algorithm to be replaced with another in the next generation or version. Where possible, use wrappers to make the interfaces uniform. This will make it easier to upgrade to stronger algorithms. With hardware, design the product at the Intellectual Property (IP) level so that one cryptographic algorithm can be replaced with another in the next generation of the hardware product."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design",
+          "text": "Carefully manage and protect cryptographic keys (see CWE-320). If the keys can be guessed or stolen, then the strength of the cryptography itself is irrelevant."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]. Industry-standard implementations will save development time and may be more likely to avoid errors that can occur during implementation of cryptographic algorithms. Consider the ESAPI Encryption feature."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Implementation, Architecture and Design",
+          "text": "When using industry-approved techniques, use them correctly. Don't cut corners by skipping resource-intensive steps (CWE-325). These steps are often essential for preventing common attacks."
+        }
+      ],
+      "detection_notes": "Automated Analysis: Automated methods may be useful for recognizing commonly-used libraries or features that have become obsolete. | Manual Analysis: This weakness can be detected using tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session. | Automated Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Binary Weakness Analysis - including disassembler + source code weakness analysis Binary / Bytecode simple extractor - strings, ELF readers, etc. | Manual Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies | Dynamic Analysis with Automated Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Web Application Scanner Web Services Scanner Database Scanners | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Man-in-the-middle attack tool Cost effective for partial coverage: Framework-based Fuzzer Automated Monitored Execution Monitored Virtual Environment - run potentially malicious code in sandbox / wrapper / virtual machine, see if it does anything suspicious | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Manual Source Code Review (not inspections) Cost effective for partial coverage: Focused Manual Spotcheck - Focused manual analysis of source | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer | Automated Static Analysis: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Configuration Checker | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Formal Methods / Correct-By-Construction Cost effective for partial coverage: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.)"
     },
     {
       "id": "CWE-328",
       "name": "Use of Weak Hash",
-      "description": "The software uses a hashing algorithm that does not provide enough protection for the required use (for example MD5 or SHA-1 when a stronger digest is needed).",
+      "description": "The product uses an algorithm that produces a digest (output value) that does not meet security expectations for a hash function that allows an adversary to reasonably determine the original input (preimage attack), find another input that can produce the same hash (2nd preimage attack), or find multiple inputs that evaluate to the same hash (birthday attack).",
+      "extended_description": "A hash function is defined as an algorithm that maps arbitrarily sized data into a fixed-sized digest (output) such that the following properties hold: The algorithm is not invertible (also called \"one-way\" or \"not reversible\") The algorithm is deterministic; the same input produces the same digest every time Building on this definition, a cryptographic hash function must also ensure that a malicious actor cannot leverage the hash function to have a reasonable chance of success at determining any of the following: the original input (preimage attack), given only the digest another input that can produce the same digest (2nd preimage attack), given the original input a set of two or more inputs that evaluate to the same digest (birthday attack), given the actor can arbitrarily choose the inputs to be hashed and can do so a reasonable amount of times What is regarded as \"reasonable\" varies by context and threat model, but in general, \"reasonable\" could cover any attack that is more efficient than brute force (i.e., on average, attempting half of all possible combinations). Note that some attacks might be more efficient than brute force but are still not regarded as achievable in the real world. Any algorithm that does not meet the above conditions will generally be considered weak for general use in hashing. In addition to algorithmic weaknesses, a hash function can be made weak by using the hash in a security context that breaks its security guarantees. For example, using a hash function without a salt for storing passwords (that are sufficiently short) could enable an adversary to create a \"rainbow table\" [REF-637] to recover the password under certain conditions; this attack works against such hash functions as MD5, SHA-1, and SHA-2.",
+      "consequences": "Access Control: Bypass Protection Mechanism",
+      "abstraction": "Base",
+      "status": "Draft",
       "relationships": {
-        "parents": ["CWE-327"],
+        "parents": [
+          "CWE-326",
+          "CWE-327"
+        ],
         "children": [],
         "peers": []
       },
       "mitigations": [
         {
-          "id": "cwe328-sha256",
-          "title": "Use a strong digest",
-          "text": "Use SHA-256 or better for integrity; do not use MD5 as a security hash."
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use an adaptive hash function that can be configured to change the amount of computational effort needed to compute the hash, such as the number of iterations (\"stretching\") or the amount of memory required. Some hash functions perform salting automatically. These functions can significantly increase the overhead for a brute force attack compared to intentionally-fast functions such as MD5. For example, rainbow table attacks can become infeasible due to the high computing overhead. Finally, since computing power gets faster and cheaper over time, the technique can be reconfigured to increase the workload without forcing an entire replacement of the algorithm in use. Some hash functions that have one or more of these desired properties include bcrypt [REF-291], scrypt [REF-292], and PBKDF2 [REF-293]. While there is active debate about which of these is the most effective, they are all stronger than using salts with hash functions with very little computing overhead. Note that using these functions can have an impact on performance, so they require special consideration to avoid denial-of-service attacks. However, their configurability provides finer control over how much CPU and memory is used, so it could be adjusted to suit the environment's needs."
         }
       ],
-      "detection_notes": "Child of CWE-327; the seed MD5 unit is labeled CWE-327 as the broader class."
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-344",
+      "name": "Use of Invariant Value in Dynamically Changing Context",
+      "description": "The product uses a constant value, name, or reference, but this value can (or should) vary across different environments.",
+      "extended_description": "",
+      "consequences": "Other: Varies by Context",
+      "abstraction": "Base",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-330"
+        ],
+        "children": [
+          "CWE-798"
+        ],
+        "peers": []
+      },
+      "mitigations": [],
+      "detection_notes": ""
+    },
+    {
+      "id": "CWE-352",
+      "name": "Cross-Site Request Forgery (CSRF)",
+      "description": "The web application does not, or cannot, sufficiently verify whether a request was intentionally provided by the user who sent the request, which could have originated from an unauthorized actor.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Integrity/Availability/Non-Repudiation/Access Control: Gain Privileges or Assume Identity, Bypass Protection Mechanism, Read Application Data, Modify Application Data, DoS: Crash, Exit, or Restart",
+      "abstraction": "Compound",
+      "status": "Stable",
+      "relationships": {
+        "parents": [
+          "CWE-345"
+        ],
+        "children": [],
+        "peers": [
+          "CWE-79"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid [REF-1482]. For example, use anti-CSRF packages such as the OWASP CSRFGuard. [REF-330] Another example is the ESAPI Session Management control, which includes a component for CSRF. [REF-45]"
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "Ensure that the application is free of cross-site scripting issues (CWE-79), because most CSRF defenses can be bypassed using attacker-controlled script."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design",
+          "text": "Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). [REF-332]"
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Architecture and Design",
+          "text": "Use the \"double-submitted cookie\" method as described by Felten and Zeller: When a user visits a site, the site should generate a pseudorandom value and set it as a cookie on the user's machine. The site should require every form submission to include this value as a form value and also as a cookie value. When a POST request is sent to the site, the request should only be considered valid if the form value and the cookie value are the same. Because of the same-origin policy, an attacker cannot read or modify the value stored in the cookie. To successfully submit a form on behalf of the user, the attacker would have to correctly guess the pseudorandom value. If the pseudorandom value is cryptographically strong, this will be prohibitively difficult. This technique requires Javascript, so it may not work for browsers that have Javascript disabled. [REF-331]"
+        },
+        {
+          "id": "MIT-6",
+          "title": "Architecture and Design",
+          "text": "Do not use the GET method for any request that triggers a state change."
+        },
+        {
+          "id": "MIT-7",
+          "title": "Implementation",
+          "text": "Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+        }
+      ],
+      "detection_notes": "Manual Analysis: This weakness can be detected using tools and techniques that require manual (human) analysis, such as penetration testing, threat modeling, and interactive tools that allow the tester to record and modify an active session. Specifically, manual analysis can be useful for finding this weakness, and for minimizing false positives assuming an understanding of business logic. However, it might not achieve desired code coverage within limited time constraints. For black-box analysis, if credentials are not known for privileged accounts, then the most security-critical portions of the application may not receive sufficient attention. Consider using OWASP CSRFTester to identify potential issues and aid in manual analysis. | Automated Static Analysis: CSRF is currently difficult to detect reliably using automated techniques. This is because each application has its own implicit security policy that dictates which requests can be influenced by an outsider and automatically performed on behalf of a user, versus which requests require strong confidence that the user intends to make the request. For example, a keyword search of the public portion of a web site is typically expected to be encoded within a link that can be launched automatically when the user clicks on the link. | Automated Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Binary Weakness Analysis - including disassembler + source code weakness analysis | Manual Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies | Dynamic Analysis with Automated Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Web Application Scanner | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Fuzz Tester Framework-based Fuzzer | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Focused Manual Spotcheck - Focused manual analysis of source Manual Source Code Review (not inspections) | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.) Formal Methods / Correct-By-Construction"
+    },
+    {
+      "id": "CWE-502",
+      "name": "Deserialization of Untrusted Data",
+      "description": "The product deserializes untrusted data without sufficiently ensuring that the resulting data will be valid.",
+      "extended_description": "",
+      "consequences": "Integrity: Modify Application Data, Unexpected State; Availability: DoS: Resource Consumption (CPU); Other: Varies by Context",
+      "abstraction": "Base",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-913"
+        ],
+        "children": [],
+        "peers": [
+          "CWE-915"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design, Implementation",
+          "text": "If available, use the signing/sealing features of the programming language to assure that deserialized data has not been tainted. For example, a hash-based message authentication code (HMAC) could be used to ensure that data has not been modified."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation",
+          "text": "When deserializing data, populate a new object rather than just deserializing. The result is that the data flows through safe input validation and that the functions are safe."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "Explicitly define a final object() to prevent deserialization."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design, Implementation",
+          "text": "Make fields transient to protect them from deserialization. An attempt to serialize and then deserialize a class containing transient fields will result in NULLs where the transient data should be. This is an excellent way to prevent time, environment-based, or sensitive variables from being carried over and used improperly."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Implementation",
+          "text": "Avoid having unnecessary types or gadgets (a sequence of instances and method invocations that can self-execute during the deserialization process, often found in libraries) available that can be leveraged for malicious ends. This limits the potential for unintended or unauthorized types and gadgets to be leveraged by the attacker. Add only acceptable classes to an allowlist. Note: new gadgets are constantly being discovered, so this alone is not a sufficient mitigation."
+        },
+        {
+          "id": "MIT-6",
+          "title": "Architecture and Design, Implementation",
+          "text": "Employ cryptography of the data or code for protection. However, it's important to note that it would still be client-side security. This is risky because if the client is compromised then the security implemented on the client (the cryptography) can be bypassed."
+        },
+        {
+          "id": "MIT-7",
+          "title": "Operation",
+          "text": "Use an application firewall that can detect attacks against this weakness. It can be beneficial in cases in which the code cannot be fixed (because it is controlled by a third party), as an emergency prevention measure while more comprehensive software assurance measures are applied, or to provide defense in depth [REF-1481]."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-671",
+      "name": "Lack of Administrator Control over Security",
+      "description": "The product uses security features in a way that prevents the product's administrator from tailoring security settings to reflect the environment in which the product is being used. This introduces resultant weaknesses or prevents it from operating at a level of security that is desired by the administrator.",
+      "extended_description": "If the product's administrator does not have the ability to manage security-related decisions at all times, then protecting the product from outside threats - including the product's developer - can become impossible. For example, a hard-coded account name and password cannot be changed by the administrator, thus exposing that product to attacks that the administrator can not prevent.",
+      "consequences": "Other: Varies by Context",
+      "abstraction": "Class",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-657"
+        ],
+        "children": [
+          "CWE-798"
+        ],
+        "peers": []
+      },
+      "mitigations": [],
+      "detection_notes": ""
+    },
+    {
+      "id": "CWE-693",
+      "name": "Protection Mechanism Failure",
+      "description": "The product does not use or incorrectly uses a protection mechanism that provides sufficient defense against directed attacks against the product.",
+      "extended_description": "This weakness covers three distinct situations. A \"missing\" protection mechanism occurs when the application does not define any mechanism against a certain class of attack. An \"insufficient\" protection mechanism might provide some defenses - for example, against the most common attacks - but it does not protect against everything that is intended. Finally, an \"ignored\" mechanism occurs when a mechanism is available and in active use within the product, but the developer has not applied it in some code path.",
+      "consequences": "Access Control: Bypass Protection Mechanism",
+      "abstraction": "Pillar",
+      "status": "Draft",
+      "relationships": {
+        "parents": [],
+        "children": [
+          "CWE-311",
+          "CWE-326",
+          "CWE-327"
+        ],
+        "peers": []
+      },
+      "mitigations": [],
+      "detection_notes": ""
+    },
+    {
+      "id": "CWE-706",
+      "name": "Use of Incorrectly-Resolved Name or Reference",
+      "description": "The product uses a name or reference to access a resource, but the name/reference resolves to a resource that is outside of the intended control sphere.",
+      "extended_description": "",
+      "consequences": "Confidentiality/Integrity: Read Application Data, Modify Application Data",
+      "abstraction": "Class",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-664"
+        ],
+        "children": [
+          "CWE-22"
+        ],
+        "peers": [
+          "CWE-99"
+        ]
+      },
+      "mitigations": [],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-798",
+      "name": "Use of Hard-coded Credentials",
+      "description": "The product contains hard-coded credentials, such as a password or cryptographic key.",
+      "extended_description": "There are two main variations: Inbound: the product contains an authentication mechanism that checks the input credentials against a hard-coded set of credentials. In this variant, a default administration account is created, and a simple password is hard-coded into the product and associated with that account. This hard-coded password is the same for each installation of the product, and it usually cannot be changed or disabled by system administrators without manually modifying the program, or otherwise patching the product. It can also be difficult for the administrator to detect. Outbound: the product connects to another system or component, and it contains hard-coded credentials for connecting to that component. This variant applies to front-end systems that authenticate with a back-end service. The back-end service may require a fixed password that can be easily discovered. The programmer may simply hard-code those back-end credentials into the front-end product.",
+      "consequences": "Access Control: Bypass Protection Mechanism; Integrity/Confidentiality/Availability/Access Control/Other: Read Application Data, Gain Privileges or Assume Identity, Execute Unauthorized Code or Commands, Other",
+      "abstraction": "Base",
+      "status": "Draft",
+      "relationships": {
+        "parents": [
+          "CWE-1391",
+          "CWE-344",
+          "CWE-671"
+        ],
+        "children": [
+          "CWE-259",
+          "CWE-321"
+        ],
+        "peers": [
+          "CWE-257"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design",
+          "text": "For outbound authentication: store passwords, keys, and other credentials outside of the code in a strongly-protected, encrypted configuration file or database that is protected from access by all outsiders, including other local users on the same system. Properly protect the key (CWE-320). If you cannot use encryption to protect the file, then make sure that the permissions are as restrictive as possible [REF-7]. In Windows environments, the Encrypted File System (EFS) may provide some protection."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design",
+          "text": "For inbound authentication: Rather than hard-code a default username and password, key, or other authentication credentials for first time logins, utilize a \"first login\" mode that requires the user to enter a unique strong password or key."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Architecture and Design",
+          "text": "If the product must contain hard-coded credentials or they cannot be removed, perform access control checks and limit which entities can access the feature that requires the hard-coded credentials. For example, a feature might only be enabled through the system console instead of through a network connection."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Architecture and Design",
+          "text": "For inbound authentication using passwords: apply strong one-way hashes to passwords and store those hashes in a configuration file or database with appropriate access control. That way, theft of the file/database still requires the attacker to try to crack the password. When handling an incoming password during authentication, take the hash of the password and compare it to the saved hash. Use randomly assigned salts for each separate hash that is generated. This increases the amount of computation that an attacker needs to conduct a brute-force attack, possibly limiting the effectiveness of the rainbow table method."
+        },
+        {
+          "id": "MIT-5",
+          "title": "Architecture and Design",
+          "text": "For front-end to back-end connections: Three solutions are possible, although none are complete. The first suggestion involves the use of generated passwords or keys that are changed automatically and must be entered at given time intervals by a system administrator. These passwords will be held in memory and only be valid for the time intervals. Next, the passwords or keys should be limited at the back end to only performing actions valid for the front end, as opposed to having full access. Finally, the messages sent should be tagged and checksummed with time sensitive values so as to prevent replay-style attacks."
+        }
+      ],
+      "detection_notes": "Black Box: Credential storage in configuration files is findable using black box methods, but the use of hard-coded credentials for an incoming authentication routine typically involves an account that is not visible outside of the code. | Automated Static Analysis: Automated white box techniques have been published for detecting hard-coded credentials for incoming authentication, but there is some expert disagreement regarding their effectiveness and applicability to a broad range of methods. | Manual Static Analysis: This weakness may be detectable using manual code analysis. Unless authentication is decentralized and applied throughout the product, there can be sufficient time for the analyst to find incoming authentication routines and examine the program logic looking for usage of hard-coded credentials. Configuration files could also be analyzed. | Manual Dynamic Analysis: For hard-coded credentials in incoming authentication: use monitoring tools that examine the product's process as it interacts with the operating system and the network. This technique is useful in cases when source code is unavailable, if the product was not developed by you, or if you want to verify that the build phase did not introduce any new weaknesses. Examples include debuggers that directly attach to the running process; system-call tracing utilities such as truss (Solaris) and strace (Linux); system activity monitors such as FileMon, RegMon, Process Monitor, and other Sysinternals utilities (Windows); and sniffers and protocol analyzers that monitor network traffic. Attach the monitor to the process and perform a login. Using call trees or similar artifacts from the output, examine the associated behaviors and see if any of them appear to be comparing the input to a fixed string or value. | Automated Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Bytecode Weakness Analysis - including disassembler + source code weakness analysis Binary Weakness Analysis - including disassembler + source code weakness analysis | Manual Static Analysis - Binary or Bytecode: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Binary / Bytecode disassembler - then use manual analysis for vulnerabilities & anomalies | Dynamic Analysis with Manual Results Interpretation: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Network Sniffer Forced Path Execution | Manual Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Focused Manual Spotcheck - Focused manual analysis of source Manual Source Code Review (not inspections) | Automated Static Analysis - Source Code: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Source code Weakness Analyzer Context-configured Source Code Weakness Analyzer | Automated Static Analysis: According to SOAR [REF-1479], the following detection techniques may be useful: Cost effective for partial coverage: Configuration Checker | Architecture or Design Review: According to SOAR [REF-1479], the following detection techniques may be useful: Highly cost effective: Inspection (IEEE 1028 standard) (can apply to requirements, design, source code, etc.) Formal Methods / Correct-By-Construction"
+    },
+    {
+      "id": "CWE-913",
+      "name": "Improper Control of Dynamically-Managed Code Resources",
+      "description": "The product does not properly restrict reading from or writing to dynamically-managed code resources such as variables, objects, classes, attributes, functions, or executable instructions or statements.",
+      "extended_description": "Many languages offer powerful features that allow the programmer to dynamically create or modify existing code, or resources used by code such as variables and objects. While these features can offer significant flexibility and reduce development time, they can be extremely dangerous if attackers can directly influence these code resources in unexpected ways.",
+      "consequences": "Integrity: Execute Unauthorized Code or Commands; Other/Integrity: Varies by Context, Alter Execution Logic",
+      "abstraction": "Class",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-664"
+        ],
+        "children": [
+          "CWE-502",
+          "CWE-915"
+        ],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "For any externally-influenced input, check the input against an allowlist of acceptable values."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Implementation, Architecture and Design",
+          "text": "Refactor the code so that it does not need to be dynamically managed."
+        }
+      ],
+      "detection_notes": "Fuzzing: Fuzz testing (fuzzing) is a powerful technique for generating large numbers of diverse inputs - either randomly or algorithmically - and dynamically invoking the code with those inputs. Even with random inputs, it is often capable of generating unexpected results such as crashes, memory corruption, or resource consumption. Fuzzing effectively produces repeatable test cases that clearly indicate bugs, which helps developers to diagnose the issues."
+    },
+    {
+      "id": "CWE-915",
+      "name": "Improperly Controlled Modification of Dynamically-Determined Object Attributes",
+      "description": "The product receives input from an upstream component that specifies multiple attributes, properties, or fields that are to be initialized or updated in an object, but it does not properly control which attributes can be modified.",
+      "extended_description": "If the object contains attributes that were only intended for internal use, then their unexpected modification could lead to a vulnerability. This weakness is sometimes known by the language-specific mechanisms that make it possible, such as mass assignment, autobinding, or object injection.",
+      "consequences": "Integrity: Modify Application Data; Integrity: Execute Unauthorized Code or Commands; Other/Integrity: Varies by Context, Alter Execution Logic",
+      "abstraction": "Base",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-913"
+        ],
+        "children": [],
+        "peers": [
+          "CWE-502"
+        ]
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Implementation",
+          "text": "If available, use features of the language or framework that allow specification of allowlists of attributes or fields that are allowed to be modified. If possible, prefer allowlists over denylists. For applications written with Ruby on Rails, use the attr_accessible (allowlist) or attr_protected (denylist) macros in each class that may be used in mass assignment."
+        },
+        {
+          "id": "MIT-2",
+          "title": "Architecture and Design, Implementation",
+          "text": "If available, use the signing/sealing features of the programming language to assure that deserialized data has not been tainted. For example, a hash-based message authentication code (HMAC) could be used to ensure that data has not been modified."
+        },
+        {
+          "id": "MIT-3",
+          "title": "Implementation",
+          "text": "For any externally-influenced input, check the input against an allowlist of internal object attributes or fields that are allowed to be modified."
+        },
+        {
+          "id": "MIT-4",
+          "title": "Implementation, Architecture and Design",
+          "text": "Refactor the code so that object attributes or fields do not need to be dynamically identified, and only expose getter/setter functionality for the intended attributes."
+        }
+      ],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-943",
+      "name": "Improper Neutralization of Special Elements in Data Query Logic",
+      "description": "The product generates a query intended to access or manipulate data in a data store such as a database, but it does not neutralize or incorrectly neutralizes special elements that can modify the intended logic of the query.",
+      "extended_description": "Depending on the capabilities of the query language, an attacker could inject additional logic into the query to: Modify the intended selection criteria, thus changing which data entities (e.g., records) are returned, modified, or otherwise manipulated Append additional commands to the query Return more entities than intended Return fewer entities than intended Cause entities to be sorted in an unexpected way The ability to execute additional commands or change which entities are returned has obvious risks. But when the product logic depends on the order or number of entities, this can also lead to vulnerabilities. For example, if the query expects to return only one entity that specifies an administrative user, but an attacker can change which entities are returned, this could cause the logic to return information for a regular user and incorrectly assume that the user has administrative privileges. While this weakness is most commonly associated with SQL injection, there are many other query languages that are also subject to injection attacks, including HTSQL, LDAP, DQL, XQuery, Xpath, and \"NoSQL\" languages.",
+      "consequences": "Confidentiality/Integrity/Availability/Access Control: Bypass Protection Mechanism, Read Application Data, Modify Application Data, Varies by Context",
+      "abstraction": "Class",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-74"
+        ],
+        "children": [
+          "CWE-89"
+        ],
+        "peers": []
+      },
+      "mitigations": [],
+      "detection_notes": "Automated Static Analysis: Automated static analysis, commonly referred to as Static Application Security Testing (SAST), can find some instances of this weakness by analyzing source code (or binary/compiled code) without having to execute it. Typically, this is done by building a model of data flow and control flow, then searching for potentially-vulnerable patterns that connect \"sources\" (origins of input) with \"sinks\" (destinations where the data interacts with external components, a lower layer such as the OS, etc.)"
+    },
+    {
+      "id": "CWE-1391",
+      "name": "Use of Weak Credentials",
+      "description": "The product uses weak credentials (such as a default key or hard-coded password) that can be calculated, derived, reused, or guessed by an attacker.",
+      "extended_description": "By design, authentication protocols try to ensure that attackers must perform brute force attacks if they do not know the credentials such as a key or password. However, when these credentials are easily predictable or even fixed (as with default or hard-coded passwords and keys), then the attacker can defeat the mechanism without relying on brute force. Credentials may be weak for different reasons, such as: Hard-coded (i.e., static and unchangeable by the administrator) Default (i.e., the same static value across different deployments/installations, but able to be changed by the administrator) Predictable (i.e., generated in a way that produces unique credentials across deployments/installations, but can still be guessed with reasonable efficiency) Previously Compromised (i.e., \"leaked\" credentials that were published as part of a data breach) Even if a new, unique credential is intended to be generated for each product installation, if the generation is predictable, then that may also simplify guessing attacks.",
+      "consequences": "Access Control: Bypass Protection Mechanism",
+      "abstraction": "Class",
+      "status": "Incomplete",
+      "relationships": {
+        "parents": [
+          "CWE-1390"
+        ],
+        "children": [
+          "CWE-798"
+        ],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "MIT-1",
+          "title": "Architecture and Design, Operation",
+          "text": "When the user changes or sets a password, check the password against a database of already compromised or breached passwords. These passwords are likely to be used in password guessing attacks."
+        }
+      ],
+      "detection_notes": ""
     }
   ]
 }

@@ -2,6 +2,7 @@ RAG-MULTIAGENT-CWE-VULN — CANONICAL PROJECT CONTEXT
 =====================================================
 Update after EVERY phase. Must agree with README.md and docs/.
 Future agents/humans: treat this file as the source of truth.
+Production-grade design: docs/design/hld.md (HLD) and docs/design/lld.md (LLD).
 
 Official topic (exact; do not rename):
   RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases
@@ -11,27 +12,32 @@ Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
 Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
+Default path is always-LLM. final_confidence is logged, not a gate.
 
 Honesty: no invented citations; no invented Juliet/OWASP/Big-Vul numbers;
 no “100% novel” / “first ever RAG-CWE detector”; seed-only eval on the
 original 12 units / 18 queries; research eval on an authored 36-unit corpus
 (24 held-out traps); six public Java suites only as measured in
-docs/six-benchmark-results.md (Juliet SAST n=20728 / LLM n=72; five other
-suites with exact n). Java units are teaching samples, not exploits.
+docs/six-benchmark-results.md (Juliet SAST n=20728; public-suite LLM rows retracted).
+Sanitized LLM numbers: docs/thesis/05-results.md (C1 n=24 F1=0.923 trap contrast;
+C4 no-retrieval F1=0.923 / no-SAST F1=0.960 on C1 — do not claim RAG/SAST help;
+C2 rebuilt single-file pairs, partial n=35/36 TPD, pair acc 9/17=0.529 CI [0.294, 0.765];
+first C2 sample with multi-file variants is archived under results/thesis/archive/).
+Java units are teaching samples, not exploits.
 
-Defendable contribution: a RAG-augmented multi-agent detector for six Java
-CWEs in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM +
-relationship/RRF retrieves CWE knowledge, (3) a Groq LLM produces A4-schema
-explanations, (4) a validator checks schema/lines/KB not SAST agreement,
-(5) on an authored 24-unit FP/FN trap split, regex/template fail and live
-LLM recovers most cases. Six-suite scores are method-vs-corpora evidence,
-not a novelty proof.
+Defendable contribution: a RAG-augmented detector of staged specialist agents
+for six Java CWEs in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM +
+relationship/RRF retrieves CWE knowledge from an evidence/sink window, (3) a Groq
+LLM produces A4-schema explanations, (4) a validator checks schema/lines/KB not
+SAST agreement, (5) on an authored 24-unit FP/FN trap split, regex/template fail
+and live LLM recovers most cases. Six-suite scores are method-vs-corpora evidence,
+not a novelty proof. Public headline is C2 pair accuracy, not C1 F1.
 
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: six-benchmarks
-Branch: six-benchmarks
+Last phase in this file: thesis-complete
+Branch: thesis-complete
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -50,6 +56,7 @@ Branch: six-benchmarks
 | Live research default | DONE | live-research | docs/research-evaluation.md | GROQ_API_KEY required; --ablation template for F1=0 contrast |
 | Juliet Java mapped eval | DONE | benchmark-eval | docs/benchmark-plan.md · docs/benchmark-results.md | uv run cwe-vuln-eval --suite juliet |
 | Six public Java suites | THIS PR | six-benchmarks | docs/six-benchmark-plan.md · docs/six-benchmark-results.md | uv run cwe-vuln-eval --suite owasp-benchmark |
+| Sanitized thesis eval | DONE | thesis-complete | docs/thesis/ | uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000 |
 
 ============================================================
 PACKAGE TREE
@@ -184,6 +191,8 @@ uv run cwe-vuln-pipeline --offline          # ablation, not the system of record
 uv run cwe-vuln-eval --suite juliet
 uv run cwe-vuln-eval --suite owasp-benchmark
 uv run cwe-vuln-eval --suite owasp-benchmark-llm-sample --ablation template
+uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000
+uv run python scripts/write_thesis.py
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
 uv run cwe-vuln-retrieve --eval

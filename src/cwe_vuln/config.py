@@ -1,11 +1,19 @@
-"""Shared knobs only: paths, Top-K, fusion k, Groq env names, seed CWE ids."""
+"""Shared knobs only: paths, Top-K, fusion k, LLM provider env, seed CWE ids."""
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from cwe_vuln.llm.spec import (
+    LLM_API_KEY_ENV,
+    api_key_from_env,
+    base_url_from_env,
+    llm_ready,
+    missing_key_message,
+    model_from_env,
+    resolve_spec,
+)
 
 SEED_CWE_IDS: tuple[str, ...] = (
     "CWE-89",
@@ -16,12 +24,11 @@ SEED_CWE_IDS: tuple[str, ...] = (
     "CWE-327",
 )
 
-# CWE_VULN_LLM_API_KEY overrides GROQ_API_KEY. OPENAI_API_KEY is ignored.
-LLM_KEY_ENV_VARS: tuple[str, ...] = ("CWE_VULN_LLM_API_KEY", "GROQ_API_KEY")
-LLM_MODEL_ENV = "CWE_VULN_LLM_MODEL"
-LLM_BASE_URL_ENV = "CWE_VULN_LLM_BASE_URL"
-DEFAULT_LLM_MODEL = "openai/gpt-oss-20b"
-DEFAULT_LLM_BASE_URL = "https://api.groq.com/openai/v1"
+# Re-exported so existing imports keep working. Provider-specific keys live in llm.spec.
+LLM_KEY_ENV_VARS: tuple[str, ...] = (LLM_API_KEY_ENV, "GROQ_API_KEY")
+DEFAULT_LLM_PROVIDER = "groq"
+DEFAULT_LLM_MODEL = resolve_spec("groq").default_model
+DEFAULT_LLM_BASE_URL = resolve_spec("groq").base_url
 MINILM_MODEL_ID = "all-MiniLM-L6-v2"
 
 
@@ -30,24 +37,18 @@ class ConfigError(RuntimeError):
 
 
 class MissingLLMKeyError(ConfigError):
-    """Raised when the default live pipeline is used without a Groq key."""
-
-
-MISSING_LLM_KEY_MESSAGE = (
-    "GROQ_API_KEY is required for the default live research pipeline. "
-    "Set GROQ_API_KEY in the gitignored .env file or export it. "
-    "Use --offline (cwe-vuln-pipeline) or --ablation template (cwe-vuln-eval) "
-    "only for paper comparison tables. SAST-only and TemplateReasoner scored "
-    "F1=0 on the 24-unit research split and are not the system of record."
-)
+    """Raised when the default live pipeline is used without a provider key."""
 
 
 def require_llm_api_key() -> str:
-    """Return the Groq (or override) key, or raise MissingLLMKeyError."""
-    key = settings.llm_api_key()
-    if not key:
-        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
-    return key
+    """Return the selected provider's key, or a dummy key for local providers."""
+    spec = resolve_spec()
+    key = api_key_from_env(spec)
+    if key:
+        return key
+    if not spec.requires_key:
+        return spec.name
+    raise MissingLLMKeyError(missing_key_message(spec))
 
 
 def repo_root(start: Path | None = None) -> Path:
@@ -98,19 +99,26 @@ class Settings:
     default_llm_model: str = DEFAULT_LLM_MODEL
     default_llm_base_url: str = DEFAULT_LLM_BASE_URL
 
+    def llm_provider(self) -> str:
+        from cwe_vuln.llm.spec import provider_name
+
+        return provider_name()
+
     def llm_api_key(self) -> str | None:
-        """CWE_VULN_LLM_API_KEY overrides GROQ_API_KEY. OPENAI_API_KEY is ignored."""
-        for name in self.llm_env_vars:
-            value = os.environ.get(name, "").strip()
-            if value:
-                return value
-        return None
+        """Universal CWE_VULN_LLM_API_KEY, else the selected provider's key env."""
+        return api_key_from_env()
+
+    def llm_ready(self) -> bool:
+        return llm_ready()
 
     def llm_model(self) -> str:
-        return os.environ.get(LLM_MODEL_ENV, "").strip() or self.default_llm_model
+        return model_from_env() or self.default_llm_model
 
     def llm_base_url(self) -> str:
-        return os.environ.get(LLM_BASE_URL_ENV, "").strip() or self.default_llm_base_url
+        return base_url_from_env() or self.default_llm_base_url
 
 
 settings = Settings()
+
+# Default-provider snapshot for older imports; require_llm_api_key() uses the live provider.
+MISSING_LLM_KEY_MESSAGE = missing_key_message()

@@ -1,0 +1,217 @@
+{
+  "trial_id": "sast_regex_juliet_pairs",
+  "date": "2026-09-19T18:50:21Z",
+  "suite": "juliet-pairs",
+  "split": "juliet_pairs",
+  "n_units": 36,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "suite": "juliet-pairs",
+    "reasoner": "sast",
+    "backend": "regex",
+    "sast_input": "raw_disk"
+  },
+  "metrics": {
+    "tp": 8,
+    "fp": 3,
+    "tn": 15,
+    "fn": 10,
+    "precision": 0.7272727272727273,
+    "recall": 0.4444444444444444,
+    "f1": 0.5517241379310345,
+    "fpr": 0.16666666666666666,
+    "support": 36
+  },
+  "per_cwe": {
+    "CWE-89": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 2,
+      "fn": 2,
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "f1": 0.4,
+      "fpr": 0.3333333333333333,
+      "support": 6
+    },
+    "CWE-80": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-23": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.5,
+      "recall": 0.6666666666666666,
+      "f1": 0.5714285714285715,
+      "fpr": 0.6666666666666666,
+      "support": 6
+    },
+    "CWE-327": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-328": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 3,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-259": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "support": 6
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_executeUpdate_68a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s02_CWE89_SQL_Injection__Environment_executeQuery_02__method_goodG2B1",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_s02_CWE89_SQL_Injection__File_execute_53a__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_14__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_File_10__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_getQueryString_Servlet_61a__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__PropertiesFile_13__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__console_readLine_13__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getQueryString_Servlet_41__method_bad",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_81a__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_04__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_11__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Regex SAST on original units (raw disk). Not the fair LLM contrast; see sast_regex_sanitized_juliet_pairs for the apples-to-apples row.",
+  "error": null,
+  "sast_input": "raw_disk"
+}

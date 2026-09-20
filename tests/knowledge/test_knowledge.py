@@ -33,10 +33,31 @@ def test_search_finds_sql_injection() -> None:
 
 def test_relationships_and_mitigations() -> None:
     kb = CWEKnowledgeBase.load()
+    # Official MITRE view-1000 relations (catalog version recorded in meta).
     rel = kb.relationships("CWE-798")
-    assert "CWE-259" in rel.children
-    assert "CWE-287" in rel.parents
+    assert "CWE-259" in rel.children  # derived inverse edge from CWE-259 ChildOf 798
+    assert "CWE-321" in rel.children
+    assert rel.parents  # official parents (e.g. CWE-1391) — not hand-written
     neighbors = {entry.id for entry in kb.neighbors("CWE-798")}
     assert "CWE-259" in neighbors
     mits = kb.mitigations("CWE-22")
-    assert any("base directory" in item.text.lower() or "path" in item.title.lower() for item in mits)
+    assert any("path" in item.text.lower() or "path" in item.title.lower() for item in mits)
+
+
+def test_handwritten_fixture_still_loads() -> None:
+    from pathlib import Path
+
+    fixture = Path(__file__).resolve().parents[1] / "fixtures" / "cwe" / "knowledge_handwritten.json"
+    kb = CWEKnowledgeBase.load(fixture)
+    assert kb.meta.get("schema_version") == "1"
+    for cwe_id in SEED_CWE_IDS:
+        assert cwe_id in kb.entries
+
+
+def test_store_is_official_mitre_subset() -> None:
+    kb = CWEKnowledgeBase.load()
+    assert kb.meta.get("source") == "MITRE CWE XML catalog"
+    assert kb.meta.get("catalog_version")
+    assert kb.meta.get("catalog_date")
+    for cwe_id in ("CWE-80", "CWE-23", "CWE-36", "CWE-259", "CWE-321", "CWE-328"):
+        assert cwe_id in kb.entries

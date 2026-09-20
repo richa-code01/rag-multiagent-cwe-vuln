@@ -35,3 +35,17 @@ def test_stratified_sample_is_deterministic() -> None:
     second = [unit.unit_id for unit in stratified_sample(units, per_cwe=4, seed=13)]
     assert first == second
     assert first
+
+
+def test_multi_file_flow_variant_is_excluded_from_pair_pool() -> None:
+    from cwe_vuln.dataset.juliet import MULTI_FILE_STEM
+    from cwe_vuln.framework.pairs import build_pairs
+
+    units = load_juliet_units(tree=FIXTURE)
+    assert any("_68a" in unit.unit_id for unit in units)
+    pairs = build_pairs(units)
+    assert pairs
+    assert not any("_68a" in pair.vulnerable.unit_id for pair in pairs)
+    for pair in pairs:
+        stem = Path(pair.vulnerable.path).stem
+        assert MULTI_FILE_STEM.search(stem) is None

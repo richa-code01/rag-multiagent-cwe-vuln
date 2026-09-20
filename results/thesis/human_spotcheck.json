@@ -1,0 +1,209 @@
+{
+  "status": "not_run",
+  "n_target": 30,
+  "n_sampled": 20,
+  "protocol": "Richa labels 10 correct / 10 FP / 10 FN LLM outputs for explanation correctness and remediation usefulness. Single rater; no inter-rater stats.",
+  "rows": [
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_03__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-327",
+      "gold_cwe": "CWE-327",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_08__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-22",
+      "gold_cwe": "CWE-23",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe89_t04_split_concat",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-89",
+      "gold_cwe": "CWE-89",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_execute_01__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-89",
+      "gold_cwe": "CWE-89",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe327_t03_md5_variable",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-328",
+      "gold_cwe": "CWE-327",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_15__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-327",
+      "gold_cwe": "CWE-327",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_17__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-259",
+      "gold_cwe": "CWE-259",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_45__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-259",
+      "gold_cwe": "CWE-259",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe502_t03_helper_reflection",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-502",
+      "gold_cwe": "CWE-502",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe89_t03_stringbuilder",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-89",
+      "gold_cwe": "CWE-89",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_connect_tcp_13__method_goodG2B1",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-79",
+      "gold_cwe": "CWE-80",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe798_t01_sentinel_then_env",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-798",
+      "gold_cwe": "CWE-798",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_execute_01__method_goodG2B",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-89",
+      "gold_cwe": "CWE-89",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_03__method_good1",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-327",
+      "gold_cwe": "CWE-327",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_45__method_goodG2BSink",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-798",
+      "gold_cwe": "CWE-259",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_41__method_goodG2BSink",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-22",
+      "gold_cwe": "CWE-23",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "java_cwe22_t01_const_concat",
+      "source_trial": "llm_then_research_test",
+      "gold_label": "not_vulnerable",
+      "decision": "vulnerable",
+      "predicted_cwe": "CWE-22",
+      "gold_cwe": "CWE-22",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__connect_tcp_prepareStatement_21__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "uncertain",
+      "predicted_cwe": "CWE-74",
+      "gold_cwe": "CWE-89",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_41__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "uncertain",
+      "predicted_cwe": "CWE-79",
+      "gold_cwe": "CWE-23",
+      "explanation_correct": null,
+      "remediation_useful": null
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_42__method_bad",
+      "source_trial": "llm_then_juliet_pairs",
+      "gold_label": "vulnerable",
+      "decision": "not_vulnerable",
+      "predicted_cwe": "CWE-89",
+      "gold_cwe": "CWE-259",
+      "explanation_correct": null,
+      "remediation_useful": null
+    }
+  ],
+  "notes": "C8 not run \u2014 awaiting Richa labels. Not filled in. Unit ids are sampled; labels stay empty."
+}

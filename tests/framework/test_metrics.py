@@ -30,3 +30,12 @@ def test_zero_positive_predictions_are_zero_precision() -> None:
     assert scores.precision == 0.0
     assert scores.recall == 0.0
     assert scores.f1 == 0.0
+    assert scores.fpr == 0.0
+
+
+def test_fpr_is_fp_over_negatives() -> None:
+    scores = binary_metrics([True, False, False], [True, True, False])
+    assert scores.fp == 1
+    assert scores.tn == 1
+    assert scores.fpr == 0.5
+    assert "fpr" in scores.as_dict()

@@ -1,15 +1,20 @@
-"""Wire SAST → retrieve → reason → validate. Cost policy lives only here; no regex or prompts."""
+"""Wire SAST → retrieve → reason → validate. Cost policy lives only here; no regex or prompts.
+
+The orchestrator routes between the named agents (cwe_vuln.agents), logs the
+route and the stage signals (risk, retrieval confidence, coverage), and fuses a
+final confidence score onto every result.
+"""
 
 from __future__ import annotations
 
-from cwe_vuln.config import require_llm_api_key, settings
+from cwe_vuln.agents import EvidenceAgent, KnowledgeAgent, ReasoningAgent, ValidatorAgent
+from cwe_vuln.config import MissingLLMKeyError, settings
 from cwe_vuln.dataset import SeedUnit
+from cwe_vuln.llm import missing_key_message
 from cwe_vuln.models.pipeline import PipelineResult
+from cwe_vuln.orchestrator.confidence import fuse_confidence, risk_score
 from cwe_vuln.orchestrator.ports import EvidenceExtractor, UnitReasoner, UnitRetriever, UnitValidator
 from cwe_vuln.reasoner import LLMReasoner, TemplateReasoner
-from cwe_vuln.retrieval import HybridRetriever
-from cwe_vuln.sast import RegexEvidenceExtractor
-from cwe_vuln.validator import ResultValidator
 
 
 class Pipeline:
@@ -37,14 +42,16 @@ class Pipeline:
 
     @classmethod
     def default(cls) -> Pipeline:
-        """Live research path: Groq LLMReasoner is required. SAST is evidence only."""
-        llm = LLMReasoner(api_key=require_llm_api_key())
+        """Live research path: configured ChatProvider is required. SAST is evidence only."""
+        llm = LLMReasoner.from_env()
+        if llm is None:
+            raise MissingLLMKeyError(missing_key_message())
         return cls(
-            extractor=RegexEvidenceExtractor(),
-            retriever=HybridRetriever.load(),
-            reasoner=TemplateReasoner(),
-            validator=ResultValidator(),
-            llm_reasoner=llm,
+            extractor=EvidenceAgent(),
+            retriever=KnowledgeAgent(),
+            reasoner=ReasoningAgent(TemplateReasoner()),
+            validator=ValidatorAgent(),
+            llm_reasoner=ReasoningAgent(llm),
             skip_llm_when_sast_hits=False,
             use_llm_if_available=True,
         )
@@ -52,12 +59,11 @@ class Pipeline:
     @classmethod
     def offline(cls) -> Pipeline:
         """Opt-in TemplateReasoner ablation. Not the system of record."""
-        template = TemplateReasoner()
         return cls(
-            extractor=RegexEvidenceExtractor(),
-            retriever=HybridRetriever.load(),
-            reasoner=template,
-            validator=ResultValidator(),
+            extractor=EvidenceAgent(),
+            retriever=KnowledgeAgent(),
+            reasoner=ReasoningAgent(TemplateReasoner()),
+            validator=ValidatorAgent(),
             llm_reasoner=None,
             skip_llm_when_sast_hits=True,
             use_llm_if_available=False,
@@ -75,6 +81,16 @@ class Pipeline:
         embedder = getattr(self.retriever, "embedder_name", "unknown")
         usage = getattr(active, "last_usage", None) or {}
         prompt = getattr(active, "last_prompt", None)
+        retrieval_confidence = (
+            self.retriever.retrieval_confidence(unit)
+            if hasattr(self.retriever, "retrieval_confidence")
+            else 0.0
+        )
+        coverage = (
+            self.retriever.coverage(evidence, hits)
+            if hasattr(self.retriever, "coverage")
+            else None
+        )
         return PipelineResult(
             unit_id=unit.unit_id,
             path=path,
@@ -85,6 +101,7 @@ class Pipeline:
             reasoner=backend,
             embedder=embedder,
             model=getattr(active, "model", None),
+            provider=getattr(active, "provider_name", None),
             fallback_reason=getattr(active, "fallback_reason", None),
             n_attempts=int(getattr(active, "n_attempts", 0) or 0),
             prompt_tokens=usage.get("prompt_tokens"),
@@ -93,6 +110,11 @@ class Pipeline:
             prompt_chars=getattr(prompt, "prompt_chars", None),
             truncated=getattr(prompt, "truncated", None),
             slice_strategy=getattr(prompt, "slice_strategy", None),
+            cwe_clamped_from=getattr(active, "last_cwe_clamped_from", None),
+            risk_score=risk_score(evidence),
+            retrieval_confidence=retrieval_confidence,
+            coverage=coverage,
+            final_confidence=fuse_confidence(result, evidence, retrieval_confidence, report),
         )
 
     def _route(self, has_evidence: bool) -> tuple[str, UnitReasoner]:

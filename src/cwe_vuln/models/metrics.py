@@ -15,6 +15,7 @@ class BinaryMetrics:
     recall: float
     f1: float
     support: int
+    fpr: float = 0.0
 
     def as_dict(self) -> dict[str, int | float]:
         return {
@@ -25,6 +26,7 @@ class BinaryMetrics:
             "precision": self.precision,
             "recall": self.recall,
             "f1": self.f1,
+            "fpr": self.fpr,
             "support": self.support,
         }
 
@@ -54,6 +56,7 @@ def binary_metrics(y_true: list[bool], y_pred: list[bool]) -> BinaryMetrics:
     precision = _ratio(tp, tp + fp)
     recall = _ratio(tp, tp + fn)
     f1 = _ratio(2 * precision * recall, precision + recall) if (precision + recall) else 0.0
+    fpr = _ratio(fp, fp + tn)
     return BinaryMetrics(
         tp=tp,
         fp=fp,
@@ -63,4 +66,5 @@ def binary_metrics(y_true: list[bool], y_pred: list[bool]) -> BinaryMetrics:
         recall=recall,
         f1=f1,
         support=len(y_true),
+        fpr=fpr,
     )

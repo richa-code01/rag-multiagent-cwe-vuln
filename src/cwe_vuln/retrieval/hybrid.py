@@ -11,7 +11,7 @@ from pathlib import Path
 
 from cwe_vuln.config import repo_root, settings
 from cwe_vuln.dataset import DatasetError, SeedUnit, load_research_corpus, load_seed
-from cwe_vuln.knowledge import CWEEntry, CWEKnowledgeBase
+from cwe_vuln.knowledge import CWEKnowledgeBase
 from cwe_vuln.models.retrieval import RankedHit, RetrievalQuery
 from cwe_vuln.retrieval.dense import DenseIndex
 from cwe_vuln.retrieval.embed import Embedder, MiniLMEmbedder, default_allow_download
@@ -37,7 +37,7 @@ class HybridRetriever:
         allow_download: bool | None = None,
     ) -> HybridRetriever:
         kb = CWEKnowledgeBase.load()
-        documents = {entry.id: _entry_document(entry) for entry in kb.entries.values()}
+        documents = passage_documents(kb)
         units = {unit.unit_id: unit for unit in load_seed(root)}
         try:
             for unit in load_research_corpus(root):
@@ -66,13 +66,30 @@ class HybridRetriever:
         )
 
     def lexical_rank(self, query: str) -> list[RankedHit]:
-        hits = self.index.rank(query)
-        return [_with_name(hit, self.kb) for hit in hits]
+        return self._collapse(self.index.rank(query))
 
     def neural_rank(self, query: str) -> list[RankedHit]:
         if self.dense is None:
             return self.lexical_rank(query)
-        return [_with_name(hit, self.kb) for hit in self.dense.rank(query)]
+        return self._collapse(self.dense.rank(query))
+
+    def _collapse(self, hits: list[RankedHit]) -> list[RankedHit]:
+        """Collapse passage-level hits (``CWE-89::main``) to one hit per CWE id,
+        keeping the best-scoring passage as the grounding text."""
+        best: dict[str, RankedHit] = {}
+        for hit in hits:
+            cwe_id, passage = split_passage_id(hit.cwe_id, self.documents)
+            collapsed = RankedHit(
+                cwe_id=cwe_id,
+                score=hit.score,
+                name=_name(self.kb, cwe_id),
+                passage=passage,
+            )
+            current = best.get(cwe_id)
+            if current is None or hit.score > current.score:
+                best[cwe_id] = collapsed
+        ordered = sorted(best.values(), key=lambda item: (-item.score, item.cwe_id))
+        return ordered
 
     def sast_rank(self, query: RetrievalQuery) -> list[RankedHit]:
         source = ""
@@ -83,7 +100,7 @@ class HybridRetriever:
         matched = [item.cwe_id for item in match_rules(source)]
         ordered = list(dict.fromkeys(matched))
         return [
-            RankedHit(cwe_id=cwe_id, score=1.0, name=_name(self.kb, cwe_id))
+            RankedHit(cwe_id=cwe_id, score=1.0, name=_name(self.kb, cwe_id), passage=self.passage_for(cwe_id))
             for cwe_id in ordered
         ]
 
@@ -97,7 +114,7 @@ class HybridRetriever:
             for related in self.kb.relationships(cwe_id).all_ids():
                 scores[related] = max(scores.get(related, 0.0), 0.4 / rank)
         hits = [
-            RankedHit(cwe_id=cwe_id, score=score, name=_name(self.kb, cwe_id))
+            RankedHit(cwe_id=cwe_id, score=score, name=_name(self.kb, cwe_id), passage=self.passage_for(cwe_id))
             for cwe_id, score in scores.items()
         ]
         hits.sort(key=lambda item: (-item.score, item.cwe_id))
@@ -110,22 +127,60 @@ class HybridRetriever:
         related = [hit.cwe_id for hit in self.relationship_rank(sast or neural[:3] or lexical[:3])]
         fused = rrf_combine(neural, sast, related)
         return [
-            RankedHit(cwe_id=cwe_id, score=score, name=_name(self.kb, cwe_id))
+            RankedHit(cwe_id=cwe_id, score=score, name=_name(self.kb, cwe_id), passage=self.passage_for(cwe_id))
             for cwe_id, score in fused
         ]
 
+    def passage_for(self, cwe_id: str, max_chars: int = 700) -> str:
+        """Grounding prose for one CWE: main passage preferred, truncated."""
+        key = f"{cwe_id}::main"
+        text = self.documents.get(key) or self.documents.get(cwe_id) or ""
+        if len(text) > max_chars:
+            return text[:max_chars].rstrip() + " ..."
+        return text
+
     def rank_for_unit(self, unit: SeedUnit) -> list[RankedHit]:
-        """Unit-level retrieve: sanitized source excerpt as the query, source as the
+        """Unit-level retrieve: evidence/sink window as the query, source as the
         SAST signal, truncated to config.top_k. ``unit.notes`` is never used here:
         benchmark adapters put gold labels (``real=true``, CWE ids) in notes."""
+        from cwe_vuln.dataset.sanitize import retrieval_query_text
+
         self.units_by_id[unit.unit_id] = unit
         query = RetrievalQuery(
             query_id=unit.unit_id,
-            query=unit.source[: settings.retrieval_query_chars],
+            query=retrieval_query_text(unit),
             relevant_cwes=(),
             unit_id=unit.unit_id,
         )
         return self.hybrid_rank(query)[: settings.top_k]
+
+    def retrieval_confidence(self, unit: SeedUnit) -> float:
+        """Cosine similarity of the best passage to the source excerpt.
+
+        MiniLM cosine when the neural index is loaded, TF-IDF cosine otherwise.
+        Clamped to [0, 1]; 0.0 when the index returns nothing. Not a calibrated
+        probability.
+        """
+        from cwe_vuln.dataset.sanitize import retrieval_query_text
+
+        query = retrieval_query_text(unit)
+        rank = self.neural_rank if self.dense is not None else self.lexical_rank
+        hits = rank(query)
+        if not hits:
+            return 0.0
+        return round(min(1.0, max(0.0, hits[0].score)), 4)
+
+    @staticmethod
+    def coverage(evidence, hits) -> float | None:
+        """Fraction of evidence CWE ids present in the retrieved hits.
+
+        None when there is no evidence (coverage is undefined, not zero).
+        """
+        evidence_cwes = {item.cwe_id for item in evidence}
+        if not evidence_cwes:
+            return None
+        hit_cwes = {hit.cwe_id for hit in hits}
+        return round(len(evidence_cwes & hit_cwes) / len(evidence_cwes), 4)
 
 
 def load_retrieval_queries(
@@ -212,15 +267,34 @@ def evaluate_retriever(
     return report
 
 
-def _entry_document(entry: CWEEntry) -> str:
-    mit = " ".join(f"{item.title} {item.text}" for item in entry.mitigations)
-    return f"{entry.id} {entry.name} {entry.description} {mit} {entry.detection_notes}"
+def passage_documents(kb: CWEKnowledgeBase) -> dict[str, str]:
+    """One CWE entry → several passages so MiniLM/TF-IDF index focused text.
+
+    Keys are ``CWE-89::main`` / ``::mitigations`` / ``::detection``; ranking
+    collapses them back to one hit per CWE id.
+    """
+    documents: dict[str, str] = {}
+    for entry in kb.entries.values():
+        main = f"{entry.id} {entry.name}. {entry.description}"
+        if entry.extended_description:
+            main += f" {entry.extended_description}"
+        if entry.consequences:
+            main += f" Consequences: {entry.consequences}"
+        documents[f"{entry.id}::main"] = main
+        if entry.mitigations:
+            mit = " ".join(f"{item.title}: {item.text}" for item in entry.mitigations)
+            documents[f"{entry.id}::mitigations"] = f"{entry.id} {entry.name} mitigations. {mit}"
+        if entry.detection_notes:
+            documents[f"{entry.id}::detection"] = f"{entry.id} {entry.name} detection. {entry.detection_notes}"
+    return documents
+
+
+def split_passage_id(doc_id: str, documents: dict[str, str]) -> tuple[str, str]:
+    """Map a passage doc id back to (cwe_id, passage text)."""
+    cwe_id = doc_id.split("::", 1)[0]
+    return cwe_id, documents.get(doc_id, "")
 
 
 def _name(kb: CWEKnowledgeBase, cwe_id: str) -> str:
     entry = kb.entries.get(cwe_id)
     return entry.name if entry else ""
-
-
-def _with_name(hit: RankedHit, kb: CWEKnowledgeBase) -> RankedHit:
-    return RankedHit(cwe_id=hit.cwe_id, score=hit.score, name=_name(kb, hit.cwe_id))

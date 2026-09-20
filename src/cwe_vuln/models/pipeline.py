@@ -46,6 +46,7 @@ class PipelineResult:
     embedder: str = "tfidf_fallback"
     # LLM diagnostics (None/0 for the deterministic template path).
     model: str | None = None
+    provider: str | None = None
     fallback_reason: str | None = None
     n_attempts: int = 0
     prompt_tokens: int | None = None
@@ -54,6 +55,12 @@ class PipelineResult:
     prompt_chars: int | None = None
     truncated: bool | None = None
     slice_strategy: str | None = None
+    cwe_clamped_from: str | None = None
+    # Stage signals + fused confidence (ApproachDoc stage 6).
+    risk_score: float = 0.0
+    retrieval_confidence: float = 0.0
+    coverage: float | None = None
+    final_confidence: float = 0.0
 
     def to_dict(self) -> dict[str, object]:
         payload: dict[str, object] = {
@@ -68,6 +75,7 @@ class PipelineResult:
         }
         diagnostics = {
             "model": self.model,
+            "provider": self.provider,
             "fallback_reason": self.fallback_reason,
             "n_attempts": self.n_attempts,
             "prompt_tokens": self.prompt_tokens,
@@ -76,6 +84,15 @@ class PipelineResult:
             "prompt_chars": self.prompt_chars,
             "truncated": self.truncated,
             "slice_strategy": self.slice_strategy,
+            "cwe_clamped_from": self.cwe_clamped_from,
         }
         payload["diagnostics"] = {key: value for key, value in diagnostics.items() if value is not None}
+        signals: dict[str, object] = {
+            "risk_score": self.risk_score,
+            "retrieval_confidence": self.retrieval_confidence,
+            "final_confidence": self.final_confidence,
+        }
+        if self.coverage is not None:
+            signals["coverage"] = self.coverage
+        payload["signals"] = signals
         return payload

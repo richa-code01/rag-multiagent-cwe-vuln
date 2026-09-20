@@ -5,7 +5,7 @@
 **Current milestone:** six public Java suites (`six-benchmarks`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
-Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
+Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · **HLD:** [`docs/design/hld.md`](docs/design/hld.md) · **LLD:** [`docs/design/lld.md`](docs/design/lld.md) · Thesis chapters: [`docs/thesis/README.md`](docs/thesis/README.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
 
 Authored 36-unit scores and Juliet scores are **different tables**. Do not mix them.
 
@@ -17,7 +17,9 @@ A RAG-augmented multi-agent detector for **six Java CWEs** in which:
 2. Hybrid MiniLM + SAST ids + CWE relationship/RRF retrieves CWE knowledge
 3. A Groq LLM produces Assignment-4 schema explanations grounded in the unit, evidence, and retrieval hits
 4. A validator checks schema, CWE-in-KB, cited lines, and JSON consistency — **not** SAST agreement
-5. On an authored 24-unit FP/FN trap split, regex SAST and TemplateReasoner fail (F1=0) and the live LLM recovers most cases
+5. On an authored 24-unit FP/FN trap split, regex SAST and TemplateReasoner fail (F1=0) and the live LLM recovers most cases (trap-overfit contrast only)
+
+The **public LLM number** is C2 Juliet pair accuracy with a bootstrap CI, not C1 F1. Default path is always-LLM; fused confidence is logged, not a routing gate.
 
 This is **not** a claim of SOTA, 100% novelty, or that the authored 36-unit trap split is Juliet. RAG + CWE + multi-agent detection already exists in related work. The contribution is this specific, runnable composition, the honest trap-split contrast, and measured scores on **six named public/industry-style Java suites** versus regex/template baselines (not “first system ever”).
 
@@ -56,11 +58,11 @@ uv run cwe-vuln-pipeline --offline
 uv run cwe-vuln-eval --suite research --ablation template
 ```
 
-**Research split** (24 held-out authored traps, **authored corpus — not Juliet**): SAST/template P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), validator **24/24**. Details: [`docs/research-evaluation.md`](docs/research-evaluation.md).
+**Research split** (24 held-out authored traps, **authored corpus — not Juliet**, sanitized 2026-09-18): original-unit regex SAST P=R=F1=0.000 (12 FP / 12 FN); live Groq then_llm P=0.857 R=1.000 F1=0.923 (2 FP / 0 FN), all `reasoner=llm`. This is a trap-overfit contrast, not the public headline. Details: [`docs/thesis/05-results.md`](docs/thesis/05-results.md).
 
-**Juliet Java v1.3** (mapped/nearby CWE folders, **n=20728 SAST**; live Groq on stratified sample **n=72**): regex SAST P=0.300 R=0.334 F1=0.316; sample template F1=0.552; sample live Groq F1=0.733. NIST zip returned HTTP 403; GitHub mirror commit `b2c6df3`. CWE-79/22/502/798 folders are missing; nearby ids were not relabeled. Details: [`docs/benchmark-results.md`](docs/benchmark-results.md).
+**Juliet Java v1.3** (mapped/nearby CWE folders, **n=20728 SAST F1=0.316 kept**). Rebuilt single-file pair sample (seed=13, `_NNa/_NNb` excluded): LLM **partial** n_scored=35/36 (TPD). **Pair accuracy 9/17 = 0.529**, bootstrap 95% CI [0.294, 0.765] on complete pairs (1 pair excluded as TPD-incomplete, not a model miss). Binary F1=0.789 on 35 units. C4 no-retrieval on Juliet **not run** (TPD) — do not claim RAG helps on Juliet. First contaminated C2 sample (pair acc 0.556) is archived, not deleted. Old n=72 LLM F1=0.733 is **retracted**. Details: [`docs/benchmark-results.md`](docs/benchmark-results.md) · [`docs/thesis/05-results.md`](docs/thesis/05-results.md).
 
-**Six public suites** (advisor table): Juliet n=20728 SAST F1=0.316 / LLM n=72 F1=0.733; OWASP Benchmark n=2740 F1=0.395 / LLM n=12 F1=0.286; Securibench Micro n=119 F1=0.072 / LLM n=12 F1=0.500; Find Security Bugs test-code n=79 F1=0.435 / LLM n=12 F1=0.364; Vul4J n=62 F1=0.244 / LLM n=12 F1=0.000; CVEfixes-Java-slice n=92 F1=0.207 / LLM n=12 F1=0.000. **No HTTP 429.** LLM samples are not full suites; regex ≠ CodeQL. Six-suite measurement does **not** prove 100% novelty. Details: [`docs/six-benchmark-results.md`](docs/six-benchmark-results.md).
+**Six public suites** (regex SAST kept): Juliet n=20728 F1=0.316; OWASP n=2740 F1=0.395; Securibench n=119 F1=0.072; Find Security Bugs n=79 F1=0.435; Vul4J n=62 F1=0.244; CVEfixes-Java-slice n=92 F1=0.207. **Public-suite LLM rows from 2026-09-17 are retracted** (gold-label leakage / silent Groq fallback). Replacement LLM tables are C1/C2 in `results/thesis/`. Regex ≠ CodeQL. Details: [`docs/six-benchmark-results.md`](docs/six-benchmark-results.md).
 
 ## MiniLM embeddings
 
@@ -74,24 +76,37 @@ Recorded seed-only retrieval (18 queries, embedder=`minilm`): neural R@1=0.944 R
 
 Expanded authored queries (48, **not a public benchmark**): TF-IDF R@1=0.646 MRR=0.794; MiniLM R@1=0.812 MRR=0.894; hybrid RRF R@1=0.854 MRR=0.917. Hybrid still helps R@1/MRR on the expanded set.
 
-## Live LLM (Groq)
+## Live LLM (provider-agnostic)
 
-Default `cwe-vuln-pipeline` and `cwe-vuln-eval --suite research` **require** a Groq key. Copy `.env.example` to `.env` (gitignored) or export:
+Default `cwe-vuln-pipeline` and `cwe-vuln-eval --suite research` **require** a configured chat provider. Groq is the default (free-tier). Copy `.env.example` to `.env` (gitignored) or export:
 
 ```bash
-export GROQ_API_KEY=...                 # or CWE_VULN_LLM_API_KEY
-# optional:
-# export CWE_VULN_LLM_MODEL=openai/gpt-oss-20b
-# export CWE_VULN_LLM_BASE_URL=https://api.groq.com/openai/v1
+# default (Groq)
+export GROQ_API_KEY=...
 uv run cwe-vuln-pipeline
+
+# OpenAI
+export CWE_VULN_LLM_PROVIDER=openai
+export OPENAI_API_KEY=...
+export CWE_VULN_LLM_MODEL=gpt-4o-mini
+
+# any OpenAI-compatible host (Together, vLLM, a campus gateway, …)
+export CWE_VULN_LLM_PROVIDER=custom
+export CWE_VULN_LLM_BASE_URL=https://api.example.com/v1
+export CWE_VULN_LLM_MODEL=my-model
+export CWE_VULN_LLM_API_KEY=...
 ```
 
 | Env | Role |
 | --- | --- |
-| `GROQ_API_KEY` | Required for the default live path |
-| `CWE_VULN_LLM_API_KEY` | Optional override |
-| `CWE_VULN_LLM_MODEL` | Default `openai/gpt-oss-20b` (Groq free-tier replacement for retired `llama-3.1-8b-instant`) |
-| `CWE_VULN_LLM_BASE_URL` | Default `https://api.groq.com/openai/v1` |
+| `CWE_VULN_LLM_PROVIDER` | `groq` (default), `openai`, `together`, `openrouter`, `fireworks`, `deepseek`, `ollama`, `custom` |
+| `GROQ_API_KEY` / `OPENAI_API_KEY` / … | Provider-scoped key |
+| `CWE_VULN_LLM_API_KEY` | Optional override for any provider |
+| `CWE_VULN_LLM_MODEL` | Overrides the provider default (`openai/gpt-oss-20b` on Groq) |
+| `CWE_VULN_LLM_BASE_URL` | Overrides the provider default; required for `custom` |
+| `CWE_VULN_LLM_JSON_MODE` | `0` to disable `response_format=json_object` |
+
+Adding a new named host is one `register_provider(ProviderSpec(...))` call (or `custom` + three env vars). The reasoner does not import Groq or OpenAI types.
 
 Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`. Paths are `sast_then_llm` / `hybrid_retrieve_then_llm`. Invalid JSON is retried once, then `reasoner=llm_fallback_template`. No exploit generation.
 
@@ -108,14 +123,15 @@ Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`. Pat
 | SAST evidence objects | Done ([PR #5](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/5)) |
 | Template reasoning agent | Done ([PR #6](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/6)) — **ablation only** |
 | Validator | Done ([PR #7](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/7)); SAST-iff-vulnerable rule **removed** on `live-research` |
-| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)); default is live Groq |
+| Cost-aware orchestrator | Done ([PR #8](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/8)); default is always-LLM; confidence is logged, not a gate |
 | Framework CLI on the seed | Done ([PR #9](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/9)) |
 | Layered packages (`models`, `dataset`, `sast`, …) | Done ([PR #10](https://github.com/richa-code01/rag-multiagent-cwe-vuln/pull/10)) |
-| Live LLM reasoner | Done — Groq `LLMReasoner`; default path **fails** without `GROQ_API_KEY` |
+| Live LLM reasoner | Done — `ChatProvider` + `LLMReasoner`; default Groq; swap via `CWE_VULN_LLM_PROVIDER` |
 | Research evaluation (authored 36-unit corpus) | Done — `uv run cwe-vuln-eval --suite research` |
 | Live research default | Groq required; validator no longer tied to SAST |
 | Juliet Java v1.3 mapped eval | Done — `uv run cwe-vuln-eval --suite juliet` / `--suite juliet-llm-sample` |
 | Six public Java suites | Done — `--suite owasp-benchmark` · `securibench-micro` · `find-sec-bugs` · `vul4j` · `cvefixes-java-slice` (+ `-llm-sample`) |
+| Thesis-defendable eval | `uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000` → [`docs/thesis/`](docs/thesis/README.md) |
 
 Authored 36-unit metrics live in [`docs/research-evaluation.md`](docs/research-evaluation.md). Juliet metrics live in [`docs/benchmark-results.md`](docs/benchmark-results.md). Six-suite table: [`docs/six-benchmark-results.md`](docs/six-benchmark-results.md). Those tables are not interchangeable.
 

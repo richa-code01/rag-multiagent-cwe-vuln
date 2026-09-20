@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-09-17T14:08:18Z",
   "evaluation_scope": "six_public_java_suites",
-  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM sample rows in this file from 2026-09-17 are RETRACTED. Six-suite measurement does not prove 100% novelty.",
   "novelty": "Novelty claim is the method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) versus these corpora and regex/template baselines \u2014 not 'first system ever' or 100% novelty.",
   "trials": [
     {
@@ -1566,5 +1566,7 @@
       "validation_pass": 12,
       "rate_limited": false
     }
-  ]
+  ],
+  "llm_rows_retracted": true,
+  "llm_retraction_reason": "Gold-label leakage (Juliet FLAW/FIX comments, unit_ids, notes) and/or silent Groq 429\u2192template fallback. Regex SAST rows are kept. Replacement LLM numbers: results/thesis/ after uv run cwe-vuln-eval --suite thesis."
 }

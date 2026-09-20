@@ -111,6 +111,8 @@ Held-out **research test (24 units)**. Seed-only 12-unit scores stay in
 `results/assignment-1-baseline.json` (P=R=F1=1.000) and
 `results/framework-seed*.json`.
 
+The 2026-09-18 sanitized re-run (`uv run cwe-vuln-eval --suite thesis` → `results/thesis/llm_then_research_test.json`) is the C1 system of record: live Groq F1=0.923 (P=0.857 R=1.000, n=24, all `reasoner=llm`, `prompt_audit_leaks=[]`). Validator pass is 11/24 because cited lines are **not** rewritten. See [`thesis/05-results.md`](thesis/05-results.md).
+
 | System | Precision | Recall | F1 | FP | FN | n | Role |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | SAST / regex only | 0.000 | 0.000 | 0.000 | 12 | 12 | 24 | ablation |

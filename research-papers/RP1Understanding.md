@@ -16,7 +16,7 @@ The techniques compared are:
 
 ## Database Used
 
-A curated dataset was compiled from **Big-Vul** [1] and real-world code repositories from GitHub, focusing on five critical Common Weakness Enumeration (**CWE**) categories: **CWE-119**, **CWE-399**, **CWE-264**, **CWE-20**, and **CWE-200**.
+A curated dataset was compiled from **Big-Vul** [1] and partner **GlassHouse** traces (not a generic GitHub dump), focusing on five critical Common Weakness Enumeration (**CWE**) categories: **CWE-119**, **CWE-399**, **CWE-264**, **CWE-20**, and **CWE-200**.
 
 
 **RAG** approach integrated external domain knowledge from the internet and the **MITRE CWE** database. It achieved the highest overall accuracy (**0.86**) and F1 score (**0.85**), highlighting the value of contextual augmentation.

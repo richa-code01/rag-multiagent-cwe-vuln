@@ -78,6 +78,61 @@ def sanitize_unit(unit: SeedUnit, *, display_path: str = "Snippet.java") -> Seed
     )
 
 
+def retrieval_query_text(unit: SeedUnit, *, max_chars: int | None = None, pad: int = 20) -> str:
+    """Source window used as the retrieval query: evidence or sink, not file head.
+
+    Aligns MiniLM/TF-IDF with the same region the LLM prompt prefers. Line numbers
+    are not re-based (unlike ``slice_unit``); this is a query string only.
+    """
+    from cwe_vuln.config import settings
+    from cwe_vuln.sast import extract_evidence
+
+    budget = max_chars if max_chars is not None else settings.retrieval_query_chars
+    lines = unit.source.splitlines() or [""]
+    evidence = extract_evidence(unit)
+    if evidence:
+        lo = max(1, min(item.start_line for item in evidence) - pad)
+        hi = min(len(lines), max(item.end_line for item in evidence) + pad)
+    else:
+        from cwe_vuln.reasoner.prompts import _first_sink_line
+
+        sink = _first_sink_line(lines)
+        if sink is None:
+            return unit.source[:budget]
+        lo = max(1, sink - pad)
+        hi = min(len(lines), sink + pad)
+    window = "\n".join(lines[lo - 1 : hi])
+    return window[:budget]
+
+
+def slice_unit(unit: SeedUnit, *, pad: int = 40) -> SeedUnit:
+    """Keep a window around SAST/sink lines so real-world files stay prompt-sized.
+
+    Used for Vul4J/CVEfixes (C3). Line numbers inside the window are re-based to 1
+    because the sliced source *is* the unit the LLM and validator see.
+    """
+    from cwe_vuln.sast import extract_evidence
+
+    lines = unit.source.splitlines() or [""]
+    evidence = extract_evidence(unit)
+    if evidence:
+        lo = max(1, min(item.start_line for item in evidence) - pad)
+        hi = min(len(lines), max(item.end_line for item in evidence) + pad)
+        strategy = "evidence_window"
+    else:
+        from cwe_vuln.reasoner.prompts import _first_sink_line
+
+        sink = _first_sink_line(lines)
+        if sink is None:
+            return unit
+        lo = max(1, sink - pad)
+        hi = min(len(lines), sink + pad)
+        strategy = "sink_window"
+    window = "\n".join(lines[lo - 1 : hi])
+    notes = f"{unit.notes} slice={strategy} orig_lines={lo}-{hi}".strip()
+    return replace(unit, source=window, notes=notes)
+
+
 def sanitize_source(source: str) -> str:
     """Blank comments and rename gold-hint identifiers, preserving line numbers."""
     return _rewrite_code(source, _rename_identifiers)

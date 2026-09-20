@@ -22,7 +22,8 @@ SYSTEM_PROMPT = """You are a senior Java application-security analyst.
 Return ONLY a JSON object that matches the Assignment 4 reasoning schema.
 Do not generate exploits, payloads, or attack instructions.
 Decide vulnerable / not_vulnerable / uncertain from the given SAST evidence, the code excerpt, and the retrieved CWE knowledge.
-Ground the CWE id in the retrieval hits when possible. Keep explanation and remediation defensive."""
+The CWE id MUST be one of the allowed retrieval-hit ids listed in the user prompt. Never emit CWE-0 or an id outside that list. If uncertain, still pick the nearest allowed hit id.
+Keep explanation and remediation defensive."""
 
 USER_PROMPT = """Analyze this Java unit. Return JSON only, no markdown.
 
@@ -41,6 +42,9 @@ Optional keys: confidence (0-1), evidence_ids (array of strings).
 
 unit_id: {unit_id}
 path: {path}
+
+Allowed CWE ids (pick exactly one; never CWE-0 or an id outside this list):
+{allowed_cwe_ids}
 
 Code excerpt ({window_note}):
 {source}
@@ -100,9 +104,12 @@ def render_prompt(
         }
         for hit in hits
     ]
+    allowed = list(dict.fromkeys([hit.cwe_id for hit in hits] + [item.cwe_id for item in evidence]))
+    allowed_text = ", ".join(allowed) if allowed else "(none — still never emit CWE-0)"
     text = USER_PROMPT.format(
         unit_id=unit.unit_id,
         path=unit.path,
+        allowed_cwe_ids=allowed_text,
         window_note=window_note,
         source=excerpt,
         evidence=json.dumps(evidence_payload, indent=2),

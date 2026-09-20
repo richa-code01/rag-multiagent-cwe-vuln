@@ -11,8 +11,9 @@ Cost policy (here only, not in the thesis title; knobs in `config.Settings`):
 
 - Always run regex SAST first (signals for retrieval + the reasoner)
 - `Pipeline.default()` **requires** `GROQ_API_KEY` (or `CWE_VULN_LLM_API_KEY`); missing key raises `MissingLLMKeyError`
-- Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False`
+- Default knobs: `use_llm_if_available=True`, `skip_llm_when_sast_hits=False` — **always-LLM**
 - Default paths: `sast_then_llm` / `hybrid_retrieve_then_llm`
+- `final_confidence` is **logged**, not a routing gate
 - `Pipeline.offline()` / `cwe-vuln-pipeline --offline` uses `TemplateReasoner` for paper contrast (F1=0 on research_test; not the system of record)
 - `--ablation skip-llm` keeps the old cost path (SAST hits → template) as an opt-in trial
 - Default model `openai/gpt-oss-20b`. `OPENAI_API_KEY` is ignored.

@@ -75,6 +75,34 @@ def test_empty_explanation_fails_internal_consistency() -> None:
     assert names["internal_consistency"] is False
 
 
+def test_indent_only_mismatch_fails_raw_cited_lines_but_passes_normalized() -> None:
+    unit = next(item for item in load_seed() if item.unit_id == "java_cwe89_sqli_concat")
+    evidence = extract_evidence(unit)
+    template = TemplateReasoner().compose(unit, evidence, [])
+    lines = unit.source.splitlines()
+    start = end = None
+    for index in range(len(lines) - 1):
+        if lines[index].strip() and lines[index + 1].strip():
+            start, end = index + 1, index + 2
+            break
+    assert start is not None
+    snippet = f"        {lines[start - 1].strip()}\n        {lines[end - 1].strip()}"
+    result = replace(
+        template,
+        supporting_source_lines=replace(
+            template.supporting_source_lines,
+            start_line=start,
+            end_line=end,
+            snippet=snippet,
+        ),
+    )
+    report = ResultValidator().check(result, unit, evidence)
+    names = {check.name: check.passed for check in report.checks}
+    assert names["cited_lines"] is False
+    assert names["cited_lines_normalized"] is True
+    assert report.passed is False
+
+
 def test_default_pipeline_requires_groq_key() -> None:
     from cwe_vuln.orchestrator import Pipeline
 

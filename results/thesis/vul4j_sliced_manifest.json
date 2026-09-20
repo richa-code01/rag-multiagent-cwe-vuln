@@ -1,0 +1,29 @@
+{
+  "n": 24,
+  "unit_ids": [
+    "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+    "vul4j_VUL4J-25_XSSAPIImpl_vuln",
+    "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+    "vul4j_VUL4J-34_I18nInterceptor_vuln",
+    "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+    "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+    "vul4j_VUL4J-37_Setup_vuln",
+    "vul4j_VUL4J-37_TomEEConfiguration_vuln",
+    "vul4j_VUL4J-37_EmbeddedTomEEConfiguration_vuln",
+    "vul4j_VUL4J-37_BlacklistClassResolver_vuln",
+    "vul4j_VUL4J-37_BlacklistClassResolverTest_vuln",
+    "vul4j_VUL4J-37_EjbObjectInputStream_vuln",
+    "vul4j_VUL4J-18_DefaultURLConstructor_fixed",
+    "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+    "vul4j_VUL4J-25_XSSAPIImplTest_fixed",
+    "vul4j_VUL4J-34_I18nInterceptor_fixed",
+    "vul4j_VUL4J-34_I18nInterceptorTest_fixed",
+    "vul4j_VUL4J-34_I18nInterceptorTest_fixed",
+    "vul4j_VUL4J-37_Setup_fixed",
+    "vul4j_VUL4J-37_TomEEConfiguration_fixed",
+    "vul4j_VUL4J-37_EmbeddedTomEEConfiguration_fixed",
+    "vul4j_VUL4J-37_BlacklistClassResolver_fixed",
+    "vul4j_VUL4J-37_BlacklistClassResolverTest_fixed",
+    "vul4j_VUL4J-37_EjbObjectInputStream_fixed"
+  ]
+}

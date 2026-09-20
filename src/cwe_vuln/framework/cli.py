@@ -38,7 +38,7 @@ def run_split(split: str, *, offline: bool = False) -> dict:
         "n_units": len(units),
         "embedder": embedder,
         "offline": offline,
-        "llm_configured": bool(settings.llm_api_key()),
+        "llm_configured": bool(settings.llm_ready()),
         "detector_path_counts": _path_counts(rows),
         "reasoner_counts": _reasoner_counts(rows),
         "validation_pass": sum(1 for row in rows if row.report.passed),

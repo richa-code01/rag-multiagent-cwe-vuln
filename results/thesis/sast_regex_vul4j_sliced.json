@@ -1,0 +1,170 @@
+{
+  "trial_id": "sast_regex_vul4j_sliced",
+  "date": "2026-09-18T17:54:44Z",
+  "suite": "vul4j-sliced",
+  "split": "vul4j_sliced",
+  "n_units": 24,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "suite": "vul4j-sliced",
+    "reasoner": "sast",
+    "backend": "regex"
+  },
+  "metrics": {
+    "tp": 2,
+    "fp": 2,
+    "tn": 10,
+    "fn": 10,
+    "precision": 0.5,
+    "recall": 0.16666666666666666,
+    "f1": 0.25,
+    "support": 24
+  },
+  "per_cwe": {
+    "CWE-22": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-79": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 4,
+      "fn": 4,
+      "precision": 0.5,
+      "recall": 0.2,
+      "f1": 0.28571428571428575,
+      "support": 10
+    },
+    "CWE-502": {
+      "tp": 1,
+      "fp": 1,
+      "tn": 5,
+      "fn": 5,
+      "precision": 0.5,
+      "recall": 0.16666666666666666,
+      "f1": 0.25,
+      "support": 12
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptor_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-34_I18nInterceptorTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_TomEEConfiguration_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_EmbeddedTomEEConfiguration_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolver_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolverTest_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_EjbObjectInputStream_fixed",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    }
+  ],
+  "notes": "Regex SAST only. On research_test this should be imperfect by construction.",
+  "error": null,
+  "resumed": true
+}

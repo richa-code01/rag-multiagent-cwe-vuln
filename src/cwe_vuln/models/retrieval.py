@@ -18,3 +18,4 @@ class RankedHit:
     cwe_id: str
     score: float
     name: str = ""
+    passage: str = ""  # retrieved CWE prose shown to the LLM (RAG grounding)

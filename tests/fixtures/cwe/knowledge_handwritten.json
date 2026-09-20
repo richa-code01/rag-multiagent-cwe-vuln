@@ -1,0 +1,404 @@
+{
+  "meta": {
+    "schema_version": "1",
+    "title": "Curated CWE knowledge subset for Assignment 2",
+    "disclaimer": "This is a curated teaching subset derived from well-known public CWE/MITRE catalog facts (names, high-level descriptions, common mitigations, and published relationships). It is not an official MITRE dump, not a complete CWE database, and not a substitute for cwe.mitre.org."
+  },
+  "entries": [
+    {
+      "id": "CWE-89",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "description": "The software constructs all or part of an SQL command using externally influenced input without neutralizing special elements that can modify the intended command.",
+      "relationships": {
+        "parents": ["CWE-943"],
+        "children": ["CWE-564"],
+        "peers": ["CWE-74", "CWE-20"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe89-parameterized",
+          "title": "Use parameterized queries / prepared statements",
+          "text": "Bind user values as parameters instead of concatenating them into the SQL string."
+        },
+        {
+          "id": "cwe89-least-privilege",
+          "title": "Least-privilege database accounts",
+          "text": "The application account should only have the statements it needs (no DROP/admin)."
+        },
+        {
+          "id": "cwe89-allowlist",
+          "title": "Allowlist dynamic identifiers",
+          "text": "If table or column names must be dynamic, allowlist them rather than interpolating raw input."
+        }
+      ],
+      "detection_notes": "String-concatenated SQL passed to Statement.executeQuery / executeUpdate is a common teaching pattern."
+    },
+    {
+      "id": "CWE-79",
+      "name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+      "description": "The software does not neutralize or incorrectly neutralizes user-controllable input before it is placed in output used as a web page.",
+      "relationships": {
+        "parents": ["CWE-74"],
+        "children": ["CWE-80"],
+        "peers": ["CWE-20"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe79-output-encode",
+          "title": "Context-appropriate output encoding",
+          "text": "HTML-encode (or JSON/attribute/URL-encode, depending on sink) untrusted data before writing it into a page."
+        },
+        {
+          "id": "cwe79-framework-escape",
+          "title": "Use auto-escaping templates",
+          "text": "Prefer frameworks that escape by default; avoid writing raw markup from request parameters."
+        }
+      ],
+      "detection_notes": "HTML markup concatenated with a request/comment string without an encode helper is a common teaching pattern."
+    },
+    {
+      "id": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "description": "The software uses external input to construct a pathname that is intended to stay under a restricted parent directory, but does not properly neutralize special elements such as '..' sequences.",
+      "relationships": {
+        "parents": ["CWE-706"],
+        "children": ["CWE-23", "CWE-36"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe22-canonicalize",
+          "title": "Resolve and constrain the path",
+          "text": "Normalize/canonicalize the path and reject it if it does not remain under the intended base directory."
+        },
+        {
+          "id": "cwe22-allowlist",
+          "title": "Allowlist file identifiers",
+          "text": "Map user input to known file IDs rather than concatenating raw path segments."
+        }
+      ],
+      "detection_notes": "java.io.File constructed by concatenating a caller-supplied relative path is a common teaching pattern."
+    },
+    {
+      "id": "CWE-502",
+      "name": "Deserialization of Untrusted Data",
+      "description": "The application deserializes untrusted data without sufficiently verifying that the resulting data will be valid, which can lead to unexpected object graphs or control flow.",
+      "relationships": {
+        "parents": ["CWE-913"],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe502-avoid",
+          "title": "Do not deserialize untrusted Java objects",
+          "text": "Prefer data-only formats (JSON, protobuf) with explicit schemas over ObjectInputStream on untrusted input."
+        },
+        {
+          "id": "cwe502-allowlist",
+          "title": "Constrain types if deserialization is required",
+          "text": "Use look-ahead / type allowlists rather than unrestricted readObject on attacker-controlled streams."
+        }
+      ],
+      "detection_notes": "ObjectInputStream.readObject on an InputStream is a common teaching pattern. This catalog does not include gadget chains or exploit payloads."
+    },
+    {
+      "id": "CWE-798",
+      "name": "Use of Hard-coded Credentials",
+      "description": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data.",
+      "relationships": {
+        "parents": ["CWE-287"],
+        "children": ["CWE-259", "CWE-321"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe798-secret-store",
+          "title": "Load secrets from the environment or a secret store",
+          "text": "Do not ship passwords or API keys as string literals; inject them at deployment time."
+        },
+        {
+          "id": "cwe798-rotate",
+          "title": "Rotate default credentials",
+          "text": "Default or sample passwords in source must never be used in a real system."
+        }
+      ],
+      "detection_notes": "Assignments of password/apiKey/secret to a string literal are the teaching pattern. Examples in this repo use fake values such as admin/password."
+    },
+    {
+      "id": "CWE-327",
+      "name": "Use of a Broken or Risky Cryptographic Algorithm",
+      "description": "The software stores or transmits sensitive data using a cryptographic algorithm that is known to be weak, obsolete, or otherwise inappropriate for the protection needed.",
+      "relationships": {
+        "parents": ["CWE-326"],
+        "children": ["CWE-328"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe327-modern-algs",
+          "title": "Use currently recommended algorithms",
+          "text": "Prefer SHA-256/SHA-3 family hashes and modern authenticated encryption; do not use MD5, DES, or RC4 for security."
+        },
+        {
+          "id": "cwe327-libraries",
+          "title": "Use vetted crypto libraries",
+          "text": "Call maintained platform APIs rather than implementing or selecting obsolete ciphers by name."
+        }
+      ],
+      "detection_notes": "MessageDigest.getInstance(\"MD5\") versus SHA-256 is the teaching contrast in the seed."
+    },
+    {
+      "id": "CWE-943",
+      "name": "Improper Neutralization of Special Elements in Data Query Logic",
+      "description": "The software constructs a data query using externally influenced input without neutralizing special elements that can modify the intended query logic.",
+      "relationships": {
+        "parents": ["CWE-74"],
+        "children": ["CWE-89"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe943-bind",
+          "title": "Separate query structure from values",
+          "text": "Use bind variables / parameterized APIs for SQL, LDAP, and similar query languages."
+        }
+      ],
+      "detection_notes": "Parent class of SQL injection (CWE-89) in the CWE hierarchy used here."
+    },
+    {
+      "id": "CWE-564",
+      "name": "SQL Injection: Hibernate",
+      "description": "An ORM / Hibernate-style query is constructed with untrusted input in a way that can change the intended query.",
+      "relationships": {
+        "parents": ["CWE-89"],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe564-named-params",
+          "title": "Use parameterized ORM queries",
+          "text": "Bind values through the ORM API rather than concatenating HQL/SQL."
+        }
+      ],
+      "detection_notes": "Related child of CWE-89; included so relationship walks have a target. Not represented as its own Java seed unit."
+    },
+    {
+      "id": "CWE-74",
+      "name": "Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')",
+      "description": "The software constructs all or part of a command, query, or other structured message using externally influenced input without neutralizing special elements.",
+      "relationships": {
+        "parents": ["CWE-20"],
+        "children": ["CWE-79", "CWE-943"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe74-neutralize",
+          "title": "Neutralize for the downstream interpreter",
+          "text": "Encode or parameterize for the specific sink (SQL, HTML, OS, LDAP) rather than applying a generic sanitize."
+        }
+      ],
+      "detection_notes": "Injection class covering XSS and query neutralization parents used in this subset."
+    },
+    {
+      "id": "CWE-80",
+      "name": "Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)",
+      "description": "The software receives input from an upstream component but does not neutralize special characters that could be interpreted as web-scripting elements.",
+      "relationships": {
+        "parents": ["CWE-79"],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe80-html-encode",
+          "title": "HTML-encode untrusted page content",
+          "text": "Strip or encode script-related tags before reflecting input into HTML."
+        }
+      ],
+      "detection_notes": "More specific XSS variant under CWE-79."
+    },
+    {
+      "id": "CWE-20",
+      "name": "Improper Input Validation",
+      "description": "The product receives input or data but does not validate or incorrectly validates that the input has the properties required to process it safely.",
+      "relationships": {
+        "parents": [],
+        "children": ["CWE-74"],
+        "peers": ["CWE-89", "CWE-79"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe20-validate",
+          "title": "Validate against a spec",
+          "text": "Check type, length, range, and encoding of inputs close to the trust boundary. Validation complements (does not replace) parameterized queries and output encoding."
+        }
+      ],
+      "detection_notes": "Broad ancestor used for relationship walks; not a seed-unit label by itself."
+    },
+    {
+      "id": "CWE-706",
+      "name": "Use of Incorrectly-Resolved Name or Reference",
+      "description": "The software uses a name or reference to access a resource, but the name/reference resolves to a resource that is outside the intended control sphere.",
+      "relationships": {
+        "parents": [],
+        "children": ["CWE-22"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe706-resolve",
+          "title": "Resolve names before use",
+          "text": "Canonicalize identifiers and compare them against the intended namespace."
+        }
+      ],
+      "detection_notes": "Parent of path traversal (CWE-22) in this subset."
+    },
+    {
+      "id": "CWE-23",
+      "name": "Relative Path Traversal",
+      "description": "The software uses external input to construct a pathname that includes relative path sequences such as '..' sequences.",
+      "relationships": {
+        "parents": ["CWE-22"],
+        "children": [],
+        "peers": ["CWE-36"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe23-normalize",
+          "title": "Reject parent-directory segments after normalize",
+          "text": "After resolving the path, ensure it still starts with the allowed root."
+        }
+      ],
+      "detection_notes": "Child of CWE-22; teaching samples in the seed use generic path concatenation rather than a dedicated relative-path unit."
+    },
+    {
+      "id": "CWE-36",
+      "name": "Absolute Path Traversal",
+      "description": "The software uses external input to construct a pathname that can resolve to an absolute location outside the intended directory.",
+      "relationships": {
+        "parents": ["CWE-22"],
+        "children": [],
+        "peers": ["CWE-23"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe36-reject-absolute",
+          "title": "Reject absolute paths from callers",
+          "text": "Treat user-supplied absolute paths as out of bounds unless explicitly allowed."
+        }
+      ],
+      "detection_notes": "Child of CWE-22."
+    },
+    {
+      "id": "CWE-913",
+      "name": "Improper Control of Dynamically-Managed Code Resources",
+      "description": "The software does not properly restrict the resources that can be loaded or executed dynamically, such as deserialized objects or reflective code.",
+      "relationships": {
+        "parents": [],
+        "children": ["CWE-502"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe913-restrict",
+          "title": "Restrict dynamic loading",
+          "text": "Allowlist types and avoid executing attacker-influenced serialized graphs."
+        }
+      ],
+      "detection_notes": "Parent of CWE-502 in this subset."
+    },
+    {
+      "id": "CWE-287",
+      "name": "Improper Authentication",
+      "description": "The software does not sufficiently verify that an actor claiming an identity is who they claim to be.",
+      "relationships": {
+        "parents": [],
+        "children": ["CWE-798"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe287-strong-auth",
+          "title": "Use a real authentication mechanism",
+          "text": "Do not bake identities or shared secrets into source; verify credentials through a dedicated store."
+        }
+      ],
+      "detection_notes": "Parent used for CWE-798 relationship walks in this curated subset."
+    },
+    {
+      "id": "CWE-259",
+      "name": "Use of Hard-coded Password",
+      "description": "The software contains a hard-coded password, which it uses for inbound authentication, outbound communication, or similar purposes.",
+      "relationships": {
+        "parents": ["CWE-798"],
+        "children": [],
+        "peers": ["CWE-321"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe259-env",
+          "title": "Remove password literals",
+          "text": "Read passwords from a secret manager or environment; never commit real passwords."
+        }
+      ],
+      "detection_notes": "Child of CWE-798. Seed units use fake teaching passwords only."
+    },
+    {
+      "id": "CWE-321",
+      "name": "Use of Hard-coded Cryptographic Key",
+      "description": "The software uses a hard-coded cryptographic key for authentication, encryption, or integrity protection.",
+      "relationships": {
+        "parents": ["CWE-798"],
+        "children": [],
+        "peers": ["CWE-259"]
+      },
+      "mitigations": [
+        {
+          "id": "cwe321-key-mgmt",
+          "title": "Use a key-management path",
+          "text": "Load keys from a KMS or protected store rather than embedding them in source."
+        }
+      ],
+      "detection_notes": "Child of CWE-798."
+    },
+    {
+      "id": "CWE-326",
+      "name": "Inadequate Encryption Strength",
+      "description": "The software stores or transmits sensitive data using an encryption scheme that is theoretically sound but is not strong enough for the required protection.",
+      "relationships": {
+        "parents": [],
+        "children": ["CWE-327"],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe326-strength",
+          "title": "Choose adequate key sizes and algorithms",
+          "text": "Follow current platform guidance; avoid known-broken ciphers and short keys."
+        }
+      ],
+      "detection_notes": "Parent of CWE-327 in this subset."
+    },
+    {
+      "id": "CWE-328",
+      "name": "Use of Weak Hash",
+      "description": "The software uses a hashing algorithm that does not provide enough protection for the required use (for example MD5 or SHA-1 when a stronger digest is needed).",
+      "relationships": {
+        "parents": ["CWE-327"],
+        "children": [],
+        "peers": []
+      },
+      "mitigations": [
+        {
+          "id": "cwe328-sha256",
+          "title": "Use a strong digest",
+          "text": "Use SHA-256 or better for integrity; do not use MD5 as a security hash."
+        }
+      ],
+      "detection_notes": "Child of CWE-327; the seed MD5 unit is labeled CWE-327 as the broader class."
+    }
+  ]
+}

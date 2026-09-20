@@ -12,7 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from cwe_vuln.config import MissingLLMKeyError, MISSING_LLM_KEY_MESSAGE, repo_root, settings
+from cwe_vuln.config import MissingLLMKeyError, repo_root, settings
+from cwe_vuln.llm import OpenAICompatProvider, fallback_models, missing_key_message
 from cwe_vuln.dataset import SeedUnit, load_research_corpus, load_seed
 from cwe_vuln.dataset.sanitize import find_gold_tokens, opaque_unit_id, sanitize_unit
 from cwe_vuln.knowledge import CWEKnowledgeBase
@@ -48,8 +49,7 @@ from cwe_vuln.models.metrics import binary_metrics
 from cwe_vuln.orchestrator import Pipeline
 from cwe_vuln.reasoner import LLMReasoner, TemplateReasoner
 from cwe_vuln.retrieval import HybridRetriever, evaluate_retriever, load_retrieval_queries
-from cwe_vuln.sast import RegexEvidenceExtractor, detect
-from cwe_vuln.validator import ResultValidator
+from cwe_vuln.sast import detect
 
 DISCLAIMER = (
     "authored corpus — not a public benchmark. Metrics are computed only on "
@@ -63,17 +63,15 @@ JULIET_DISCLAIMER = (
     "Nearby CWE folders keep their Juliet ids (no silent relabel to 79/22/798/327)."
 )
 
-# Verified live on this Groq free-tier key 2026-09-18 (GET /openai/v1/models).
-# Dead names removed: llama-3.3-70b-versatile (404), llama-4-scout (404), gemma2-9b-it (decommissioned).
-FALLBACK_MODELS = (
-    "openai/gpt-oss-20b",
-    "openai/gpt-oss-120b",
-    "qwen/qwen3.8-27b",
-)
+# Fallback model list is owned by the selected provider preset (see cwe_vuln.llm.spec).
+# Groq (default): openai/gpt-oss-20b, openai/gpt-oss-120b, qwen/qwen3.8-27b.
 
 # Set by main(); raw LLM responses land in <output_dir>/raw_llm/<trial_id>/*.json.
 # Gitignored. None disables capture (unit tests call trial_pipeline directly).
 RAW_LLM_DIR: Path | None = None
+# When True, trial_pipeline reuses raw_llm/<trial_id>/<opaque_id>.json instead of
+# calling the provider. Used by --resume so a crashed TPD run does not re-bill Groq.
+REPLAY_RAW_LLM = False
 
 
 def experiments_dir(root: Path | None = None) -> Path:
@@ -101,6 +99,38 @@ def write_trial(payload: dict[str, Any], output_dir: Path) -> Path:
     path = output_dir / f"{trial_id}.json"
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return path
+
+
+def load_ok_trial(output_dir: Path, trial_id: str) -> dict[str, Any] | None:
+    """Return an on-disk trial with status=ok, else None. Used by --resume."""
+    path = output_dir / f"{trial_id}.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    if payload.get("status") == "ok":
+        return payload
+    return None
+
+
+def trial_token_count(trial: dict[str, Any]) -> int:
+    usage = trial.get("token_usage") or {}
+    return int(usage.get("total_tokens") or 0)
+
+
+def skipped_trial(trial_id: str, reason: str, **extra: Any) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "trial_id": trial_id,
+        "date": utc_now(),
+        "status": "skipped",
+        "metrics": None,
+        "notes": reason,
+        "error": None,
+    }
+    payload.update(extra)
+    return payload
 
 
 def _per_cwe(units: list[SeedUnit], y_pred: list[bool]) -> dict[str, dict[str, int | float]]:
@@ -181,15 +211,37 @@ def _detection_trial(
     return payload
 
 
-def trial_sast(units: list[SeedUnit], split: str, suite: str) -> dict[str, Any]:
-    y_pred = [detect(unit).is_vulnerable for unit in units]
+def trial_sast(
+    units: list[SeedUnit],
+    split: str,
+    suite: str,
+    *,
+    sanitized: bool = False,
+) -> dict[str, Any]:
+    if sanitized:
+        y_pred = [detect(sanitize_unit(unit)).is_vulnerable for unit in units]
+        trial_id = f"sast_regex_sanitized_{split}"
+        notes = (
+            "Regex SAST on sanitized units (same input as template/LLM). "
+            "Comment-only regex hits disappear when comments are blanked."
+        )
+        extra: dict[str, Any] = {"sast_input": "sanitized"}
+    else:
+        y_pred = [detect(unit).is_vulnerable for unit in units]
+        trial_id = f"sast_regex_{split}"
+        notes = (
+            "Regex SAST on original units (raw disk). Not the fair LLM contrast; "
+            f"see sast_regex_sanitized_{split} for the apples-to-apples row."
+        )
+        extra = {"sast_input": "raw_disk"}
     return _detection_trial(
-        trial_id=f"sast_regex_{split}",
+        trial_id=trial_id,
         split=split,
         units=units,
         y_pred=y_pred,
-        config={"suite": suite, "reasoner": "sast", "backend": "regex"},
-        notes="Regex SAST only. On research_test this should be imperfect by construction.",
+        config={"suite": suite, "reasoner": "sast", "backend": "regex", "sast_input": extra["sast_input"]},
+        notes=notes,
+        extra=extra,
     )
 
 
@@ -222,12 +274,15 @@ def trial_pipeline(
     prompt_leaks: list[str] = []
     rate_limited = False
     skipped = 0
+    replayed = 0
+    n_planned = len(units)
     for index, unit in enumerate(units):
-        if delay_seconds and index:
+        cached = _load_raw_llm(trial_id, unit) if REPLAY_RAW_LLM else None
+        if delay_seconds and index and cached is None:
             time.sleep(delay_seconds)
         prompt_unit = sanitize_unit(unit)
         try:
-            row = pipeline.run(prompt_unit)
+            row = _run_unit(pipeline, prompt_unit, cached)
         except Exception as exc:
             text = redact(f"{unit.unit_id}: {exc}")
             if stop_on_rate_limit and _is_rate_limit(text):
@@ -235,35 +290,51 @@ def trial_pipeline(
                 if row is None:
                     rate_limited = True
                     errors.append(text)
-                    skipped = len(units) - index
+                    skipped = n_planned - index
                     break
             else:
                 errors.append(text)
                 failed.append({"unit_id": unit.unit_id, "error": text})
                 continue
+        if cached is not None:
+            replayed += 1
         rows.append(row)
         y_pred.append(row.result.decision == "vulnerable")
         used.append(unit)
         leaks = _prompt_gold_tokens(pipeline)
         if leaks:
             prompt_leaks.append(f"{unit.unit_id}:{','.join(leaks)}")
-        _write_raw_llm(trial_id, unit, pipeline)
+        if cached is None:
+            _write_raw_llm(trial_id, unit, pipeline)
+        if RAW_LLM_DIR is not None:
+            kind = "replay" if cached is not None else "live"
+            print(f"{trial_id} {index + 1}/{n_planned} {kind} {unit.unit_id}", flush=True)
     n_scored = len(used)
     validator_pass = sum(1 for row in rows if row.report.passed)
-    cited_ok = 0
-    cited_n = 0
+    cited_ok = cited_n = 0
+    cited_norm_ok = cited_norm_n = 0
     for row in rows:
         for check in row.report.checks:
-            if check.name != "cited_lines":
-                continue
-            cited_n += 1
-            if check.passed:
-                cited_ok += 1
+            if check.name == "cited_lines":
+                cited_n += 1
+                if check.passed:
+                    cited_ok += 1
+            elif check.name == "cited_lines_normalized":
+                cited_norm_n += 1
+                if check.passed:
+                    cited_norm_ok += 1
     disagreement = 0
     for row in rows:
         if any(item.name == "sast_disagreement" for item in row.report.warnings):
             disagreement += 1
-    cwe_exact, cwe_family = _cwe_match(rows, used, kb)
+    cwe_exact, cwe_parent_child, cwe_peer, cwe_family = _cwe_match(rows, used, kb)
+    decisions = [row.result.decision for row in rows]
+    n_abstain = sum(1 for item in decisions if item == "uncertain")
+    y_true_all = [unit.is_vulnerable for unit in used]
+    y_true_ex = [truth for truth, decision in zip(y_true_all, decisions, strict=True) if decision != "uncertain"]
+    y_pred_ex = [decision == "vulnerable" for decision in decisions if decision != "uncertain"]
+    exclude_metrics = binary_metrics(y_true_ex, y_pred_ex).as_dict()
+    n_clamped = sum(1 for row in rows if getattr(row, "cwe_clamped_from", None))
     extra = {
         "validation_pass": validator_pass,
         "validation_pass_rate": (validator_pass / n_scored) if n_scored else 0.0,
@@ -271,10 +342,25 @@ def trial_pipeline(
         "cited_lines_n": cited_n,
         "cited_lines_rate": (cited_ok / cited_n) if cited_n else 0.0,
         "cited_lines_note": "raw pass rate; no span substitution is applied to LLM citations",
+        "cited_lines_normalized_grounded": cited_norm_ok,
+        "cited_lines_normalized_n": cited_norm_n,
+        "cited_lines_normalized_rate": (cited_norm_ok / cited_norm_n) if cited_norm_n else 0.0,
         "sast_disagreement": disagreement,
         "sast_disagreement_rate": (disagreement / n_scored) if n_scored else 0.0,
         "cwe_exact_match": cwe_exact,
+        "cwe_parent_child_match": cwe_parent_child,
+        "cwe_peer_match": cwe_peer,
         "cwe_family_match": cwe_family,
+        "cwe_family_definition": "exact or parent/child; peers are a separate column",
+        "cwe_clamped_n": n_clamped,
+        "cwe_clamped_rate": (n_clamped / n_scored) if n_scored else 0.0,
+        "abstain_n": n_abstain,
+        "abstain_rate": (n_abstain / n_scored) if n_scored else 0.0,
+        "metrics_exclude_abstain": exclude_metrics,
+        "uncertain_policy": (
+            "Binary `metrics` treat uncertain as not_vulnerable (abstain-as-negative). "
+            "`metrics_exclude_abstain` drops those units. Pair accuracy treats uncertain as incorrect."
+        ),
         "detector_path_counts": _counts(row.path for row in rows),
         "reasoner_counts": _counts(row.reasoner for row in rows),
         "embedder": getattr(pipeline.retriever, "embedder_name", "unknown"),
@@ -286,8 +372,9 @@ def trial_pipeline(
             _unit_decision(unit, row, kb)
             for unit, row in zip(used, rows, strict=True)
         ],
-        "n_planned": len(units),
+        "n_planned": n_planned,
         "n_scored": n_scored,
+        "replayed_n": replayed,
         "rate_limited": rate_limited,
         "skipped_due_to_rate_limit": skipped,
     }
@@ -372,9 +459,122 @@ def _write_raw_llm(trial_id: str, unit: SeedUnit, pipeline: Pipeline) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def _cwe_match(rows: list[Any], units: list[SeedUnit], kb: CWEKnowledgeBase) -> tuple[dict[str, int], dict[str, int]]:
-    """Exact and family (parent/child/peer via KB) CWE-id match over scored units."""
+def _load_raw_llm(trial_id: str, unit: SeedUnit) -> dict[str, Any] | None:
+    """Return a persisted Groq response for this unit, or None."""
+    if RAW_LLM_DIR is None:
+        return None
+    path = RAW_LLM_DIR / trial_id / f"{opaque_unit_id(unit.unit_id)}.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    if not (payload.get("raw_response") or "").strip():
+        return None
+    return payload
+
+
+def _llm_backend(pipeline: Pipeline) -> Any | None:
+    reasoner = pipeline.llm_reasoner
+    if reasoner is None:
+        return None
+    return getattr(reasoner, "backend", reasoner)
+
+
+def _run_unit(pipeline: Pipeline, prompt_unit: SeedUnit, cached: dict[str, Any] | None) -> Any:
+    """Run the pipeline, optionally substituting a persisted LLM completion."""
+    backend = _llm_backend(pipeline)
+    if cached is None or backend is None or not hasattr(backend, "_complete"):
+        return pipeline.run(prompt_unit)
+    original = backend._complete
+
+    def _cached(_messages: list[dict[str, str]], _payload: dict[str, Any] = cached) -> str:
+        usage = _payload.get("usage") or {}
+        backend.last_usage = {
+            "prompt_tokens": int(usage.get("prompt_tokens") or 0),
+            "completion_tokens": int(usage.get("completion_tokens") or 0),
+        }
+        backend.last_latency_ms = _payload.get("latency_ms")
+        backend.last_finish_reason = _payload.get("finish_reason")
+        backend.last_raw = str(_payload.get("raw_response") or "")
+        return backend.last_raw
+
+    backend._complete = _cached
+    try:
+        return pipeline.run(prompt_unit)
+    finally:
+        backend._complete = original
+
+
+def cwe_tier(predicted: str, gold: str, kb: CWEKnowledgeBase) -> str:
+    """exact | parent_child | peer | none. Peers are not family."""
+    if predicted == gold:
+        return "exact"
+    parent_child: set[str] = set()
+    peers: set[str] = set()
+    if gold in kb.entries:
+        rel = kb.relationships(gold)
+        parent_child.update(rel.parents)
+        parent_child.update(rel.children)
+        peers.update(rel.peers)
+    if predicted in kb.entries:
+        rel = kb.relationships(predicted)
+        parent_child.update(rel.parents)
+        parent_child.update(rel.children)
+        peers.update(rel.peers)
+    if predicted in parent_child or gold in parent_child:
+        return "parent_child"
+    if predicted in peers or gold in peers:
+        return "peer"
+    return "none"
+
+
+def enrich_trial_cwe_fields(trial: dict[str, Any], kb: CWEKnowledgeBase | None = None) -> dict[str, Any]:
+    """Recompute exact/parent-child/peer columns from unit_decisions (no LLM)."""
+    rows = trial.get("unit_decisions") or []
+    if not rows:
+        return trial
+    store = kb or CWEKnowledgeBase.load()
+    exact = parent_child = peer = family = abstain = 0
+    for row in rows:
+        predicted = str(row.get("predicted_cwe") or "")
+        gold = str(row.get("gold_cwe") or "")
+        tier = cwe_tier(predicted, gold, store)
+        row["cwe_tier"] = tier
+        row["cwe_exact"] = tier == "exact"
+        row["cwe_parent_child"] = tier in {"exact", "parent_child"}
+        row["cwe_peer"] = tier == "peer"
+        row["cwe_family"] = tier in {"exact", "parent_child"}
+        if row.get("decision") == "uncertain":
+            abstain += 1
+        if tier == "exact":
+            exact += 1
+        if tier in {"exact", "parent_child"}:
+            parent_child += 1
+            family += 1
+        elif tier == "peer":
+            peer += 1
+    total = len(rows)
+    trial["cwe_exact_match"] = {"correct": exact, "total": total}
+    trial["cwe_parent_child_match"] = {"correct": parent_child, "total": total}
+    trial["cwe_peer_match"] = {"correct": peer, "total": total}
+    trial["cwe_family_match"] = {"correct": family, "total": total}
+    trial["cwe_family_definition"] = "exact or parent/child; peers are a separate column"
+    trial["abstain_n"] = abstain
+    trial["abstain_rate"] = (abstain / total) if total else 0.0
+    return trial
+
+
+def _cwe_match(
+    rows: list[Any],
+    units: list[SeedUnit],
+    kb: CWEKnowledgeBase,
+) -> tuple[dict[str, int], dict[str, int], dict[str, int], dict[str, int]]:
+    """Exact, parent/child, peer-only, and family (exact|parent_child) counts."""
     exact = {"correct": 0, "total": 0}
+    parent_child = {"correct": 0, "total": 0}
+    peer = {"correct": 0, "total": 0}
     family = {"correct": 0, "total": 0}
     for row, unit in zip(rows, units, strict=True):
         if row is None:
@@ -382,19 +582,20 @@ def _cwe_match(rows: list[Any], units: list[SeedUnit], kb: CWEKnowledgeBase) -> 
         predicted = row.result.cwe.id
         gold = unit.cwe_id
         exact["total"] += 1
+        parent_child["total"] += 1
+        peer["total"] += 1
         family["total"] += 1
-        if predicted == gold:
+        tier = cwe_tier(predicted, gold, kb)
+        if tier == "exact":
             exact["correct"] += 1
+            parent_child["correct"] += 1
             family["correct"] += 1
-            continue
-        related: set[str] = set()
-        if gold in kb.entries:
-            related |= set(kb.relationships(gold).all_ids())
-        if predicted in kb.entries:
-            related |= set(kb.relationships(predicted).all_ids())
-        if predicted in related or gold in related:
+        elif tier == "parent_child":
+            parent_child["correct"] += 1
             family["correct"] += 1
-    return exact, family
+        elif tier == "peer":
+            peer["correct"] += 1
+    return exact, parent_child, peer, family
 
 
 def _token_usage(rows: list[Any]) -> dict[str, Any]:
@@ -413,19 +614,21 @@ def _token_usage(rows: list[Any]) -> dict[str, Any]:
 def _unit_decision(unit: SeedUnit, row: Any, kb: CWEKnowledgeBase) -> dict[str, Any]:
     predicted = row.result.cwe.id
     gold = unit.cwe_id
-    related: set[str] = set()
-    if gold in kb.entries:
-        related |= set(kb.relationships(gold).all_ids())
-    if predicted in kb.entries:
-        related |= set(kb.relationships(predicted).all_ids())
+    tier = cwe_tier(predicted, gold, kb)
+    checks = {check.name: check.passed for check in row.report.checks}
     return {
         "unit_id": unit.unit_id,
         "prompt_id": row.unit_id,
         "decision": row.result.decision,
+        "gold_label": unit.label,
         "predicted_cwe": predicted,
         "gold_cwe": gold,
-        "cwe_exact": predicted == gold,
-        "cwe_family": predicted == gold or predicted in related or gold in related,
+        "cwe_exact": tier == "exact",
+        "cwe_parent_child": tier in {"exact", "parent_child"},
+        "cwe_peer": tier == "peer",
+        "cwe_family": tier in {"exact", "parent_child"},
+        "cwe_tier": tier,
+        "cwe_clamped_from": getattr(row, "cwe_clamped_from", None),
         "path": row.path,
         "reasoner": row.reasoner,
         "model": row.model,
@@ -438,6 +641,8 @@ def _unit_decision(unit: SeedUnit, row: Any, kb: CWEKnowledgeBase) -> dict[str, 
         "truncated": row.truncated,
         "slice_strategy": row.slice_strategy,
         "validator_passed": row.report.passed,
+        "cited_lines": checks.get("cited_lines"),
+        "cited_lines_normalized": checks.get("cited_lines_normalized"),
         "sast_disagreement": any(item.name == "sast_disagreement" for item in row.report.warnings),
     }
 
@@ -509,6 +714,56 @@ def trial_retrieval(retriever: HybridRetriever, suite: str) -> list[dict[str, An
     return trials
 
 
+def trial_retrieval_units(
+    retriever: HybridRetriever,
+    units: list[SeedUnit],
+    suite: str,
+    split: str,
+    disclaimer: str,
+) -> dict[str, Any]:
+    """Retrieval quality on detection units: sanitized evidence/sink window as the
+    query, gold CWE as the relevant id. No LLM calls. Nearby Juliet ids are valid
+    targets now that the KB is the official MITRE subset."""
+    from cwe_vuln.dataset.sanitize import retrieval_query_text
+    from cwe_vuln.models.retrieval import RetrievalQuery
+
+    queries = []
+    for unit in units:
+        clean = sanitize_unit(unit)
+        retriever.units_by_id[clean.unit_id] = clean
+        queries.append(
+            RetrievalQuery(
+                query_id=unit.unit_id,
+                query=retrieval_query_text(clean),
+                relevant_cwes=(unit.cwe_id,),
+                unit_id=clean.unit_id,
+            )
+        )
+    report = evaluate_retriever(retriever, queries, k_values=(1, 3, 5))
+    return {
+        "trial_id": f"retrieval_units_{split}",
+        "date": utc_now(),
+        "suite": suite,
+        "split": split,
+        "evaluation_scope": "public_suite_sample_retrieval" if suite != "research" else "authored_corpus_not_a_public_benchmark",
+        "disclaimer": disclaimer,
+        "status": "ok",
+        "config": {
+            "embedder": retriever.embedder_name,
+            "k_values": [1, 3, 5],
+            "n_units": len(units),
+            "query": "sanitized_evidence_or_sink_window",
+        },
+        "metrics": report["systems"],
+        "notes": (
+            "Per-unit retrieval on the same evidence/sink window the LLM sees; "
+            "relevant id = gold CWE."
+        ),
+        "error": None,
+        "embedder": retriever.embedder_name,
+    }
+
+
 def _counts(values) -> dict[str, int]:
     counts: dict[str, int] = {}
     for value in values:
@@ -520,7 +775,13 @@ def _counts(values) -> dict[str, int]:
 
 def _is_rate_limit(text: str) -> bool:
     lowered = text.lower()
-    return "429" in text or "rate limit" in lowered or "rate_limit" in lowered
+    return (
+        "429" in text
+        or "rate limit" in lowered
+        or "rate_limit" in lowered
+        or "tokens per day" in lowered
+        or "tokens per minute" in lowered
+    )
 
 
 def _make_pipeline(
@@ -529,22 +790,24 @@ def _make_pipeline(
     skip_llm_when_sast_hits: bool,
     use_llm: bool,
 ) -> Pipeline:
+    from cwe_vuln.agents import EvidenceAgent, KnowledgeAgent, ReasoningAgent, ValidatorAgent
+
     return Pipeline(
-        extractor=RegexEvidenceExtractor(),
-        retriever=retriever,
-        reasoner=TemplateReasoner(),
-        validator=ResultValidator(),
-        llm_reasoner=llm if use_llm else None,
+        extractor=EvidenceAgent(),
+        retriever=KnowledgeAgent(retriever),
+        reasoner=ReasoningAgent(TemplateReasoner()),
+        validator=ValidatorAgent(),
+        llm_reasoner=ReasoningAgent(llm) if (use_llm and llm is not None) else None,
         skip_llm_when_sast_hits=skip_llm_when_sast_hits,
         use_llm_if_available=use_llm,
     )
 
 
 def _build_llm(model: str) -> LLMReasoner | None:
-    key = settings.llm_api_key()
-    if not key:
+    provider = OpenAICompatProvider.from_env(model=model)
+    if provider is None:
         return None
-    return LLMReasoner(api_key=key, model=model)
+    return LLMReasoner(provider=provider)
 
 
 def _failed_trial(trial_id: str, split: str, suite: str, notes: str, error: str, config: dict[str, Any]) -> dict[str, Any]:
@@ -565,15 +828,15 @@ def _failed_trial(trial_id: str, split: str, suite: str, notes: str, error: str,
 
 def _candidate_models() -> list[str]:
     ordered: list[str] = []
-    for name in (settings.llm_model(), *FALLBACK_MODELS):
+    for name in (settings.llm_model(), *fallback_models()):
         if name and name not in ordered:
             ordered.append(name)
     return ordered
 
 
 def run_research_suite(ablation: str = "none") -> list[dict[str, Any]]:
-    if ablation != "template" and not settings.llm_api_key():
-        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+    if ablation != "template" and not settings.llm_ready():
+        raise MissingLLMKeyError(missing_key_message())
 
     units = load_research_corpus(split="research_test")
     retriever = HybridRetriever.load(allow_download=True)
@@ -788,10 +1051,16 @@ def run_juliet_llm_suite(
             extra_config={"provenance": provenance, "sample_manifest": str(dest_manifest)},
         )
     ]
+    trials.append(
+        _juliet_label(
+            trial_retrieval_units(retriever, sample, "juliet-llm-sample", "juliet_llm_sample", JULIET_DISCLAIMER),
+            extra_notes="Retrieval on the LLM sample units; relevant id = gold CWE.",
+        )
+    )
     if ablation == "template":
         return trials
-    if not settings.llm_api_key():
-        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+    if not settings.llm_ready():
+        raise MissingLLMKeyError(missing_key_message())
     llm, model_notes = _llm_with_fallback()
     if llm is None:
         trials.append(
@@ -932,10 +1201,13 @@ def run_public_llm_suite(
     template["cwe_mapping"] = spec.notes(sample)
     template["config"] = {**(template.get("config") or {}), "provenance": provenance, "sample_manifest": str(dest_manifest)}
     trials.append(template)
+    trials.append(
+        trial_retrieval_units(retriever, sample, f"{name}-llm-sample", f"{name}_llm_sample", spec.disclaimer)
+    )
     if ablation == "template":
         return trials
-    if not settings.llm_api_key():
-        raise MissingLLMKeyError(MISSING_LLM_KEY_MESSAGE)
+    if not settings.llm_ready():
+        raise MissingLLMKeyError(missing_key_message())
     llm, model_notes = _llm_with_fallback()
     if llm is None:
         trials.append(
@@ -1264,9 +1536,9 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    public_names = sorted(set(list(SAST_SUITE_NAMES) + list(LLM_SUITE_NAMES) + ["juliet-sast", "all-sast"]))
+    public_names = sorted(set(list(SAST_SUITE_NAMES) + list(LLM_SUITE_NAMES) + ["juliet-sast", "all-sast", "thesis"]))
     parser = argparse.ArgumentParser(
-        description="Run authored-corpus or public-suite evaluation trials (SAST or Groq sample)."
+        description="Run authored-corpus, public-suite, or thesis-defendable evaluation trials."
     )
     parser.add_argument(
         "--suite",
@@ -1277,7 +1549,7 @@ def main(argv: list[str] | None = None) -> int:
         "--ablation",
         choices=["none", "template", "skip-llm"],
         default="none",
-        help="none = live Groq (default). template = SAST/template contrast only. skip-llm = cost-path ablation.",
+        help="none = live LLM (default). template = SAST/template contrast only. skip-llm = cost-path ablation.",
     )
     parser.add_argument(
         "--offline",
@@ -1295,20 +1567,54 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--per-cwe", type=int, default=DEFAULT_PER_CWE)
     parser.add_argument("--sample-n", type=int, default=DEFAULT_SUITE_SAMPLE_N)
     parser.add_argument("--sample-seed", type=int, default=SAMPLE_SEED)
+    parser.add_argument(
+        "--include-model-ablation",
+        action="store_true",
+        help="C7: re-run the authored traps on fallback models. Skip unless TPD remains.",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip thesis trials that already have status=ok on disk.",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=None,
+        help="Stop scheduling live LLM thesis trials once recorded usage reaches this budget.",
+    )
     args = parser.parse_args(argv)
     ablation = args.ablation
     if args.offline or args.skip_llm:
         ablation = "template"
 
-    public = args.suite not in {"research", "seed", "all"}
+    public = args.suite not in {"research", "seed", "all", "thesis"}
     out = args.output_dir or (benchmarks_results_dir() if public else experiments_dir())
+    if args.suite == "thesis":
+        from cwe_vuln.framework.thesis import thesis_results_dir
+
+        out = args.output_dir or thesis_results_dir()
     out.mkdir(parents=True, exist_ok=True)
     global RAW_LLM_DIR
     RAW_LLM_DIR = out / "raw_llm"
     tree = args.suite_tree or args.juliet_tree
     trials: list[dict[str, Any]] = []
     try:
-        if args.suite == "all-sast":
+        if args.suite == "thesis":
+            from cwe_vuln.framework.thesis import run_thesis_eval, thesis_results_dir
+
+            dest = args.output_dir or thesis_results_dir()
+            trials.extend(
+                run_thesis_eval(
+                    ablation=ablation,
+                    juliet_tree=tree,
+                    output_dir=dest,
+                    include_model_ablation=args.include_model_ablation,
+                    resume=args.resume,
+                    max_tokens=args.max_tokens,
+                )
+            )
+        elif args.suite == "all-sast":
             for name in SAST_SUITE_NAMES:
                 if name == "juliet":
                     trials.extend(run_juliet_sast_suite(tree=tree if tree else None))
@@ -1373,6 +1679,10 @@ def main(argv: list[str] | None = None) -> int:
     for trial in trials:
         path = write_trial(trial, out)
         print(f"wrote {path} status={trial.get('status')}")
+    if args.suite == "thesis":
+        print(f"thesis trials written under {out}")
+        failed = [item for item in trials if item.get("status") == "failed"]
+        return 1 if failed else 0
     if public:
         known = {item["trial_id"] for item in trials}
         extras: list[dict[str, Any]] = []

@@ -64,6 +64,9 @@ INGEST_FOLDERS: tuple[tuple[int, str, str], ...] = (
 
 SKIP_FILE_NAMES = {"Main.java", "ServletMain.java"}
 SKIP_NAME_PARTS = ("_base.java", "_helper.java")
+# Juliet flow variants: CWE259_...__driverManager_81a.java calls 81b which holds the sink.
+# Pair scoring on the `a` file hides the sink from the LLM. Exclude from the pair pool.
+MULTI_FILE_STEM = re.compile(r"_\d{2}[a-z]$")
 METHOD_SIG = re.compile(
     r"(?:public|private|protected)\s+(?:static\s+)?void\s+(bad|good[A-Za-z0-9]*)\s*\(",
     re.MULTILINE,
@@ -127,8 +130,29 @@ def mapping_notes() -> dict[str, Any]:
         "llm_sample_cwes": list(LLM_SAMPLE_CWES),
         "sast_only_ingested_cwes": ["CWE-81", "CWE-83", "CWE-36", "CWE-321"],
         "cwe502": "no Juliet Java 1.3 folder; not evaluated",
-        "retrieval_at_juliet": "skipped — nearby gold ids are not in the curated CWE store",
+        "retrieval_at_juliet": (
+            "nearby gold ids (80, 23, 259, 328, …) are in the MITRE XML subset; "
+            "retrieval@sample is computed on the Juliet pair sample"
+        ),
+        "multi_file_exclusion": (
+            "Juliet _NNa/_NNb flow variants are ingested for SAST but excluded from "
+            "the C2 pair pool: the `a` file often only forwards data to a `b` helper "
+            "that holds the sink, so the LLM never sees the vulnerable line."
+        ),
     }
+
+
+def is_multi_file_juliet_stem(stem: str) -> bool:
+    """True for Juliet flow-variant stems such as ``..._81a`` / ``..._68b``."""
+    return bool(MULTI_FILE_STEM.search(stem))
+
+
+def is_multi_file_juliet_unit(unit: SeedUnit) -> bool:
+    """True when the unit comes from a multi-file (_NNa/_NNb) Juliet variant."""
+    if is_multi_file_juliet_stem(Path(unit.path).stem):
+        return True
+    stripped = re.sub(r"__(method_|file_)?(bad|good[A-Za-z0-9]*)$", "", unit.unit_id)
+    return is_multi_file_juliet_stem(stripped)
 
 
 def ensure_juliet(root: Path | None = None) -> JulietProvenance:

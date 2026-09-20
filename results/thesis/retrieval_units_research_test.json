@@ -1,0 +1,49 @@
+{
+  "trial_id": "retrieval_units_research_test",
+  "date": "2026-09-19T18:50:10Z",
+  "suite": "research",
+  "split": "research_test",
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "embedder": "minilm",
+    "k_values": [
+      1,
+      3,
+      5
+    ],
+    "n_units": 24,
+    "query": "sanitized_evidence_or_sink_window"
+  },
+  "metrics": {
+    "lexical_tfidf": {
+      "recall@1": 0.1667,
+      "recall@3": 0.5833,
+      "recall@5": 0.625,
+      "mrr": 0.3971
+    },
+    "neural": {
+      "recall@1": 0.7083,
+      "recall@3": 0.875,
+      "recall@5": 0.9167,
+      "mrr": 0.7932
+    },
+    "sast": {
+      "recall@1": 0.25,
+      "recall@3": 0.25,
+      "recall@5": 0.25,
+      "mrr": 0.25
+    },
+    "hybrid_rrf": {
+      "recall@1": 0.75,
+      "recall@3": 0.875,
+      "recall@5": 0.9583,
+      "mrr": 0.8299
+    }
+  },
+  "notes": "Per-unit retrieval on the same evidence/sink window the LLM sees; relevant id = gold CWE.",
+  "error": null,
+  "embedder": "minilm",
+  "resumed": true
+}
