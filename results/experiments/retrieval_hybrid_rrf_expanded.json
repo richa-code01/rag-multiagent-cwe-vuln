@@ -1,0 +1,29 @@
+{
+  "trial_id": "retrieval_hybrid_rrf_expanded",
+  "date": "2026-09-17T03:55:04Z",
+  "suite": "research",
+  "split": "expanded_queries",
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "system": "hybrid_rrf",
+    "embedder": "minilm",
+    "top_k": [
+      3,
+      5,
+      10
+    ],
+    "n_queries": 48
+  },
+  "metrics": {
+    "recall@1": 0.8542,
+    "recall@3": 0.9583,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr": 0.9167
+  },
+  "notes": "Expanded authored queries \u2014 not a public benchmark.",
+  "error": null,
+  "embedder": "minilm"
+}

@@ -1,0 +1,9 @@
+{
+  "trial_id": "llm_no_retrieval_juliet_pairs",
+  "date": "2026-09-20T03:47:58Z",
+  "status": "skipped",
+  "metrics": null,
+  "notes": "rate_limited",
+  "error": null,
+  "suite": "thesis"
+}

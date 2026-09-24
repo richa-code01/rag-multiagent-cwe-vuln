@@ -45,9 +45,13 @@ class CWEEntry:
     relationships: Relationships
     mitigations: tuple[Mitigation, ...]
     detection_notes: str = ""
+    extended_description: str = ""
+    consequences: str = ""
+    abstraction: str = ""
+    status: str = ""
 
     def searchable_text(self) -> str:
-        parts = [self.id, self.name, self.description, self.detection_notes]
+        parts = [self.id, self.name, self.description, self.extended_description, self.detection_notes]
         for item in self.mitigations:
             parts.extend([item.title, item.text])
         return " ".join(parts).lower()
@@ -156,6 +160,10 @@ def _entry_from_payload(raw: dict[str, object]) -> CWEEntry:
         ),
         mitigations=mitigations,
         detection_notes=str(raw.get("detection_notes") or ""),
+        extended_description=str(raw.get("extended_description") or ""),
+        consequences=str(raw.get("consequences") or ""),
+        abstraction=str(raw.get("abstraction") or ""),
+        status=str(raw.get("status") or ""),
     )
 
 

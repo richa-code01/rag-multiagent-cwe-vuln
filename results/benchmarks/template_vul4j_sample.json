@@ -1,0 +1,289 @@
+{
+  "trial_id": "template_vul4j_sample",
+  "date": "2026-09-17T14:06:21Z",
+  "suite": "vul4j-llm-sample",
+  "split": "vul4j_llm_sample",
+  "n_units": 12,
+  "evaluation_scope": "vul4j_thesis_cwes_stratified_sample",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "vul4j-llm-sample",
+    "reasoner": "template",
+    "skip_llm_when_sast_hits": true,
+    "use_llm_if_available": false,
+    "model": null,
+    "provenance": {
+      "suite": "vul4j",
+      "source_url": "https://github.com/tuhh-softsec/vul4j.git",
+      "downloaded_at": "2026-09-17T14:05:45Z",
+      "method": "cached",
+      "sha256_or_commit": "376411da11fa705019f731404de1d0679fe73537",
+      "license_note": "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. Java snippets are fetched from upstream patch commits and are not vendored in git."
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/vul4j_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 0,
+    "fp": 1,
+    "tn": 5,
+    "fn": 6,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "support": 12
+  },
+  "per_cwe": {
+    "CWE-22": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 2,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    },
+    "CWE-79": {
+      "tp": 0,
+      "fp": 1,
+      "tn": 1,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    },
+    "CWE-502": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 2,
+      "fn": 2,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 4
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "follows_sast_false_positive"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-43_ZipUtil_vuln",
+      "cwe_id": "CWE-22",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-50_HtmlSessionInformationsReport_vuln",
+      "cwe_id": "CWE-79",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "vul4j_VUL4J-54_XStream2Test_vuln",
+      "cwe_id": "CWE-502",
+      "trap_type": "vul4j",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Ablation: TemplateReasoner on the vul4j LLM sample. Not the system of record.",
+  "error": null,
+  "validation_pass": 12,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 12,
+  "cited_lines_n": 12,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "hybrid_retrieve_skip_llm": 11,
+    "sast_first_skip_llm": 1
+  },
+  "reasoner_counts": {
+    "template": 12
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "vul4j_VUL4J-18_DefaultURLConstructor_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImplTest_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-25_XSSAPIImpl_fixed",
+      "decision": "vulnerable",
+      "path": "sast_first_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_BlacklistClassResolver_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-37_Setup_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-43_ZipUtil_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-50_HtmlSessionInformationsReport_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-54_XStream2Test_vuln",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-69_ResourceServlet_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "vul4j_VUL4J-76_RequestFactoryTest_fixed",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_skip_llm",
+      "reasoner": "template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 12,
+  "n_scored": 12,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "cwe_mapping": {
+    "gold": "vul4j_dataset.csv cwe_id; parent commit file = vulnerable, patch commit = fixed",
+    "cwe_coverage_plan": {
+      "CWE-89": "not present in CSV (thesis set)",
+      "CWE-79": "present if fetch succeeds",
+      "CWE-22": "present if fetch succeeds",
+      "CWE-502": "present if fetch succeeds",
+      "CWE-798": "not present in CSV",
+      "CWE-327": "not present in CSV"
+    },
+    "license_note": "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. Java snippets are fetched from upstream patch commits and are not vendored in git.",
+    "cwe_coverage": {
+      "CWE-89": "not present",
+      "CWE-79": "present",
+      "CWE-22": "present",
+      "CWE-502": "present",
+      "CWE-798": "not present",
+      "CWE-327": "not present"
+    },
+    "per_cwe_n": {
+      "CWE-22": {
+        "vulnerable": 2,
+        "not_vulnerable": 2,
+        "n": 4
+      },
+      "CWE-79": {
+        "vulnerable": 2,
+        "not_vulnerable": 2,
+        "n": 4
+      },
+      "CWE-502": {
+        "vulnerable": 2,
+        "not_vulnerable": 2,
+        "n": 4
+      }
+    }
+  }
+}

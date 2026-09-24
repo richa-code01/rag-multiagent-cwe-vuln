@@ -1,4 +1,4 @@
-"""In-memory TF-IDF cosine index. Lexical only; no neural embeddings."""
+"""In-memory TF-IDF cosine index. Lexical retriever / TfidfEmbedder backend."""
 
 from __future__ import annotations
 
@@ -36,8 +36,11 @@ class TfidfIndex:
         vec = {token: (count / len(tokens)) * self.idf.get(token, 0.0) for token, count in tf.items()} if tokens else {}
         return _l2_normalize(vec)
 
+    def vectorize(self, text: str) -> dict[str, float]:
+        return self._tfidf(tokenize(text))
+
     def rank(self, query: str) -> list[RankedHit]:
-        qvec = self._tfidf(tokenize(query))
+        qvec = self.vectorize(query)
         hits = [
             RankedHit(cwe_id=doc_id, score=_cosine(qvec, self.vectors[doc_id]))
             for doc_id in self.doc_ids

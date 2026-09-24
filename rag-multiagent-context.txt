@@ -2,6 +2,7 @@ RAG-MULTIAGENT-CWE-VULN — CANONICAL PROJECT CONTEXT
 =====================================================
 Update after EVERY phase. Must agree with README.md and docs/.
 Future agents/humans: treat this file as the source of truth.
+Production-grade design: docs/design/hld.md (HLD) and docs/design/lld.md (LLD).
 
 Official topic (exact; do not rename):
   RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases
@@ -11,15 +12,32 @@ Advisor: Dr. Akshay Pandey
 Repo: https://github.com/richa-code01/rag-multiagent-cwe-vuln
 Package: cwe-vuln (src/cwe_vuln layered subpackages), Python >=3.11, uv
 Cost-aware routing lives in the orchestrator. It is NOT in the thesis title.
+Default path is always-LLM. final_confidence is logged, not a gate.
 
-Honesty: no invented citations; no Juliet/OWASP Benchmark/Big-Vul numbers;
-seed-only eval on authored units/queries; Java units are teaching samples, not exploits.
+Honesty: no invented citations; no invented Juliet/OWASP/Big-Vul numbers;
+no “100% novel” / “first ever RAG-CWE detector”; seed-only eval on the
+original 12 units / 18 queries; research eval on an authored 36-unit corpus
+(24 held-out traps); six public Java suites only as measured in
+docs/six-benchmark-results.md (Juliet SAST n=20728; public-suite LLM rows retracted).
+Sanitized LLM numbers: docs/thesis/05-results.md (C1 n=24 F1=0.923 trap contrast;
+C4 no-retrieval F1=0.923 / no-SAST F1=0.960 on C1 — do not claim RAG/SAST help;
+C2 rebuilt single-file pairs, partial n=35/36 TPD, pair acc 9/17=0.529 CI [0.294, 0.765];
+first C2 sample with multi-file variants is archived under results/thesis/archive/).
+Java units are teaching samples, not exploits.
+
+Defendable contribution: a RAG-augmented detector of staged specialist agents
+for six Java CWEs in which (1) SAST-style rules emit evidence, (2) hybrid MiniLM +
+relationship/RRF retrieves CWE knowledge from an evidence/sink window, (3) a Groq
+LLM produces A4-schema explanations, (4) a validator checks schema/lines/KB not
+SAST agreement, (5) on an authored 24-unit FP/FN trap split, regex/template fail
+and live LLM recovers most cases. Six-suite scores are method-vs-corpora evidence,
+not a novelty proof. Public headline is C2 pair accuracy, not C1 F1.
 
 ============================================================
 CURRENT STATUS
 ============================================================
-Last phase in this file: modular-layout
-Branch: modular-layout
+Last phase in this file: thesis-complete
+Branch: thesis-complete
 
 | Phase | Status | Branch | Doc | Command |
 | --- | --- | --- | --- | --- |
@@ -29,34 +47,74 @@ Branch: modular-layout
 | A4 output schema | DONE PR #4 | assignment-4 | docs/assignment-4-output-schema.md | uv run cwe-vuln-schema data/schema_samples/vulnerable.json |
 | SAST evidence | DONE PR #5 | sast-evidence | docs/sast-evidence.md | uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat |
 | Reasoning agent | DONE PR #6 | reasoning-agent | docs/reasoning-agent.md | uv run pytest tests/reasoner/test_reasoner.py |
-| Validator | DONE PR #7 | validator | docs/validator.md | uv run pytest tests/validator/test_validator.py |
-| Orchestrator | DONE PR #8 | orchestrator | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
+| Validator | DONE; SAST-iff-vulnerable removed | live-research | docs/validator.md | uv run pytest tests/validator/test_validator.py |
+| Orchestrator | DONE; default is live Groq | live-research | docs/orchestrator.md | uv run pytest tests/orchestrator/test_orchestrator.py |
 | Framework | DONE PR #9 | framework | docs/framework.md | uv run cwe-vuln-pipeline |
-| Layered packages | THIS PR | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
+| Layered packages | DONE PR #10 | modular-layout | docs/architecture.md | uv sync && uv run pytest && uv run cwe-vuln-pipeline |
+| Neural embeddings + LLM reasoner | DONE | embeddings-llm | docs/architecture.md | MiniLM local; Groq required on default path |
+| Research evaluation | DONE | research-eval | docs/research-evaluation.md | uv run cwe-vuln-eval --suite research |
+| Live research default | DONE | live-research | docs/research-evaluation.md | GROQ_API_KEY required; --ablation template for F1=0 contrast |
+| Juliet Java mapped eval | DONE | benchmark-eval | docs/benchmark-plan.md · docs/benchmark-results.md | uv run cwe-vuln-eval --suite juliet |
+| Six public Java suites | THIS PR | six-benchmarks | docs/six-benchmark-plan.md · docs/six-benchmark-results.md | uv run cwe-vuln-eval --suite owasp-benchmark |
+| Sanitized thesis eval | DONE | thesis-complete | docs/thesis/ | uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000 |
 
 ============================================================
 PACKAGE TREE
 ============================================================
 src/cwe_vuln/
-  config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS
+  config.py           repo_root, top_k, rrf_k, LLM env names, SEED_CWE_IDS, require_llm_api_key
   models/             Evidence, RankedHit, ReasoningResult, ValidationReport, PipelineResult, binary_metrics
-  dataset/            SeedUnit, load_seed, TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
+  dataset/            SeedUnit, load_seed (8/4), load_research_corpus (36), Juliet + five public adapters
   knowledge/          CWEKnowledgeBase
-  sast/               regex RULES, detect(), extract_evidence()
-  retrieval/          TfidfIndex, HybridRetriever, RRF (lexical, not neural)
+  sast/               regex RULES, detect(), extract_evidence()  — evidence only, not the decision
+  retrieval/          Embedder, MiniLMEmbedder, TfidfEmbedder, DenseIndex, HybridRetriever, RRF
   schema/             load/validate Assignment 4 JSON Schema
-  reasoner/           TemplateReasoner.compose (no LLM)
-  validator/          ResultValidator.check
-  orchestrator/       Pipeline.run; SAST-first skip-LLM; ports
-  framework/          cwe-vuln-pipeline CLI
+  reasoner/           LLMReasoner (live default) + TemplateReasoner (ablation); Reasoner.reason
+  validator/          ResultValidator.check — schema, KB, cited lines, JSON consistency
+  orchestrator/       Pipeline.default (requires Groq); Pipeline.offline (ablation)
+  framework/          cwe-vuln-pipeline + cwe-vuln-eval
   cli/                baseline, knowledge, retrieval, schema, evidence
 
 tests/ mirrors those packages. data/ docs/ results/ schemas/ stay outside src/.
 
 ============================================================
-DATASET (stable)
+EMBEDDINGS
 ============================================================
-12 Java units, data/seed/labels.jsonl, data/seed/java/
+Port: Embedder.encode(texts) -> 2-D array-like
+MiniLM: sentence-transformers all-MiniLM-L6-v2, cache .cache/sentence-transformers/ (gitignored)
+Fallback: embedder=tfidf_fallback if import/download fails. Never crash the pipeline.
+Unit tests: fake KeywordEmbedder; do not require MiniLM download.
+Hybrid: RRF of neural cosine + SAST CWE ids + one-hop CWE relationships.
+
+============================================================
+LLM (no OpenAI account)
+============================================================
+Primary key: GROQ_API_KEY   REQUIRED for default cwe-vuln-pipeline and
+                             cwe-vuln-eval --suite research
+Override: CWE_VULN_LLM_API_KEY
+Do not tell Richa to create an OpenAI account.
+Missing key → exit non-zero with a message to set GROQ_API_KEY.
+Do not silently construct TemplateReasoner on the default path.
+
+Default model: openai/gpt-oss-20b
+Optional model: CWE_VULN_LLM_MODEL=openai/gpt-oss-120b
+Default base URL: https://api.groq.com/openai/v1
+Override: CWE_VULN_LLM_BASE_URL
+Retired: llama-3.1-8b-instant (Groq free-tier 404). Do not use it.
+
+Client: openai.OpenAI(api_key=..., base_url=...) OpenAI-compatible.
+Load repo-root .env via python-dotenv. Never commit .env. Never print gsk_.
+
+Default path → sast_then_llm / hybrid_retrieve_then_llm
+--offline / --ablation template → TemplateReasoner (paper contrast; F1=0)
+--ablation skip-llm → SAST hits use template; misses use LLM (opt-in)
+Invalid JSON: retry once, then reasoner=llm_fallback_template
+Tests mock the client. No live LLM calls in pytest.
+
+============================================================
+DATASET
+============================================================
+Assignment seed (stable): 12 Java units, data/seed/labels.jsonl, data/seed/java/
 Split: src/cwe_vuln/dataset/seed.py TRAIN_UNIT_IDS (8) / TEST_UNIT_IDS (4)
 
 Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescaped,
@@ -65,40 +123,62 @@ Train: java_cwe89_sqli_concat, java_cwe89_sqli_prepared, java_cwe79_xss_unescape
 Test: java_cwe798_hardcoded, java_cwe798_env_config, java_cwe327_md5, java_cwe327_sha256
 CWEs: 89, 79, 22, 502, 798, 327 (one vuln + one safe each)
 
+Research corpus: 36 units (seed 12 + research_test 24). data/research/labels.jsonl
+Held-out traps: 12 fp_trap + 12 fn_trap. load_research_corpus(split="research_test")
+Research class names/javadocs must not contain gold labels (Safe/Vulnerable).
+
 ============================================================
 DATA FLOW
 ============================================================
 SeedUnit → Evidence[] → RankedHit[] → ReasoningResult → ValidationReport → Metrics
 
   dataset      load labels/split/source only
-  sast         regex rules + binary detect() + Evidence spans (CWE hints, not encyclopedia)
+  sast         regex rules + binary detect() + Evidence spans (CWE hints; not the decision)
   knowledge    CWE JSON store + query API
-  retrieval    TF-IDF + SAST + relationship RRF; rank_for_unit; no reasoner
+  retrieval    MiniLM or TF-IDF + SAST + relationship RRF; rank_for_unit; no reasoner
   schema       Draft 2020-12 validate helpers
-  reasoner     TemplateReasoner.compose (no I/O, no LLM)
-  validator    schema + KB + cited lines + decision vs evidence
-  orchestrator Pipeline.run; SAST-first; skip LLM without key / when evidence exists
-  framework    cwe-vuln-pipeline CLI + seed metrics
+  reasoner     LLMReasoner / TemplateReasoner (no dataset I/O)
+  validator    schema + KB + cited lines + JSON consistency; sast_disagreement warning
+  orchestrator Pipeline.default requires Groq; SAST is evidence for the LLM
+  framework    cwe-vuln-pipeline + cwe-vuln-eval
   cli          thin A1 / KB / retrieve / schema / evidence
   models       one Evidence, one ReasoningResult, one binary_metrics
-  config       paths, top_k, rrf_k, LLM env names
+  config       paths, top_k, rrf_k, LLM env names, use_llm_if_available, skip_llm_when_sast_hits
 
 ============================================================
-METRICS ACTUALLY COMPUTED (seed-only — not a benchmark)
+METRICS ACTUALLY COMPUTED
 ============================================================
-A1 detection (12 units, regex only):
+A1 detection (12 units, regex only, seed-only — not a benchmark):
   overall P=1.000 R=1.000 F1=1.000 tp=6 fp=0 tn=6 fn=0
 
-A3 retrieval (18 queries):
+A3 retrieval (18 queries, embedder=minilm, seed-only):
   lexical_tfidf  R@1=0.7778 R@3=0.9444 R@5=0.9444 MRR=0.8681
-  sast           R@1=0.3333 R@3=0.3333 R@5=0.3333 MRR=0.3333
-  hybrid_rrf     R@1=0.7778 R@3=0.9444 R@5=1.0000 MRR=0.8722
+  neural         R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
+  hybrid_rrf     R@1=0.9444 R@3=1.0000 R@5=1.0000 MRR=0.9722
 
-Framework pipeline (test split, 4 units):
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  validation_pass=4/4
-  paths: sast_first_skip_llm=2, hybrid_retrieve_skip_llm=2
-Framework pipeline (all 12):
-  P=1.000 R=1.000 F1=1.000 fp=0 fn=0  paths 6/6 sast vs hybrid skip_llm
+Framework pipeline (test split, 4 units, live Groq openai/gpt-oss-20b, seed-only):
+  P=1.000 R=1.000 F1=1.000 fp=0 fn=0
+  paths: sast_then_llm=2, hybrid_retrieve_then_llm=2
+  reasoner=llm  embedder=minilm
+
+Research detection (24 held-out authored traps — not a public benchmark):
+  SAST/template     P=0.000 R=0.000 F1=0.000 fp=12 fn=12   (ablation)
+  Groq then_llm     P=0.857 R=1.000 F1=0.923 fp=2 fn=0     (system of record)
+                    validator 24/24  cited_lines 24/24  sast_disagreement 22/24
+  Groq seed_test    P=1.000 R=1.000 F1=1.000 fp=0 fn=0 n=4 validator 4/4
+  skip_llm          P=0.500 R=1.000 F1=0.667 fp=12 fn=0    (prior ablation JSON; old validator 12/24)
+  model=openai/gpt-oss-20b probe_ok
+
+Research retrieval (48 authored queries, embedder=minilm — not a public benchmark):
+  lexical_tfidf  R@1=0.646 R@3=0.917 R@5=0.938 R@10=1.000 MRR=0.794
+  neural         R@1=0.812 R@3=0.979 R@5=1.000 R@10=1.000 MRR=0.894
+  hybrid_rrf     R@1=0.854 R@3=0.958 R@5=1.000 R@10=1.000 MRR=0.917
+
+Failed/invalid trials kept in results/experiments/:
+  sast_fn_traps_javadoc_false_start
+  sast_fp_traps_javadoc_rewrite_regression
+  llm_then_research_test_label_leak
+  llm_skip_when_sast_research_test_label_leak
 
 ============================================================
 HOW TO RUN
@@ -107,9 +187,15 @@ uv sync
 uv run pytest
 uv run cwe-vuln-pipeline
 uv run cwe-vuln-pipeline --split all
+uv run cwe-vuln-pipeline --offline          # ablation, not the system of record
+uv run cwe-vuln-eval --suite juliet
+uv run cwe-vuln-eval --suite owasp-benchmark
+uv run cwe-vuln-eval --suite owasp-benchmark-llm-sample --ablation template
+uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000
+uv run python scripts/write_thesis.py
 uv run cwe-vuln
 uv run cwe-vuln-kb demo
-uv run cwe-vuln-retrieve
+uv run cwe-vuln-retrieve --eval
 uv run cwe-vuln-schema data/schema_samples/vulnerable.json
 uv run cwe-vuln-evidence --unit-id java_cwe89_sqli_concat
 
@@ -118,6 +204,10 @@ KEY FILES
 ============================================================
 README.md
 rag-multiagent-context.txt
+docs/research-evaluation.md
+docs/six-benchmark-plan.md
+docs/six-benchmark-results.md
+docs/benchmark-results.md
 docs/implementation-plan.md
 docs/advisor-phase-plan.md
 docs/architecture.md
@@ -126,29 +216,31 @@ docs/assignment-1-dataset-baseline.md
 docs/assignment-2-cwe-knowledge.md
 docs/assignment-3-hybrid-retrieval.md
 docs/assignment-4-output-schema.md
-docs/sast-evidence.md
-docs/reasoning-agent.md
-docs/validator.md
-docs/orchestrator.md
-schemas/reasoning_output.schema.json
 data/seed/labels.jsonl
-data/cwe/knowledge.json
+data/research/labels.jsonl
 data/retrieval/labeled_queries.jsonl
-src/cwe_vuln/framework/cli.py
+data/retrieval/research_queries.jsonl
+src/cwe_vuln/framework/eval.py
+src/cwe_vuln/dataset/research.py
+src/cwe_vuln/validator/checks.py
 src/cwe_vuln/orchestrator/pipeline.py
-results/assignment-1-baseline.json
-results/assignment-3-retrieval.json
-results/framework-seed.json
-results/framework-seed-all.json
+results/research-eval-summary.json
+results/experiments/
 Thesis Progress Report_RichaVerma_25MCSS02.docx
 
-Do not commit: ApproachDoc.pdf, secrets, .env
+Do not commit: ApproachDoc.pdf, secrets, .env, .cache/, research-papers/ PDFs unless asked
+This repo is Richa Verma CWE/RAG work only. Do not add UAV/compiler code.
 
 ============================================================
 LIMITATIONS
 ============================================================
-- Seed-only evaluation (12 authored Java units / 18 retrieval queries).
-- Retrieval is lexical TF-IDF, not neural embeddings. sentence-transformers was not added
-  (keeps uv sync small/offline; A3 already documented this choice).
-- Reasoner is a template composer; LLM path is skipped (no API key / not implemented).
+- Seed-only 12-unit scores, authored 36-unit scores, Juliet subset, and other public suites are separate tables.
+- Research corpus is authored, small N, traps written against our regex.
+- MiniLM may be tfidf_fallback if the model is not cached / download failed.
+- Default live path requires GROQ_API_KEY; missing key fails clearly.
 - CWE store is a curated subset, not a full MITRE dump.
+- Juliet Java v1.3: NIST zip 403; GitHub mirror used. Missing CWE-79/22/502/798 folders.
+- Juliet SAST n=20728 mapped/nearby folders only; LLM n=72 stratified sample (seed 13, 12/CWE × 6 ids).
+- Six-suite LLM samples are n=12 per non-Juliet suite (seed 13), not full ingested sets. Regex ≠ CodeQL.
+- CVEfixes-Java-slice is a GitHub Advisory maven slice (24 advisories), not the full CVEfixes dump.
+- Not a claim of 100% novelty or SOTA.

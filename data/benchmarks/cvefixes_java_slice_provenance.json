@@ -1,0 +1,9 @@
+{
+  "suite": "cvefixes-java-slice",
+  "source_url": "https://api.github.com/advisories?ecosystem=maven",
+  "downloaded_at": "2026-09-17T14:01:31Z",
+  "method": "github_advisories_maven_slice",
+  "sha256_or_commit": "n_advisories=24 pages<=3",
+  "license_note": "Slice constructed from public GitHub Security Advisories (ecosystem=maven) plus referenced GitHub commits. Named CVEfixes-Java-slice because the full CVEfixes (Zenodo/SQLite) dump is too large to vendor; gold CWE comes from the advisory CWE list. Not the complete CVEfixes database.",
+  "n_advisories": 24
+}

@@ -51,7 +51,7 @@ Train and test both mix vulnerable and not_vulnerable units. Test holds out two 
 ## Baseline
 
 - **Type:** regex / SAST-style pattern detector (`src/cwe_vuln/sast/detector.py`). No API key.
-- **LLM stub:** `llm_detect` is skipped without `CWE_VULN_LLM_API_KEY` / `OPENAI_API_KEY`, and is **not implemented** in Assignment 1 even if a key is set.
+- **LLM stub:** Assignment 1’s `llm_detect` is skipped without `GROQ_API_KEY` / `CWE_VULN_LLM_API_KEY`, and is **not implemented in this assignment** even if a key is set. `OPENAI_API_KEY` is unused. The later pipeline reasoner is Groq `LLMReasoner` (default `openai/gpt-oss-20b`) outside Assignment 1.
 - **Positive class:** `vulnerable` vs `not_vulnerable` (binary). A unit is predicted vulnerable if **any** configured rule matches.
 - **Rules (seed-oriented):**
   - CWE-89: `"SELECT|INSERT|UPDATE|DELETE..."` immediately concatenated with `+`

@@ -1,0 +1,319 @@
+{
+  "trial_id": "llm_then_owasp_benchmark_sample",
+  "date": "2026-09-17T14:04:24Z",
+  "suite": "owasp-benchmark-llm-sample",
+  "split": "owasp-benchmark_llm_sample",
+  "n_units": 12,
+  "evaluation_scope": "owasp_benchmark_java_stratified_sample",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM scores are on a deterministic stratified sample, not the full ingested set. Six-suite measurement does not prove 100% novelty; the claim is this method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) vs these corpora/baselines.",
+  "status": "ok",
+  "config": {
+    "suite": "owasp-benchmark-llm-sample",
+    "reasoner": "llm",
+    "skip_llm_when_sast_hits": false,
+    "use_llm_if_available": true,
+    "model": "openai/gpt-oss-20b",
+    "provenance": {
+      "suite": "owasp-benchmark",
+      "source_url": "https://github.com/OWASP-Benchmark/BenchmarkJava.git",
+      "downloaded_at": "2026-09-17T14:03:49Z",
+      "method": "cached",
+      "sha256_or_commit": "20cbf3d11123347e47ed89541e6942836def53f7",
+      "license_note": "OWASP Benchmark for Java (BenchmarkJava). Educational AST test suite; see the upstream repository license/README. Not redistributed in git."
+    },
+    "sample_manifest": "/Users/theatulgupta/Desktop/rag-multiagent-cwe-vuln/data/benchmarks/owasp-benchmark_llm_sample.json"
+  },
+  "metrics": {
+    "tp": 1,
+    "fp": 0,
+    "tn": 6,
+    "fn": 5,
+    "precision": 1.0,
+    "recall": 0.16666666666666666,
+    "f1": 0.2857142857142857,
+    "support": 12
+  },
+  "per_cwe": {
+    "CWE-328": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-22": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-501": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-327": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 1,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 2
+    },
+    "CWE-330": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    },
+    "CWE-614": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "owasp_BenchmarkTest00074",
+      "cwe_id": "CWE-328",
+      "trap_type": "owasp-benchmark",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00564",
+      "cwe_id": "CWE-330",
+      "trap_type": "owasp-benchmark",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00623",
+      "cwe_id": "CWE-22",
+      "trap_type": "owasp-benchmark",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01281",
+      "cwe_id": "CWE-614",
+      "trap_type": "owasp-benchmark",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest02262",
+      "cwe_id": "CWE-501",
+      "trap_type": "owasp-benchmark",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    }
+  ],
+  "notes": "Live Groq on the stratified owasp-benchmark sample. probe_ok model=openai/gpt-oss-20b",
+  "error": null,
+  "validation_pass": 12,
+  "validation_pass_rate": 1.0,
+  "cited_lines_grounded": 12,
+  "cited_lines_n": 12,
+  "cited_lines_rate": 1.0,
+  "sast_disagreement": 0,
+  "sast_disagreement_rate": 0.0,
+  "detector_path_counts": {
+    "hybrid_retrieve_then_llm": 11,
+    "sast_then_llm": 1
+  },
+  "reasoner_counts": {
+    "llm": 2,
+    "llm_fallback_template": 10
+  },
+  "embedder": "minilm",
+  "unit_decisions": [
+    {
+      "unit_id": "owasp_BenchmarkTest00074",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00131",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00322",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00523",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00564",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00623",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest00795",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01281",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01541",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01566",
+      "decision": "vulnerable",
+      "path": "sast_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest01862",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    },
+    {
+      "unit_id": "owasp_BenchmarkTest02262",
+      "decision": "not_vulnerable",
+      "path": "hybrid_retrieve_then_llm",
+      "reasoner": "llm_fallback_template",
+      "validator_passed": true,
+      "sast_disagreement": false
+    }
+  ],
+  "n_planned": 12,
+  "n_scored": 12,
+  "rate_limited": false,
+  "skipped_due_to_rate_limit": 0,
+  "cwe_mapping": {
+    "gold": "expectedresults-1.2.csv columns: test name, category, real vulnerability, cwe",
+    "unit": "one BenchmarkTest*.java file per CSV row",
+    "cwe_coverage_plan": {
+      "CWE-89": "present (sqli)",
+      "CWE-79": "present (xss)",
+      "CWE-22": "present (pathtraver)",
+      "CWE-327": "present (crypto)",
+      "CWE-328": "nearby hash category; not relabeled to 327",
+      "CWE-502": "not present",
+      "CWE-798": "not present"
+    },
+    "license_note": "OWASP Benchmark for Java (BenchmarkJava). Educational AST test suite; see the upstream repository license/README. Not redistributed in git.",
+    "cwe_coverage": {
+      "CWE-89": "not present",
+      "CWE-79": "not present",
+      "CWE-22": "present",
+      "CWE-502": "not present",
+      "CWE-798": "not present",
+      "CWE-327": "present"
+    },
+    "per_cwe_n": {
+      "CWE-328": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-22": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-501": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-327": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-330": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      },
+      "CWE-614": {
+        "vulnerable": 1,
+        "not_vulnerable": 1,
+        "n": 2
+      }
+    }
+  }
+}

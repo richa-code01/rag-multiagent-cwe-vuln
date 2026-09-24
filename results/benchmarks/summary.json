@@ -1,0 +1,1572 @@
+{
+  "generated_at": "2026-09-17T14:08:18Z",
+  "evaluation_scope": "six_public_java_suites",
+  "disclaimer": "Public/industry-style Java suite. Regex SAST is not CodeQL. LLM sample rows in this file from 2026-09-17 are RETRACTED. Six-suite measurement does not prove 100% novelty.",
+  "novelty": "Novelty claim is the method (SAST evidence + hybrid CWE retrieval + schema-bound Groq) versus these corpora and regex/template baselines \u2014 not 'first system ever' or 100% novelty.",
+  "trials": [
+    {
+      "trial_id": "llm_then_cvefixes_java_slice_sample",
+      "suite": "cvefixes-java-slice-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 0,
+        "fp": 1,
+        "tn": 6,
+        "fn": 5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-89": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        }
+      },
+      "rate_limited": false,
+      "notes": "Live Groq on the stratified cvefixes-java-slice sample. probe_failed model=openai/gpt-oss-20b: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kkjxq033ean84gxkg2vn4bxn` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199715, Requested 1088. Please try again in 5m46.896s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}} probe_failed model=llama-3.3-70b-versatile: Error code: 404 - {'error': {'message': 'The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=meta-llama/llama-4-scout-17b-16e-instruct: Error code: 404 - {'error': {'message': 'The model `meta-llama/llama-4-scout-17b-16e-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=gemma2-9b-it: Error code: 400 - {'error': {'message': 'The model `gemma2-9b-it` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}} (using model after probe warning)",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_find_sec_bugs_sample",
+      "suite": "find-sec-bugs-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 2,
+        "fp": 2,
+        "tn": 3,
+        "fn": 5,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "f1": 0.36363636363636365,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-327": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-798": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-89": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 0,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "support": 2
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        }
+      },
+      "rate_limited": false,
+      "notes": "Live Groq on the stratified find-sec-bugs sample. probe_failed model=openai/gpt-oss-20b: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kkjxq033ean84gxkg2vn4bxn` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199840, Requested 1388. Please try again in 8m50.496s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}} probe_failed model=llama-3.3-70b-versatile: Error code: 404 - {'error': {'message': 'The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=meta-llama/llama-4-scout-17b-16e-instruct: Error code: 404 - {'error': {'message': 'The model `meta-llama/llama-4-scout-17b-16e-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=gemma2-9b-it: Error code: 400 - {'error': {'message': 'The model `gemma2-9b-it` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}} (using model after probe warning)",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_juliet_sample",
+      "suite": "juliet-llm-sample",
+      "status": "ok",
+      "n_units": 72,
+      "n_scored": 72,
+      "metrics": {
+        "tp": 22,
+        "fp": 2,
+        "tn": 34,
+        "fn": 14,
+        "precision": 0.9166666666666666,
+        "recall": 0.6111111111111112,
+        "f1": 0.7333333333333334,
+        "support": 72
+      },
+      "per_cwe": {
+        "CWE-23": {
+          "tp": 5,
+          "fp": 0,
+          "tn": 6,
+          "fn": 1,
+          "precision": 1.0,
+          "recall": 0.8333333333333334,
+          "f1": 0.9090909090909091,
+          "support": 12
+        },
+        "CWE-259": {
+          "tp": 6,
+          "fp": 1,
+          "tn": 5,
+          "fn": 0,
+          "precision": 0.8571428571428571,
+          "recall": 1.0,
+          "f1": 0.923076923076923,
+          "support": 12
+        },
+        "CWE-327": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 6,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "CWE-328": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 6,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "support": 12
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-89": {
+          "tp": 2,
+          "fp": 1,
+          "tn": 5,
+          "fn": 4,
+          "precision": 0.6666666666666666,
+          "recall": 0.3333333333333333,
+          "f1": 0.4444444444444444,
+          "support": 12
+        }
+      },
+      "rate_limited": false,
+      "notes": "System of record on sample n=72 (not the full ingested set). Live Groq on the stratified Juliet sample. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_owasp_benchmark_sample",
+      "suite": "owasp-benchmark-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 6,
+        "fn": 5,
+        "precision": 1.0,
+        "recall": 0.16666666666666666,
+        "f1": 0.2857142857142857,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-328": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-501": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-327": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 1,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "CWE-330": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-614": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        }
+      },
+      "rate_limited": false,
+      "notes": "Live Groq on the stratified owasp-benchmark sample. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_securibench_micro_sample",
+      "suite": "securibench-micro-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 3,
+        "fp": 1,
+        "tn": 3,
+        "fn": 5,
+        "precision": 0.75,
+        "recall": 0.375,
+        "f1": 0.5,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 3,
+          "fn": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 6
+        },
+        "CWE-89": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 3
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "rate_limited": false,
+      "notes": "Live Groq on the stratified securibench-micro sample. probe_failed model=openai/gpt-oss-20b: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kkjxq033ean84gxkg2vn4bxn` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199933, Requested 387. Please try again in 2m18.24s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}} probe_failed model=llama-3.3-70b-versatile: Error code: 404 - {'error': {'message': 'The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=meta-llama/llama-4-scout-17b-16e-instruct: Error code: 404 - {'error': {'message': 'The model `meta-llama/llama-4-scout-17b-16e-instruct` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'code': 'model_not_found'}} probe_failed model=gemma2-9b-it: Error code: 400 - {'error': {'message': 'The model `gemma2-9b-it` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.', 'type': 'invalid_request_error', 'code': 'model_decommissioned'}} (using model after probe warning)",
+      "error": null
+    },
+    {
+      "trial_id": "llm_then_vul4j_sample",
+      "suite": "vul4j-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 0,
+        "fp": 1,
+        "tn": 5,
+        "fn": 6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 1,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        }
+      },
+      "rate_limited": false,
+      "notes": "Live Groq on the stratified vul4j sample. probe_ok model=openai/gpt-oss-20b",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_cvefixes_java_slice",
+      "suite": "cvefixes-java-slice",
+      "status": "ok",
+      "n_units": 92,
+      "n_scored": null,
+      "metrics": {
+        "tp": 6,
+        "fp": 6,
+        "tn": 40,
+        "fn": 40,
+        "precision": 0.5,
+        "recall": 0.13043478260869565,
+        "f1": 0.20689655172413793,
+        "support": 92
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 4,
+          "fp": 4,
+          "tn": 12,
+          "fn": 12,
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.3333333333333333,
+          "support": 32
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "CWE-79": {
+          "tp": 2,
+          "fp": 2,
+          "tn": 22,
+          "fn": 22,
+          "precision": 0.5,
+          "recall": 0.08333333333333333,
+          "f1": 0.14285714285714285,
+          "support": 48
+        },
+        "CWE-89": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 8
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested cvefixes-java-slice units n=92. Missing thesis CWEs are 'not present', not relabeled.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_find_sec_bugs",
+      "suite": "find-sec-bugs",
+      "status": "ok",
+      "n_units": 79,
+      "n_scored": null,
+      "metrics": {
+        "tp": 20,
+        "fp": 4,
+        "tn": 7,
+        "fn": 48,
+        "precision": 0.8333333333333334,
+        "recall": 0.29411764705882354,
+        "f1": 0.4347826086956522,
+        "support": 79
+      },
+      "per_cwe": {
+        "CWE-327": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 3
+        },
+        "CWE-22": {
+          "tp": 2,
+          "fp": 0,
+          "tn": 1,
+          "fn": 6,
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4,
+          "support": 9
+        },
+        "CWE-798": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 9,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 10
+        },
+        "CWE-502": {
+          "tp": 2,
+          "fp": 3,
+          "tn": 3,
+          "fn": 3,
+          "precision": 0.4,
+          "recall": 0.4,
+          "f1": 0.4000000000000001,
+          "support": 11
+        },
+        "CWE-89": {
+          "tp": 13,
+          "fp": 1,
+          "tn": 0,
+          "fn": 10,
+          "precision": 0.9285714285714286,
+          "recall": 0.5652173913043478,
+          "f1": 0.7027027027027025,
+          "support": 24
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 20,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 22
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested find-sec-bugs units n=79. Missing thesis CWEs are 'not present', not relabeled.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_juliet",
+      "suite": "juliet-sast",
+      "status": "ok",
+      "n_units": 20728,
+      "n_scored": null,
+      "metrics": {
+        "tp": 1604,
+        "fp": 3736,
+        "tn": 12195,
+        "fn": 3193,
+        "precision": 0.300374531835206,
+        "recall": 0.3343756514488222,
+        "f1": 0.31646443721022,
+        "support": 20728
+      },
+      "per_cwe": {
+        "CWE-89": {
+          "tp": 1260,
+          "fp": 3060,
+          "tn": 6495,
+          "fn": 1020,
+          "precision": 0.2916666666666667,
+          "recall": 0.5526315789473685,
+          "f1": 0.3818181818181819,
+          "support": 11835
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 18,
+          "tn": 1962,
+          "fn": 684,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2664
+        },
+        "CWE-81": {
+          "tp": 0,
+          "fp": 9,
+          "tn": 981,
+          "fn": 342,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1332
+        },
+        "CWE-83": {
+          "tp": 0,
+          "fp": 9,
+          "tn": 981,
+          "fn": 342,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1332
+        },
+        "CWE-23": {
+          "tp": 276,
+          "fp": 624,
+          "tn": 363,
+          "fn": 180,
+          "precision": 0.30666666666666664,
+          "recall": 0.6052631578947368,
+          "f1": 0.4070796460176991,
+          "support": 1443
+        },
+        "CWE-36": {
+          "tp": 0,
+          "fp": 12,
+          "tn": 975,
+          "fn": 456,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1443
+        },
+        "CWE-327": {
+          "tp": 34,
+          "fp": 0,
+          "tn": 60,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 94
+        },
+        "CWE-328": {
+          "tp": 34,
+          "fp": 0,
+          "tn": 90,
+          "fn": 17,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8,
+          "support": 141
+        },
+        "CWE-259": {
+          "tp": 0,
+          "fp": 3,
+          "tn": 216,
+          "fn": 114,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 333
+        },
+        "CWE-321": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 72,
+          "fn": 38,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 111
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested Juliet Java v1.3 mapped folders. n=20728. CWE-502 has no Juliet Java folder. Retrieval@Juliet skipped. Regex SAST only. On research_test this should be imperfect by construction.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_owasp_benchmark",
+      "suite": "owasp-benchmark",
+      "status": "ok",
+      "n_units": 2740,
+      "n_scored": null,
+      "metrics": {
+        "tp": 399,
+        "fp": 206,
+        "tn": 1119,
+        "fn": 1016,
+        "precision": 0.6595041322314049,
+        "recall": 0.28197879858657243,
+        "f1": 0.39504950495049507,
+        "support": 2740
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 135,
+          "fn": 133,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 268
+        },
+        "CWE-328": {
+          "tp": 28,
+          "fp": 0,
+          "tn": 107,
+          "fn": 101,
+          "precision": 1.0,
+          "recall": 0.21705426356589147,
+          "f1": 0.356687898089172,
+          "support": 236
+        },
+        "CWE-501": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 43,
+          "fn": 83,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 126
+        },
+        "CWE-327": {
+          "tp": 130,
+          "fp": 0,
+          "tn": 116,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 246
+        },
+        "CWE-78": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 125,
+          "fn": 126,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 251
+        },
+        "CWE-89": {
+          "tp": 241,
+          "fp": 206,
+          "tn": 26,
+          "fn": 31,
+          "precision": 0.5391498881431768,
+          "recall": 0.8860294117647058,
+          "f1": 0.6703755215577191,
+          "support": 504
+        },
+        "CWE-330": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 275,
+          "fn": 218,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 493
+        },
+        "CWE-90": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 32,
+          "fn": 27,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 59
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 209,
+          "fn": 246,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 455
+        },
+        "CWE-614": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 31,
+          "fn": 36,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 67
+        },
+        "CWE-643": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 20,
+          "fn": 15,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 35
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested owasp-benchmark units n=2740. Missing thesis CWEs are 'not present', not relabeled.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_securibench_micro",
+      "suite": "securibench-micro",
+      "status": "ok",
+      "n_units": 119,
+      "n_scored": null,
+      "metrics": {
+        "tp": 4,
+        "fp": 2,
+        "tn": 12,
+        "fn": 101,
+        "precision": 0.6666666666666666,
+        "recall": 0.0380952380952381,
+        "f1": 0.07207207207207207,
+        "support": 119
+      },
+      "per_cwe": {
+        "CWE-79": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 12,
+          "fn": 99,
+          "precision": 0.5,
+          "recall": 0.01,
+          "f1": 0.0196078431372549,
+          "support": 113
+        },
+        "CWE-89": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 3
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested securibench-micro units n=119. Missing thesis CWEs are 'not present', not relabeled.",
+      "error": null
+    },
+    {
+      "trial_id": "sast_regex_vul4j",
+      "suite": "vul4j",
+      "status": "ok",
+      "n_units": 62,
+      "n_scored": null,
+      "metrics": {
+        "tp": 5,
+        "fp": 5,
+        "tn": 26,
+        "fn": 26,
+        "precision": 0.5,
+        "recall": 0.16129032258064516,
+        "f1": 0.24390243902439024,
+        "support": 62
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 2,
+          "fp": 2,
+          "tn": 8,
+          "fn": 8,
+          "precision": 0.5,
+          "recall": 0.2,
+          "f1": 0.28571428571428575,
+          "support": 20
+        },
+        "CWE-79": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 8,
+          "fn": 8,
+          "precision": 0.5,
+          "recall": 0.1111111111111111,
+          "f1": 0.1818181818181818,
+          "support": 18
+        },
+        "CWE-502": {
+          "tp": 2,
+          "fp": 2,
+          "tn": 10,
+          "fn": 10,
+          "precision": 0.5,
+          "recall": 0.16666666666666666,
+          "f1": 0.25,
+          "support": 24
+        }
+      },
+      "rate_limited": null,
+      "notes": "Full regex SAST on ingested vul4j units n=62. Missing thesis CWEs are 'not present', not relabeled.",
+      "error": null
+    },
+    {
+      "trial_id": "template_cvefixes_java_slice_sample",
+      "suite": "cvefixes-java-slice-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 0,
+        "fp": 1,
+        "tn": 6,
+        "fn": 5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-89": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        }
+      },
+      "rate_limited": false,
+      "notes": "Ablation: TemplateReasoner on the cvefixes-java-slice LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "template_find_sec_bugs_sample",
+      "suite": "find-sec-bugs-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 2,
+        "fp": 2,
+        "tn": 3,
+        "fn": 5,
+        "precision": 0.5,
+        "recall": 0.2857142857142857,
+        "f1": 0.36363636363636365,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-327": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        },
+        "CWE-798": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-89": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 0,
+          "fn": 0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "support": 2
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        }
+      },
+      "rate_limited": false,
+      "notes": "Ablation: TemplateReasoner on the find-sec-bugs LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "template_juliet_sample",
+      "suite": "juliet-llm-sample",
+      "status": "ok",
+      "n_units": 72,
+      "n_scored": 72,
+      "metrics": {
+        "tp": 16,
+        "fp": 6,
+        "tn": 30,
+        "fn": 20,
+        "precision": 0.7272727272727273,
+        "recall": 0.4444444444444444,
+        "f1": 0.5517241379310345,
+        "support": 72
+      },
+      "per_cwe": {
+        "CWE-23": {
+          "tp": 5,
+          "fp": 5,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.5,
+          "recall": 0.8333333333333334,
+          "f1": 0.625,
+          "support": 12
+        },
+        "CWE-259": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-327": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 6,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "CWE-328": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 6,
+          "fn": 3,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "support": 12
+        },
+        "CWE-80": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 6,
+          "fn": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12
+        },
+        "CWE-89": {
+          "tp": 2,
+          "fp": 1,
+          "tn": 5,
+          "fn": 4,
+          "precision": 0.6666666666666666,
+          "recall": 0.3333333333333333,
+          "f1": 0.4444444444444444,
+          "support": 12
+        }
+      },
+      "rate_limited": false,
+      "notes": "Template ablation. Sample n=72 seed=13 per_cwe=12. Ablation: TemplateReasoner on the Juliet LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "template_owasp_benchmark_sample",
+      "suite": "owasp-benchmark-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 6,
+        "fn": 5,
+        "precision": 1.0,
+        "recall": 0.16666666666666666,
+        "f1": 0.2857142857142857,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-328": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-501": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-327": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 1,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 2
+        },
+        "CWE-330": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        },
+        "CWE-614": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 1,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2
+        }
+      },
+      "rate_limited": false,
+      "notes": "Ablation: TemplateReasoner on the owasp-benchmark LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "template_securibench_micro_sample",
+      "suite": "securibench-micro-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 3,
+        "fp": 1,
+        "tn": 3,
+        "fn": 5,
+        "precision": 0.75,
+        "recall": 0.375,
+        "f1": 0.5,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-79": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 3,
+          "fn": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 6
+        },
+        "CWE-89": {
+          "tp": 3,
+          "fp": 0,
+          "tn": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 3
+        },
+        "CWE-22": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "rate_limited": false,
+      "notes": "Ablation: TemplateReasoner on the securibench-micro LLM sample. Not the system of record.",
+      "error": null
+    },
+    {
+      "trial_id": "template_vul4j_sample",
+      "suite": "vul4j-llm-sample",
+      "status": "ok",
+      "n_units": 12,
+      "n_scored": 12,
+      "metrics": {
+        "tp": 0,
+        "fp": 1,
+        "tn": 5,
+        "fn": 6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 12
+      },
+      "per_cwe": {
+        "CWE-22": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "CWE-79": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 1,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        "CWE-502": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 2,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        }
+      },
+      "rate_limited": false,
+      "notes": "Ablation: TemplateReasoner on the vul4j LLM sample. Not the system of record.",
+      "error": null
+    }
+  ],
+  "detection_table": [
+    {
+      "system": "llm_then_cvefixes_java_slice_sample",
+      "suite": "cvefixes-java-slice-llm-sample",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 1,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_find_sec_bugs_sample",
+      "suite": "find-sec-bugs-llm-sample",
+      "status": "ok",
+      "precision": 0.5,
+      "recall": 0.2857142857142857,
+      "f1": 0.36363636363636365,
+      "fp": 2,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_juliet_sample",
+      "suite": "juliet-llm-sample",
+      "status": "ok",
+      "precision": 0.9166666666666666,
+      "recall": 0.6111111111111112,
+      "f1": 0.7333333333333334,
+      "fp": 2,
+      "fn": 14,
+      "n": 72,
+      "validation_pass": 72,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_owasp_benchmark_sample",
+      "suite": "owasp-benchmark-llm-sample",
+      "status": "ok",
+      "precision": 1.0,
+      "recall": 0.16666666666666666,
+      "f1": 0.2857142857142857,
+      "fp": 0,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_securibench_micro_sample",
+      "suite": "securibench-micro-llm-sample",
+      "status": "ok",
+      "precision": 0.75,
+      "recall": 0.375,
+      "f1": 0.5,
+      "fp": 1,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "llm_then_vul4j_sample",
+      "suite": "vul4j-llm-sample",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 1,
+      "fn": 6,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "sast_regex_cvefixes_java_slice",
+      "suite": "cvefixes-java-slice",
+      "status": "ok",
+      "precision": 0.5,
+      "recall": 0.13043478260869565,
+      "f1": 0.20689655172413793,
+      "fp": 6,
+      "fn": 40,
+      "n": 92,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_find_sec_bugs",
+      "suite": "find-sec-bugs",
+      "status": "ok",
+      "precision": 0.8333333333333334,
+      "recall": 0.29411764705882354,
+      "f1": 0.4347826086956522,
+      "fp": 4,
+      "fn": 48,
+      "n": 79,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_juliet",
+      "suite": "juliet-sast",
+      "status": "ok",
+      "precision": 0.300374531835206,
+      "recall": 0.3343756514488222,
+      "f1": 0.31646443721022,
+      "fp": 3736,
+      "fn": 3193,
+      "n": 20728,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_owasp_benchmark",
+      "suite": "owasp-benchmark",
+      "status": "ok",
+      "precision": 0.6595041322314049,
+      "recall": 0.28197879858657243,
+      "f1": 0.39504950495049507,
+      "fp": 206,
+      "fn": 1016,
+      "n": 2740,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_securibench_micro",
+      "suite": "securibench-micro",
+      "status": "ok",
+      "precision": 0.6666666666666666,
+      "recall": 0.0380952380952381,
+      "f1": 0.07207207207207207,
+      "fp": 2,
+      "fn": 101,
+      "n": 119,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "sast_regex_vul4j",
+      "suite": "vul4j",
+      "status": "ok",
+      "precision": 0.5,
+      "recall": 0.16129032258064516,
+      "f1": 0.24390243902439024,
+      "fp": 5,
+      "fn": 26,
+      "n": 62,
+      "validation_pass": null,
+      "rate_limited": null
+    },
+    {
+      "system": "template_cvefixes_java_slice_sample",
+      "suite": "cvefixes-java-slice-llm-sample",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 1,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "template_find_sec_bugs_sample",
+      "suite": "find-sec-bugs-llm-sample",
+      "status": "ok",
+      "precision": 0.5,
+      "recall": 0.2857142857142857,
+      "f1": 0.36363636363636365,
+      "fp": 2,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "template_juliet_sample",
+      "suite": "juliet-llm-sample",
+      "status": "ok",
+      "precision": 0.7272727272727273,
+      "recall": 0.4444444444444444,
+      "f1": 0.5517241379310345,
+      "fp": 6,
+      "fn": 20,
+      "n": 72,
+      "validation_pass": 72,
+      "rate_limited": false
+    },
+    {
+      "system": "template_owasp_benchmark_sample",
+      "suite": "owasp-benchmark-llm-sample",
+      "status": "ok",
+      "precision": 1.0,
+      "recall": 0.16666666666666666,
+      "f1": 0.2857142857142857,
+      "fp": 0,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "template_securibench_micro_sample",
+      "suite": "securibench-micro-llm-sample",
+      "status": "ok",
+      "precision": 0.75,
+      "recall": 0.375,
+      "f1": 0.5,
+      "fp": 1,
+      "fn": 5,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    },
+    {
+      "system": "template_vul4j_sample",
+      "suite": "vul4j-llm-sample",
+      "status": "ok",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fp": 1,
+      "fn": 6,
+      "n": 12,
+      "validation_pass": 12,
+      "rate_limited": false
+    }
+  ],
+  "llm_rows_retracted": true,
+  "llm_retraction_reason": "Gold-label leakage (Juliet FLAW/FIX comments, unit_ids, notes) and/or silent Groq 429\u2192template fallback. Regex SAST rows are kept. Replacement LLM numbers: results/thesis/ after uv run cwe-vuln-eval --suite thesis."
+}

@@ -1,0 +1,26 @@
+{
+  "status": "superseded",
+  "reason": "C2 pair sample included multi-file Juliet variants (_NNa/_NNb) that hide the sink from the LLM. Kept for audit; not the system of record.",
+  "archived_at": "2026-09-20T03:32:45Z",
+  "original_n_pairs": 18,
+  "original_pair_ids": [
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__PropertiesFile_13__pair0",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__console_readLine_13__pair0",
+    "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getQueryString_Servlet_41__pair0",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_81a__pair0",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_04__pair0",
+    "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__passwordAuth_11__pair0",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_06__pair0",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__3DES_15__pair0",
+    "juliet_CWE327_Use_Broken_Crypto_CWE327_Use_Broken_Crypto__DES_01__pair0",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_03__pair0",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_01__pair0",
+    "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__SHA1_15__pair0",
+    "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_14__pair0",
+    "juliet_s01_CWE80_XSS__Servlet_File_10__pair0",
+    "juliet_s01_CWE80_XSS__Servlet_getQueryString_Servlet_61a__pair0",
+    "juliet_s01_CWE89_SQL_Injection__console_readLine_executeUpdate_68a__pair0",
+    "juliet_s02_CWE89_SQL_Injection__Environment_executeQuery_02__pair0",
+    "juliet_s02_CWE89_SQL_Injection__File_execute_53a__pair0"
+  ]
+}

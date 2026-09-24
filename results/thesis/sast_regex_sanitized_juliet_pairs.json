@@ -1,0 +1,235 @@
+{
+  "trial_id": "sast_regex_sanitized_juliet_pairs",
+  "date": "2026-09-20T03:32:45Z",
+  "suite": "juliet-pairs",
+  "split": "juliet_pairs",
+  "n_units": 36,
+  "evaluation_scope": "authored_corpus_not_a_public_benchmark",
+  "disclaimer": "authored corpus \u2014 not a public benchmark. Metrics are computed only on the authored Java units and labeled queries in this repository. Not Juliet, OWASP Benchmark, or Big-Vul.",
+  "status": "ok",
+  "config": {
+    "suite": "juliet-pairs",
+    "reasoner": "sast",
+    "backend": "regex",
+    "sast_input": "sanitized"
+  },
+  "metrics": {
+    "tp": 8,
+    "fp": 5,
+    "tn": 13,
+    "fn": 10,
+    "precision": 0.6153846153846154,
+    "recall": 0.4444444444444444,
+    "f1": 0.5161290322580646,
+    "fpr": 0.2777777777777778,
+    "support": 36
+  },
+  "per_cwe": {
+    "CWE-23": {
+      "tp": 2,
+      "fp": 3,
+      "tn": 0,
+      "fn": 1,
+      "precision": 0.4,
+      "recall": 0.6666666666666666,
+      "f1": 0.5,
+      "fpr": 1.0,
+      "support": 6
+    },
+    "CWE-259": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-327": {
+      "tp": 3,
+      "fp": 0,
+      "tn": 3,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-328": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 3,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1": 0.5,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-80": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 3,
+      "fn": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "fpr": 0.0,
+      "support": 6
+    },
+    "CWE-89": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 1,
+      "fn": 1,
+      "precision": 0.5,
+      "recall": 0.6666666666666666,
+      "f1": 0.5714285714285715,
+      "fpr": 0.6666666666666666,
+      "support": 6
+    }
+  },
+  "confusion": [
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_08__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_41__method_bad",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__File_41__method_goodG2BSink",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_CWE23_Relative_Path_Traversal_CWE23_Relative_Path_Traversal__getParameter_Servlet_15__method_goodG2B1",
+      "cwe_id": "CWE-23",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__driverManager_42__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_17__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE259_Hard_Coded_Password_CWE259_Hard_Coded_Password__kerberosKey_45__method_bad",
+      "cwe_id": "CWE-259",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_06__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_CWE328_Reversible_One_Way_Hash_CWE328_Reversible_One_Way_Hash__MD2_09__method_bad",
+      "cwe_id": "CWE-328",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_connect_tcp_13__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__CWE182_Servlet_getParameter_Servlet_21__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE80_XSS__Servlet_connect_tcp_16__method_bad",
+      "cwe_id": "CWE-80",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__connect_tcp_prepareStatement_21__method_bad",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "vulnerable",
+      "predicted": "not_vulnerable",
+      "sast_hit": false,
+      "why": "sast_miss"
+    },
+    {
+      "unit_id": "juliet_s01_CWE89_SQL_Injection__console_readLine_execute_01__method_goodG2B",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    },
+    {
+      "unit_id": "juliet_s04_CWE89_SQL_Injection__URLConnection_prepareStatement_14__method_goodG2B1",
+      "cwe_id": "CWE-89",
+      "trap_type": "juliet",
+      "true_label": "not_vulnerable",
+      "predicted": "vulnerable",
+      "sast_hit": true,
+      "why": "sast_false_positive"
+    }
+  ],
+  "notes": "Regex SAST on sanitized units (same input as template/LLM). Comment-only regex hits disappear when comments are blanked.",
+  "error": null,
+  "sast_input": "sanitized"
+}

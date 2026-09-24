@@ -1,0 +1,48 @@
+{
+  "trial_id": "retrieval_units_juliet_pairs",
+  "date": "2026-09-20T03:32:48Z",
+  "suite": "juliet-pairs",
+  "split": "juliet_pairs",
+  "evaluation_scope": "public_suite_sample_retrieval",
+  "disclaimer": "Juliet Java public-benchmark subset. Not the authored 36-unit research table. LLM scores are on a stratified sample only unless n equals the ingested SAST set. Nearby CWE folders keep their Juliet ids (no silent relabel to 79/22/798/327).",
+  "status": "ok",
+  "config": {
+    "embedder": "minilm",
+    "k_values": [
+      1,
+      3,
+      5
+    ],
+    "n_units": 36,
+    "query": "sanitized_evidence_or_sink_window"
+  },
+  "metrics": {
+    "lexical_tfidf": {
+      "recall@1": 0.1667,
+      "recall@3": 0.3611,
+      "recall@5": 0.6111,
+      "mrr": 0.3565
+    },
+    "neural": {
+      "recall@1": 0.1667,
+      "recall@3": 0.8333,
+      "recall@5": 1.0,
+      "mrr": 0.4801
+    },
+    "sast": {
+      "recall@1": 0.1944,
+      "recall@3": 0.1944,
+      "recall@5": 0.1944,
+      "mrr": 0.1944
+    },
+    "hybrid_rrf": {
+      "recall@1": 0.25,
+      "recall@3": 0.8333,
+      "recall@5": 0.9167,
+      "mrr": 0.5508
+    }
+  },
+  "notes": "Per-unit retrieval on the same evidence/sink window the LLM sees; relevant id = gold CWE.",
+  "error": null,
+  "embedder": "minilm"
+}
