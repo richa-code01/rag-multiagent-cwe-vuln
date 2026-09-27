@@ -1,6 +1,7 @@
 # Progress reports for the mentor
 
-Ten separate notes. Each one can be read on its own. The opening and the closing connect it to the work around it.
+Ten separate notes. Each one can be read on its own.
+Each note follows the same path: the idea we started with, why we chose that way, what we did, one example, the numbers, and the conclusion those numbers support.
 The Word file is the one to edit. The PDF has the same words and the same picture, for sending.
 
 Student: Richa Verma (25MCSS02). Advisor: Dr. Akshay Pandey.

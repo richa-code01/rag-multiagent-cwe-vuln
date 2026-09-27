@@ -197,6 +197,15 @@ REPORTS: list[dict] = [
             "Many scanners only say that a piece of code is unsafe. The programmer still has to guess the kind of mistake and the fix.",
             "This note explains the problem we are working on. Later notes will describe the files, the knowledge book, the search, and the scores. Those pieces are not built in this note.",
         ],
+        "principle": [
+            "The first idea was this: a vulnerability finding is useful only if a programmer can check it. A bare yes or no cannot be checked. A named weakness, the lines involved, and a fix can be checked.",
+            "We also started from a second idea. The name of the weakness should come from a public list, not from a private label we invent. CWE is that list. If the note says CWE-89, anyone can open the CWE page and see whether our explanation matches it.",
+        ],
+        "why": [
+            "We did not start by trying to beat published detectors. Other systems already combine search, agents, and CWE catalogs. A higher score on a famous test set would not, by itself, explain a bug to a person.",
+            "We limited the study to six Java weaknesses that show up in ordinary web and enterprise code: database queries, web pages, file paths, saved objects, passwords written in source, and weak cryptography. Six is small enough to explain carefully. It is not a claim that other bugs do not matter.",
+            "Java was chosen because the public teaching suites and the industry-style suites we can later measure are in Java. Starting with many languages would have mixed the question before we knew whether the explanation itself was sound.",
+        ],
         "did": [
             "We want a tool that reads a short Java method and writes a note a person can check.",
             "The note should say four things: whether the code is unsafe, which weakness it is, which lines matter, and how to fix it.",
@@ -222,7 +231,7 @@ REPORTS: list[dict] = [
         "table_note": "These six are the whole scope. A different kind of bug is outside this project, and we will not relabel it to force a match.",
         "outro": [
             "The next piece of work is a small set of Java examples, half unsafe and half safe, so the idea can be tried on real files.",
-            "Until those files exist, there is nothing to score.",
+            "Until those files exist, there is nothing to score. The conclusion of this note is only the question: Java in, a checkable CWE note out.",
         ],
         "not_claim": "This note has no test scores. It does not say the tool is better than any other scanner.",
     },
@@ -233,6 +242,15 @@ REPORTS: list[dict] = [
         "intro": [
             "The aim is a Java tool that explains a weakness in plain words, using a CWE name. This note is only about the first files and a very simple checker.",
             "Nothing here is a public benchmark. Juliet and OWASP are larger test sets used by other people. We have not used them yet.",
+        ],
+        "principle": [
+            "Before any model, we needed a set of files whose correct answers we already knew. If we cannot score a tiny set, we cannot trust a score on a large set.",
+            "The set had to contain both unsafe and safe code. A checker that flags everything looks perfect if every file is unsafe. Safe files are what reveal false alarms.",
+        ],
+        "why": [
+            "We wrote the files ourselves, two per weakness, instead of downloading Juliet on day one. We wanted the labels, the wording, and the split to be under our control while the plumbing was new.",
+            "We split 8 files for practice and 4 files held back. The held-back files are not a serious test. They only stop us from changing the patterns after seeing every example.",
+            "The first checker is a list of text patterns, not a program analyzer. We chose that on purpose. It is easy to explain, easy to score, and easy to beat later. If a later model cannot beat this simple checker, the model is not earning its cost.",
         ],
         "did": [
             "We wrote 12 short Java files, two for each of the six weaknesses: one unsafe and one safe. For example, one file builds a database query by sticking user text onto the query, and the paired file uses a safer call.",
@@ -256,7 +274,7 @@ REPORTS: list[dict] = [
         "table_note": "The score on all 12 files is precision 1.000, recall 1.000, F1 1.000. False alarms: 0. Missed bugs: 0.",
         "outro": [
             "The checker can say that a pattern fired. It still cannot explain the weakness in CWE words, because those words are not stored yet.",
-            "The next piece of work is a small book of CWE facts: the name, what goes wrong, and a fix.",
+            "The next piece of work is a small book of CWE facts: the name, what goes wrong, and a fix. The conclusion here is narrow: the pattern list matches the 12 files we wrote. It does not yet explain them.",
         ],
         "not_claim": "This perfect score is not evidence about real projects. These 12 files are not Juliet and not the OWASP Benchmark.",
     },
@@ -267,6 +285,15 @@ REPORTS: list[dict] = [
         "intro": [
             "We already have 12 short Java files and a pattern checker that matches them. That checker can raise an alarm. It cannot yet say the official name of the weakness or how to fix it.",
             "This note describes the book we store those facts in. It does not change the detection score.",
+        ],
+        "principle": [
+            "An explanation that the tool invents cannot be audited. The words for the weakness, the risk, and the fix should be stored facts that a reader can open and compare.",
+            "We treated the CWE book as a source of truth for names, not as a detector. The book does not look at Java. Something else has to decide which page to open.",
+        ],
+        "why": [
+            "We did not load the entire MITRE catalog. Most pages are unrelated to the six weaknesses, and a huge book makes search noisier. A subset is honest if we say it is a subset.",
+            "We kept parent and child links, not only the six exact ids. Public suites often use a nearby id, such as CWE-80 for a kind of cross-site scripting when our list says CWE-79. If the book has no neighbor pages, a correct nearby name looks like a hallucination.",
+            "Fixes are stored beside the description so the answer can suggest a repair. The book has no field for how to attack the code. That was a deliberate omission.",
         ],
         "did": [
             "CWE pages are published by MITRE. We do not copy the whole catalog. We keep the pages we need for the six weaknesses, plus some close neighbors, so a near miss can still be named.",
@@ -291,7 +318,7 @@ REPORTS: list[dict] = [
         "table_note": "This book is a subset. The full CWE list is much larger. We record that limit instead of pretending the book is complete.",
         "outro": [
             "The book can be queried by a person. The Java file does not search it by itself yet.",
-            "The next piece of work is to turn the risky part of a Java file into a question and find the best CWE pages for that question.",
+            "The next piece of work is to turn the risky part of a Java file into a question and find the best CWE pages for that question. The conclusion of this note is that names and fixes now have a source. Detection is unchanged.",
         ],
         "not_claim": "Storing the book does not make detection better. The score on the 12 practice files is unchanged.",
     },
@@ -302,6 +329,15 @@ REPORTS: list[dict] = [
         "intro": [
             "We have short Java examples, a pattern checker, and a small book of CWE facts. This note is about search: given some Java, which book page should we show.",
             "Search is not the same as detection. A good search finds the right weakness page. It does not, by itself, decide that the code is unsafe.",
+        ],
+        "principle": [
+            "If the model or the template is shown the wrong CWE page, the explanation will be fluent and wrong. So we measured search on its own, before we trusted it inside a full run.",
+            "We assumed that the words in the code are not the same as the words on the CWE page. A search that only shares exact words will miss some real matches. A search that only uses a neural model may miss an obvious id that the pattern checker already found.",
+        ],
+        "why": [
+            "We compared three setups rather than picking one. Word match is the simple baseline. MiniLM is a small meaning model that can run locally. The mix adds the pattern checker's hinted id and one hop along parent and child links.",
+            "The questions are the 18 practice items whose correct CWE we already know. We did not use Juliet here. A search score on our own questions only tells us whether the book can be retrieved. It does not tell us whether bugs are found.",
+            "We record which model actually ran. If MiniLM cannot be downloaded, the system falls back to word match. Hiding that fallback would make a later score look like a neural result when it was not.",
         ],
         "did": [
             "We wrote 18 labeled questions from the practice files. Each question has a known right CWE. We then ask three searches to rank the book.",
@@ -325,7 +361,7 @@ REPORTS: list[dict] = [
         "table_note": "R@1 is not a detection score. It only says whether the correct CWE page was ranked first. These 18 questions come from our own files.",
         "outro": [
             "We can now retrieve a page. We still do not have one fixed shape for the written answer, so two runs could look different.",
-            "The next piece of work is a single answer form: decision, CWE, lines, cause, explanation, and fix.",
+            "The next piece of work is a single answer form: decision, CWE, lines, cause, explanation, and fix. The conclusion here is that meaning match finds the right page more often than word match on these 18 questions, and the mix did not improve that first-hit rate further.",
         ],
         "not_claim": "This is not a public benchmark. A high R@1 here does not mean the tool finds bugs in Juliet or in real projects.",
     },
@@ -336,6 +372,15 @@ REPORTS: list[dict] = [
         "intro": [
             "We can mark risky lines, and we can search the CWE book. What was missing was a single shape for the written answer. Without that, two runs cannot be compared.",
             "This note describes that form. It does not add a new detection score.",
+        ],
+        "principle": [
+            "Two systems can only be compared if they answer in the same shape. If one system returns a paragraph and another returns a JSON object with different fields, a table of scores is hiding a change in the question.",
+            "The form is also a safety boundary. If the answer may contain any extra text, a model can drift into writing an attack. A closed form with no payload field makes that drift fail the check.",
+        ],
+        "why": [
+            "We required a decision, a CWE id and name, cited lines, a cause, an explanation, and a fix. We allowed three decisions: unsafe, safe, and not sure. Not sure exists so the system can abstain instead of guessing.",
+            "Line numbers start at 1 because that is how a person counts lines in an editor. A citation that cannot be found in the file is a failed answer, even if the decision happens to be right.",
+            "We check the form with a schema, which is a machine-readable contract, plus a few extra rules: the CWE must be in our book, and the cited snippet must occur in the file. We do not require the decision to agree with the pattern checker. Agreement is not the same as truth.",
         ],
         "did": [
             "Every answer must fill the same fields. If a required field is missing, or if the text is not valid JSON, the answer is rejected.",
@@ -362,7 +407,7 @@ REPORTS: list[dict] = [
         "table_note": "The form is strict on purpose. Extra fields are not allowed, so the answer cannot hide an exploit in an extra box.",
         "outro": [
             "The pieces now exist separately: files, a checker, a book, search, and a form.",
-            "The next piece of work is to run them in one order, still without calling a paid model.",
+            "The next piece of work is to run them in one order, still without calling a paid model. The conclusion of this note is a contract, not a score: every later system must fill this form, and a broken form is a failed run.",
         ],
         "not_claim": "A valid form is not a correct decision. The checker can still be wrong about whether the code is unsafe.",
     },
@@ -373,6 +418,15 @@ REPORTS: list[dict] = [
         "intro": [
             "The separate pieces are a pattern checker, a CWE book, search, and a fixed answer form. This note connects them into one run.",
             "No paid language model is used here. A template fills the form from the evidence. That template is a stand-in, so we can test the plumbing.",
+        ],
+        "principle": [
+            "A pipeline should be testable before it is expensive. If the steps are wired wrongly, a live model will hide the bug behind fluent text and a bill.",
+            "We also separated evidence from decision. The pattern checker is good at pointing at a line. It is bad at knowing whether that line is really a bug. Letting it both point and decide would freeze the weak checker into the final answer.",
+        ],
+        "why": [
+            "The order is fixed: mark lines, search the book using those lines, write the form, then check the form. Search uses the risky lines rather than the top of the file, because the top of a file is often imports and comments, not the bug.",
+            "The template is deterministic. Given the same evidence, it writes the same form. That makes failures reproducible. A live model is not reproducible in the same way, so it comes later.",
+            "We save a confidence number as a weighted mix of the model's confidence, the search strength, whether the checker agrees, and whether the form passed. We do not route on it. A number we have not calibrated is not a reason to skip the model or to trust the answer.",
         ],
         "did": [
             "The run always starts by marking risky lines. Those marks are evidence. They include the file, the line numbers, and a short reason. They are not the final yes or no.",
@@ -397,7 +451,7 @@ REPORTS: list[dict] = [
         "table_note": "On the four held-back practice files, this template path still matches the labels. That only repeats the easy result from the tiny set. It is not a new public score.",
         "outro": [
             "The path is runnable from a command. The written note is still coming from rules, not from a model that can read a harder example.",
-            "The next piece of work is a set of files written to fool the pattern checker, and a live model that has to explain them.",
+            "The next piece of work is a set of files written to fool the pattern checker, and a live model that has to explain them. The conclusion here is that the path runs and the form can be checked. The template is a control, not a result we will defend.",
         ],
         "not_claim": "The template is not the system we want to rely on. A saved confidence number is not a real probability.",
     },
@@ -408,6 +462,15 @@ REPORTS: list[dict] = [
         "intro": [
             "The pipeline can already mark lines, search the CWE book, fill the answer form, and check that form. On our first 12 files the simple checker looked perfect, because those files were easy.",
             "This note is about 24 harder files we wrote on purpose, and about a live language model. These files are still ours. They are not a public test set.",
+        ],
+        "principle": [
+            "A checker that scores perfectly on files written to match its patterns has not been tested. It has been confirmed. The next honest test is a set designed so those patterns fail.",
+            "We expected the pattern checker and the template, which follows the patterns, to score near zero. We expected a model that reads the method to do better. If the model did not do better, there would be no reason to pay for it.",
+        ],
+        "why": [
+            "We wrote the traps ourselves: safe code that looks dangerous, and unsafe code that looks quiet. That is a harsh test for our checker. It is also an easy test for a model that has seen similar lessons. We say both things.",
+            "Before the model sees the file, comments are blanked and names such as bad and good are renamed. The reason is scientific, not cosmetic. If the label is inside the question, a high score measures copying, not judgment.",
+            "We also ran the model with search turned off, on the same 24 files. That is the comparison that tells us whether the CWE pages changed the decision. We decided in advance that we would not claim \"search helps\" unless the no-search score was worse.",
         ],
         "did": [
             "Twelve of the new files are unsafe but quiet. Twelve are safe but look risky, often because a comment or a name mentions a flaw. A pattern checker that hunts for those words will get both kinds wrong.",
@@ -432,7 +495,7 @@ REPORTS: list[dict] = [
         "table_note": "The live model caught every unsafe file in this set and was wrong on 2 safe files. Precision is 0.857 and recall is 1.000. Those two numbers combine into F1 0.923.",
         "outro": [
             "This is a useful contrast: rules fail, the model mostly recovers. It is not a public result.",
-            "The next measurement should be the simple checker on named public Java sets, reported separately from these 24 files.",
+            "The next measurement should be the simple checker on named public Java sets, reported separately from these 24 files. The conclusion here is a contrast, not a public claim: rules fail these traps, the live model mostly recovers, and the CWE pages did not change the detection score.",
         ],
         "not_claim": "These 24 files are not Juliet. We do not say that CWE search improves detection.",
     },
@@ -443,6 +506,15 @@ REPORTS: list[dict] = [
         "intro": [
             "Our own 24 hard files showed that a live model can recover cases the pattern checker misses. Those files were written by us, so they are not enough.",
             "This note reports the same simple checker on six public Java sets that other people published. The live-model numbers on these sets are not in the table, and the reason is below.",
+        ],
+        "principle": [
+            "A result on files we wrote can show that the system runs. It cannot show that the system works on code we did not write. Public suites are the check against that bias.",
+            "We also started from a rule we had already broken once: the question must not contain the answer. Any model score gathered before that rule was enforced is not usable, even if the number looks interesting.",
+        ],
+        "why": [
+            "We chose six named sets rather than one, because one suite has one style. Juliet is teaching code. OWASP Benchmark is a scored suite. Securibench is small servlet examples. Find Security Bugs is detector test code. Vul4J and the CVEfixes slice are closer to real fixes. Together they show a range. Together they are still not \"all Java\".",
+            "We scored the pattern checker on the full ingested sets, and we did not relabel nearby CWE ids to match our six. A missing weakness is reported as not present. Relabeling would invent recall.",
+            "The earlier live-model samples on these sets are withdrawn. The prompts still contained tokens such as method_bad, FLAW comments, or real=true. Those tokens tell the model the label. Quoting those F1 numbers would repeat a contaminated experiment.",
         ],
         "did": [
             "Juliet is a large teaching suite from NIST. OWASP Benchmark is a scored Java suite. Securibench Micro is a small set of servlet examples. Find Security Bugs contributes detector test code. Vul4J and the CVEfixes slice are closer to real project bugs, but we only keep the Java files that match the weaknesses we study.",
@@ -469,7 +541,7 @@ REPORTS: list[dict] = [
         "table_note": "Read each row on its own. Do not average them into one project score. Do not mix them with the 0.923 score on our 24 files.",
         "outro": [
             "The pattern checker is weak on public code. That is a real result, and it is the fair baseline.",
-            "The next measurement is a live-model score on Juliet after the giveaway words are hidden. We will use matched unsafe and safe files, not a single mixed file.",
+            "The next measurement is a live-model score on Juliet after the giveaway words are hidden. We will use matched unsafe and safe files, not a single mixed file. The conclusion of this note is that the pattern checker is weak on public code, and the old model samples cannot be saved.",
         ],
         "not_claim": "Do not quote the withdrawn model scores. The simple checker is not CodeQL and not a commercial product.",
     },
@@ -480,6 +552,15 @@ REPORTS: list[dict] = [
         "intro": [
             "Juliet is a large public Java suite. The simple checker scores 0.316 there. An earlier model score on Juliet was withdrawn because the question showed the answer.",
             "This note is the replacement. The model sees cleaned code. Comments that say \"flaw\" are blanked, and obvious names such as bad and good are renamed. The true label is used only when we score the answer, not when we ask the question.",
+        ],
+        "principle": [
+            "A file-level score can reward a model that says \"unsafe\" almost every time. Juliet is built as matched lessons: one bad version and one good version. The fair question is whether the model can tell those two apart.",
+            "We also refused to treat a stopped run as a finished run. If the token limit cuts a file, that file is missing data. It is not a wrong answer, and it is not a right answer.",
+        ],
+        "why": [
+            "A pair is correct only when the bad file is called unsafe and the good file is called safe. \"Not sure\" fails the pair. We would rather count an abstention as a miss for the pair than quietly turn it into a safe decision.",
+            "We sampled three pairs per weakness family that Juliet actually contains, with a fixed seed so another person can draw the same files. We left out the multi-file flow variants, because the risky line often sits in a second file the model never sees. Scoring those would measure a missing file, not the model.",
+            "Seventeen pairs is small, so we resampled the 17 outcomes a thousand times and reported the middle 95 percent of those repeats. That range is the honest uncertainty. A single 0.529 without a range would look more precise than the sample allows.",
         ],
         "did": [
             "A Juliet pair is one unsafe file and the matching safe file. The model is right only if it calls the bad file unsafe and the good file safe. If it says \"not sure\" on either file, the pair is wrong.",
@@ -505,7 +586,7 @@ REPORTS: list[dict] = [
         "table_note": "Use 9 of 17, with the range, when talking about Juliet. Do not replace it with the 0.789 file-level F1, and do not mix it with the 0.923 score on our own 24 files.",
         "outro": [
             "This is the public model number we can defend today. It is modest, and the range is wide.",
-            "We still have not run these same pairs with CWE search turned off. Until that run exists, we cannot say whether the book helps on Juliet. A local screen for running these tests is the practical next step, together with that missing comparison.",
+            "We still have not run these same pairs with CWE search turned off. Until that run exists, we cannot say whether the book helps on Juliet. The conclusion we can defend is the pair score itself: 9 of 17, with a wide range, on cleaned single-file examples, with one pair unfinished because the run stopped.",
         ],
         "not_claim": "We do not say that CWE search helps on Juliet. We do not say this is the best published detector.",
     },
@@ -516,6 +597,15 @@ REPORTS: list[dict] = [
         "intro": [
             "The tool can explain a Java method with a CWE page, and we have scores: a perfect score only on 12 practice files, a 0.923 score on 24 hard files we wrote, modest pattern-checker scores on six public sets, and a Juliet pair score of 9 out of 17.",
             "This note is about using that tool without memorizing commands, and about the tests that are still not done. It does not add a new score.",
+        ],
+        "principle": [
+            "A result that only the author can rerun is weaker than a result someone else can rerun. The screen, the stored test sets, and the tests that run on every push are there so the path is not trapped in one person's terminal history.",
+            "We also kept a rule from the experiments: a missing run stays missing. The screen must not invent a Juliet score when the key is absent or the token limit hits.",
+        ],
+        "why": [
+            "The page calls the same functions as the command line. A second implementation would drift. The page even shows the command it is about to run, so a result can be tied back to a line in a note.",
+            "It binds only to this computer. There is no login because there is no network service. Putting the pipeline on the open internet would be a different project, with authentication and abuse questions we have not studied.",
+            "The benchmarks are stored at the same commits we measured. A newer download could change file counts and silently change a score. Pinning the files is how we keep the tables stable.",
         ],
         "did": [
             "A web page on this computer lists the test sets, the settings, and a token budget. Starting a job runs the same code as the command line. The page shows the exact command before the job starts, so the run can be repeated later.",
@@ -541,7 +631,7 @@ REPORTS: list[dict] = [
         "table_note": "Empty explanation labels stay empty. We will not fill them in to make the table look finished, and we have no agreement score between two people.",
         "outro": [
             "Anyone with the project can open the page, pick an offline run, and see a note. A live run still needs a Groq key and the daily token budget.",
-            "The honest summary is unchanged by this screen: the model helps on our hard examples, the pattern checker is weak on public code, and the Juliet pair score is 9 of 17 with a wide range.",
+            "The honest summary is unchanged by this screen: the model helps on our hard examples, the pattern checker is weak on public code, and the Juliet pair score is 9 of 17 with a wide range. The conclusion of this note is operational. The science stops where the table of open items begins.",
         ],
         "not_claim": "A screen is not a new scientific result. We still do not say that CWE search improves Juliet detection.",
     },
@@ -590,17 +680,16 @@ def _build(report: dict, figure: Path) -> Document:
     _add_text(doc, WHO, size=11, color=RGBColor(0x5C, 0x56, 0x4C), space_after=2)
     _add_text(doc, report["name"], size=16, bold=True, color=RGBColor(0x1C, 0x19, 0x15), space_after=6)
 
-    _add_text(doc, "Where this fits", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
-    for sentence in report["intro"]:
-        _add_text(doc, sentence, size=12, space_after=4)
+    def section(title: str, sentences: list[str]) -> None:
+        _add_text(doc, title, size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
+        for sentence in sentences:
+            _add_text(doc, sentence, size=12, space_after=4)
 
-    _add_text(doc, "What we did", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
-    for sentence in report["did"]:
-        _add_text(doc, sentence, size=12, space_after=4)
-
-    _add_text(doc, "A concrete example", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
-    for sentence in report["example"]:
-        _add_text(doc, sentence, size=12, space_after=4)
+    section("Where this fits", report["intro"])
+    section("The idea we started with", report["principle"])
+    section("Why we chose this way", report["why"])
+    section("What we actually did", report["did"])
+    section("A concrete example", report["example"])
 
     _add_text(doc, "Picture", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
     doc.add_picture(str(figure), width=Inches(6.4))
@@ -622,11 +711,8 @@ def _build(report: dict, figure: Path) -> Document:
             _set_run(cells[index].paragraphs[0].add_run(), value, size=11)
 
     _add_text(doc, report["table_note"], size=12, space_after=6)
-    _add_text(doc, "Closing", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
-    for sentence in report["outro"]:
-        _add_text(doc, sentence, size=12, space_after=4)
-    _add_text(doc, "What we are not saying", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=2)
-    _add_text(doc, report["not_claim"], size=12, space_after=2)
+    section("What we concluded, and why", report["outro"])
+    section("What we are not saying", [report["not_claim"]])
     return doc
 
 
@@ -650,18 +736,17 @@ def write_pdf(report: dict, figure: Path) -> tuple[Path, int]:
     pdf.ln(1)
     say(report["name"], 16, bold=True, height=8)
     pdf.ln(1)
-    say("Where this fits", 13, bold=True, color=(27, 58, 75), height=7)
-    for sentence in report["intro"]:
-        say(sentence, 12)
-        pdf.ln(1)
-    say("What we did", 13, bold=True, color=(27, 58, 75), height=7)
-    for sentence in report["did"]:
-        say(sentence, 12)
-        pdf.ln(1)
-    say("A concrete example", 13, bold=True, color=(27, 58, 75), height=7)
-    for sentence in report["example"]:
-        say(sentence, 12)
-        pdf.ln(1)
+    def block(title: str, sentences: list[str]) -> None:
+        say(title, 13, bold=True, color=(27, 58, 75), height=7)
+        for sentence in sentences:
+            say(sentence, 12)
+            pdf.ln(1)
+
+    block("Where this fits", report["intro"])
+    block("The idea we started with", report["principle"])
+    block("Why we chose this way", report["why"])
+    block("What we actually did", report["did"])
+    block("A concrete example", report["example"])
     pdf.ln(1)
     say("Picture", 13, bold=True, color=(27, 58, 75), height=7)
     pdf.image(str(figure), w=160)
@@ -682,12 +767,8 @@ def write_pdf(report: dict, figure: Path) -> tuple[Path, int]:
     pdf.ln(2)
     say(report["table_note"], 12)
     pdf.ln(2)
-    say("Closing", 13, bold=True, color=(27, 58, 75), height=7)
-    for sentence in report["outro"]:
-        say(sentence, 12)
-        pdf.ln(1)
-    say("What we are not saying", 13, bold=True, color=(27, 58, 75), height=7)
-    say(report["not_claim"], 12)
+    block("What we concluded, and why", report["outro"])
+    block("What we are not saying", [report["not_claim"]])
     dest = OUT / f"{report['slug']}_RichaVerma_25MCSS02.pdf"
     pages = len(pdf.pages)
     pdf.output(dest)
@@ -698,7 +779,8 @@ def write_readme() -> None:
     lines = [
         "# Progress reports for the mentor",
         "",
-        "Ten separate notes. Each one can be read on its own. The opening and the closing connect it to the work around it.",
+        "Ten separate notes. Each one can be read on its own.",
+        "Each note follows the same path: the idea we started with, why we chose that way, what we did, one example, the numbers, and the conclusion those numbers support.",
         "The Word file is the one to edit. The PDF has the same words and the same picture, for sending.",
         "",
         "Student: Richa Verma (25MCSS02). Advisor: Dr. Akshay Pandey.",
