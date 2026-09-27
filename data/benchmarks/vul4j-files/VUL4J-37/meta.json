@@ -1,0 +1,43 @@
+{
+  "vul_id": "VUL4J-37",
+  "cwe_id": "CWE-502",
+  "slug": "apache/tomee",
+  "sha": "58cdbbef9c77ab2b44870f9d606593b49cde76d9",
+  "files": [
+    {
+      "path": "arquillian/arquillian-tomee-common/src/main/java/org/apache/openejb/arquillian/common/Setup.java",
+      "vuln": "arquillian__arquillian-tomee-common__src__main__java__org__apache__openejb__arquillian__common__Setup.java.vuln.java",
+      "fixed": "arquillian__arquillian-tomee-common__src__main__java__org__apache__openejb__arquillian__common__Setup.java.fixed.java"
+    },
+    {
+      "path": "arquillian/arquillian-tomee-common/src/main/java/org/apache/openejb/arquillian/common/TomEEConfiguration.java",
+      "vuln": "arquillian__arquillian-tomee-common__src__main__java__org__apache__openejb__arquillian__common__TomEEConfiguration.java.vuln.java",
+      "fixed": "arquillian__arquillian-tomee-common__src__main__java__org__apache__openejb__arquillian__common__TomEEConfiguration.java.fixed.java"
+    },
+    {
+      "path": "arquillian/arquillian-tomee-embedded/src/main/java/org/apache/openejb/arquillian/embedded/EmbeddedTomEEConfiguration.java",
+      "vuln": "arquillian__arquillian-tomee-embedded__src__main__java__org__apache__openejb__arquillian__embedded__EmbeddedTomEEConfiguration.java.vuln.java",
+      "fixed": "arquillian__arquillian-tomee-embedded__src__main__java__org__apache__openejb__arquillian__embedded__EmbeddedTomEEConfiguration.java.fixed.java"
+    },
+    {
+      "path": "container/openejb-core/src/main/java/org/apache/openejb/core/rmi/BlacklistClassResolver.java",
+      "vuln": "container__openejb-core__src__main__java__org__apache__openejb__core__rmi__BlacklistClassResolver.java.vuln.java",
+      "fixed": "container__openejb-core__src__main__java__org__apache__openejb__core__rmi__BlacklistClassResolver.java.fixed.java"
+    },
+    {
+      "path": "container/openejb-core/src/test/java/org/apache/openejb/core/rmi/BlacklistClassResolverTest.java",
+      "vuln": "container__openejb-core__src__test__java__org__apache__openejb__core__rmi__BlacklistClassResolverTest.java.vuln.java",
+      "fixed": "container__openejb-core__src__test__java__org__apache__openejb__core__rmi__BlacklistClassResolverTest.java.fixed.java"
+    },
+    {
+      "path": "server/openejb-client/src/main/java/org/apache/openejb/client/EjbObjectInputStream.java",
+      "vuln": "server__openejb-client__src__main__java__org__apache__openejb__client__EjbObjectInputStream.java.vuln.java",
+      "fixed": "server__openejb-client__src__main__java__org__apache__openejb__client__EjbObjectInputStream.java.fixed.java"
+    },
+    {
+      "path": "tomee/tomee-common/src/main/java/org/apache/tomee/installer/Installer.java",
+      "vuln": "tomee__tomee-common__src__main__java__org__apache__tomee__installer__Installer.java.vuln.java",
+      "fixed": "tomee__tomee-common__src__main__java__org__apache__tomee__installer__Installer.java.fixed.java"
+    }
+  ]
+}

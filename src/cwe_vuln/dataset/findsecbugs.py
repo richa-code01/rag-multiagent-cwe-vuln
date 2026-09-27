@@ -23,9 +23,11 @@ from cwe_vuln.dataset.seed import SeedUnit
 SUITE = "find-sec-bugs"
 GITHUB = "https://github.com/find-sec-bugs/find-sec-bugs.git"
 SAMPLES = Path("findsecbugs-samples-java/src/test/java/testcode")
+PINNED_COMMIT = "90447f7e39e529c31cf098ebade0a755b944dd91"
+LICENSE_PATHS = ["README.md", "LICENSE", "LICENSE.md", "license-header.txt"]
 LICENSE_NOTE = (
-    "Find Security Bugs plugin samples (LGPL-style SpotBugs plugin project). "
-    "Test-code is for detector tests, not a scored AST benchmark CSV."
+    "Find Security Bugs plugin samples (LGPL). Test-code is vendored for reproduction. "
+    "See data/benchmarks/NOTICES.md."
 )
 
 # Directory (posix prefix under testcode/) → gold CWE. Do not ingest other families.
@@ -75,12 +77,12 @@ def ensure_findsecbugs(root: Path | None = None) -> dict[str, Any]:
             "source_url": GITHUB,
             "downloaded_at": utc_now(),
             "method": "cached",
-            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else "",
+            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else PINNED_COMMIT,
             "license_note": LICENSE_NOTE,
         }
         write_json(provenance_path(root), prov)
         return prov
-    commit = sparse_clone(GITHUB, dest, [str(SAMPLES), "README.md"])
+    commit = sparse_clone(GITHUB, dest, [str(SAMPLES), *LICENSE_PATHS], rev=PINNED_COMMIT)
     prov = {
         "suite": SUITE,
         "source_url": GITHUB,

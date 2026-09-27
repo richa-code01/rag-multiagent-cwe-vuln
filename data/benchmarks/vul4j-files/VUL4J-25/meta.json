@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-25",
+  "cwe_id": "CWE-79",
+  "slug": "apache/sling-org-apache-sling-xss",
+  "sha": "ec6764d165abc4df8cffd8439761bb2228887db9",
+  "files": [
+    {
+      "path": "src/main/java/org/apache/sling/xss/impl/XSSAPIImpl.java",
+      "vuln": "src__main__java__org__apache__sling__xss__impl__XSSAPIImpl.java.vuln.java",
+      "fixed": "src__main__java__org__apache__sling__xss__impl__XSSAPIImpl.java.fixed.java"
+    },
+    {
+      "path": "src/test/java/org/apache/sling/xss/impl/XSSAPIImplTest.java",
+      "vuln": "src__test__java__org__apache__sling__xss__impl__XSSAPIImplTest.java.vuln.java",
+      "fixed": "src__test__java__org__apache__sling__xss__impl__XSSAPIImplTest.java.fixed.java"
+    }
+  ]
+}

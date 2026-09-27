@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-77",
+  "cwe_id": "CWE-502",
+  "slug": "swagger-api/swagger-parser",
+  "sha": "4c6584306b40de9b2dfa9065c3a438cd918534af",
+  "files": [
+    {
+      "path": "modules/swagger-parser/src/main/java/io/swagger/parser/util/DeserializationUtils.java",
+      "vuln": "modules__swagger-parser__src__main__java__io__swagger__parser__util__DeserializationUtils.java.vuln.java",
+      "fixed": "modules__swagger-parser__src__main__java__io__swagger__parser__util__DeserializationUtils.java.fixed.java"
+    }
+  ]
+}

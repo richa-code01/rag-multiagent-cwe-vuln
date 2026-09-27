@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-18",
+  "cwe_id": "CWE-22",
+  "slug": "apache/jspwiki",
+  "sha": "88d89d6523802c044cfcb7930cba40d8eeb21da2",
+  "files": [
+    {
+      "path": "jspwiki-main/src/main/java/org/apache/wiki/url/DefaultURLConstructor.java",
+      "vuln": "jspwiki-main__src__main__java__org__apache__wiki__url__DefaultURLConstructor.java.vuln.java",
+      "fixed": "jspwiki-main__src__main__java__org__apache__wiki__url__DefaultURLConstructor.java.fixed.java"
+    }
+  ]
+}

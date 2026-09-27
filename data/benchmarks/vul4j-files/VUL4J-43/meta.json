@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-43",
+  "cwe_id": "CWE-22",
+  "slug": "eclipse/rdf4j",
+  "sha": "df15a4d7a8f2789c043b27c9eafe1b30316cfa79",
+  "files": [
+    {
+      "path": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java",
+      "vuln": "util__src__main__java__org__eclipse__rdf4j__common__io__ZipUtil.java.vuln.java",
+      "fixed": "util__src__main__java__org__eclipse__rdf4j__common__io__ZipUtil.java.fixed.java"
+    }
+  ]
+}

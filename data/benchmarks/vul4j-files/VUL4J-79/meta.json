@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-79",
+  "cwe_id": "CWE-22",
+  "slug": "zeroturnaround/zt-zip",
+  "sha": "759b72f33bc8f4d69f84f09fcb7f010ad45d6fff",
+  "files": [
+    {
+      "path": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+      "vuln": "src__main__java__org__zeroturnaround__zip__ZipUtil.java.vuln.java",
+      "fixed": "src__main__java__org__zeroturnaround__zip__ZipUtil.java.fixed.java"
+    }
+  ]
+}

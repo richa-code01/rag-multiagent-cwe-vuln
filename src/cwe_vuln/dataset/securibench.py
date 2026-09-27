@@ -24,7 +24,12 @@ from cwe_vuln.dataset.seed import SeedUnit
 SUITE = "securibench-micro"
 GITHUB = "https://github.com/too4words/securibench-micro.git"
 MICRO = Path("src/securibench/micro")
-LICENSE_NOTE = "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro)."
+PINNED_COMMIT = "6a5a72488ea830d99f9464fc1f0562c4f864214b"
+LICENSE_PATHS = ["README.md", "LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING"]
+LICENSE_NOTE = (
+    "Apache-2.0 (Copyright 2006 Benjamin Livshits / Stanford Securibench Micro). "
+    "The scored slice is vendored under data/benchmarks/. See data/benchmarks/NOTICES.md."
+)
 SKIP_NAMES = {"BasicTestCase.java", "MicroTestCase.java"}
 DESC = re.compile(r'@servlet description\s*=\s*"([^"]+)"')
 VULN_DOC = re.compile(r'@servlet vuln_count\s*=\s*"(\d+)"')
@@ -52,12 +57,12 @@ def ensure_securibench(root: Path | None = None) -> dict[str, Any]:
             "source_url": GITHUB,
             "downloaded_at": utc_now(),
             "method": "cached",
-            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else "",
+            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else PINNED_COMMIT,
             "license_note": LICENSE_NOTE,
         }
         write_json(provenance_path(root), prov)
         return prov
-    commit = sparse_clone(GITHUB, dest, [str(MICRO), "README.md"])
+    commit = sparse_clone(GITHUB, dest, [str(MICRO), *LICENSE_PATHS], rev=PINNED_COMMIT)
     prov = {
         "suite": SUITE,
         "source_url": GITHUB,

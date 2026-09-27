@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-76",
+  "cwe_id": "CWE-22",
+  "slug": "square/retrofit",
+  "sha": "b9a7f6ad72073ddd40254c0058710e87a073047d",
+  "files": [
+    {
+      "path": "retrofit/src/main/java/retrofit2/RequestBuilder.java",
+      "vuln": "retrofit__src__main__java__retrofit2__RequestBuilder.java.vuln.java",
+      "fixed": "retrofit__src__main__java__retrofit2__RequestBuilder.java.fixed.java"
+    },
+    {
+      "path": "retrofit/src/test/java/retrofit2/RequestFactoryTest.java",
+      "vuln": "retrofit__src__test__java__retrofit2__RequestFactoryTest.java.vuln.java",
+      "fixed": "retrofit__src__test__java__retrofit2__RequestFactoryTest.java.fixed.java"
+    }
+  ]
+}

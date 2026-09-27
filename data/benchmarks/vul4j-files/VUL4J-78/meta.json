@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-78",
+  "cwe_id": "CWE-502",
+  "slug": "x-stream/xstream",
+  "sha": "f38a1da3ae9491930c2067c12cd2506738b21dab",
+  "files": [
+    {
+      "path": "xstream/src/java/com/thoughtworks/xstream/XStream.java",
+      "vuln": "xstream__src__java__com__thoughtworks__xstream__XStream.java.vuln.java",
+      "fixed": "xstream__src__java__com__thoughtworks__xstream__XStream.java.fixed.java"
+    },
+    {
+      "path": "xstream/src/test/com/thoughtworks/acceptance/SecurityVulnerabilityTest.java",
+      "vuln": "xstream__src__test__com__thoughtworks__acceptance__SecurityVulnerabilityTest.java.vuln.java",
+      "fixed": "xstream__src__test__com__thoughtworks__acceptance__SecurityVulnerabilityTest.java.fixed.java"
+    }
+  ]
+}

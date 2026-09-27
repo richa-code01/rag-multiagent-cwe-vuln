@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-65",
+  "cwe_id": "CWE-22",
+  "slug": "OpenRefine/OpenRefine",
+  "sha": "e243e73e4064de87a913946bd320fbbe246da656",
+  "files": [
+    {
+      "path": "main/src/com/google/refine/importing/ImportingUtilities.java",
+      "vuln": "main__src__com__google__refine__importing__ImportingUtilities.java.vuln.java",
+      "fixed": "main__src__com__google__refine__importing__ImportingUtilities.java.fixed.java"
+    },
+    {
+      "path": "main/tests/server/src/com/google/refine/tests/importing/ImportingUtilitiesTests.java",
+      "vuln": "main__tests__server__src__com__google__refine__tests__importing__ImportingUtilitiesTests.java.vuln.java",
+      "fixed": "main__tests__server__src__com__google__refine__tests__importing__ImportingUtilitiesTests.java.fixed.java"
+    }
+  ]
+}

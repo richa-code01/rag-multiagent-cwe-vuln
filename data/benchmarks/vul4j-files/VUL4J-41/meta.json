@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-41",
+  "cwe_id": "CWE-22",
+  "slug": "codehaus-plexus/plexus-archiver",
+  "sha": "58bc24e465c0842981692adbf6d75680298989de",
+  "files": [
+    {
+      "path": "src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java",
+      "vuln": "src__main__java__org__codehaus__plexus__archiver__AbstractUnArchiver.java.vuln.java",
+      "fixed": "src__main__java__org__codehaus__plexus__archiver__AbstractUnArchiver.java.fixed.java"
+    },
+    {
+      "path": "src/test/java/org/codehaus/plexus/archiver/zip/ZipUnArchiverTest.java",
+      "vuln": "src__test__java__org__codehaus__plexus__archiver__zip__ZipUnArchiverTest.java.vuln.java",
+      "fixed": "src__test__java__org__codehaus__plexus__archiver__zip__ZipUnArchiverTest.java.fixed.java"
+    }
+  ]
+}

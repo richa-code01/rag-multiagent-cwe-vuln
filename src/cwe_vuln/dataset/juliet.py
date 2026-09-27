@@ -31,6 +31,7 @@ NIST_ZIP_URL = (
 NIST_SHA256 = "d985f4177c2bcd7b03455a05c1c8f2e755f55c9eb250accd052f05f877347e60"
 JULIET_VERSION = "1.3"
 GITHUB_REPO = "https://github.com/find-sec-bugs/juliet-test-suite.git"
+PINNED_COMMIT = "b2c6df3733e2176fe7097e4784895c6891632b4c"
 SAMPLE_SEED = 13
 DEFAULT_PER_CWE = 20
 # Live Groq sample uses these gold ids only; remaining ingested ids are SAST-only.
@@ -399,6 +400,7 @@ def _clone_github(dest: Path) -> JulietProvenance:
     dest.mkdir(parents=True)
     folders = [f"src/testcases/{name}" for _cwe, name, _role in INGEST_FOLDERS]
     folders.append("src/testcasesupport")
+    folders.extend(["README.md", "LICENSE", "LICENSE.md"])
     cmd = [
         "git",
         "clone",
@@ -410,7 +412,30 @@ def _clone_github(dest: Path) -> JulietProvenance:
         str(dest),
     ]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
-    sparse = ["git", "-C", str(dest), "sparse-checkout", "set", *folders]
+    head = subprocess.run(
+        ["git", "-C", str(dest), "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if head != PINNED_COMMIT:
+        fetched = subprocess.run(
+            ["git", "-C", str(dest), "fetch", "--depth", "1", "origin", PINNED_COMMIT],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if fetched.returncode != 0:
+            raise JulietError(
+                f"could not fetch Juliet commit {PINNED_COMMIT}: {(fetched.stderr or fetched.stdout).strip()}"
+            )
+        subprocess.run(
+            ["git", "-C", str(dest), "checkout", "--detach", PINNED_COMMIT],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    sparse = ["git", "-C", str(dest), "sparse-checkout", "set", "--skip-checks", *folders]
     subprocess.run(sparse, check=True, capture_output=True, text=True)
     rev = subprocess.run(
         ["git", "-C", str(dest), "rev-parse", "HEAD"],

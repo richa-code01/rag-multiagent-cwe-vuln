@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-59",
+  "cwe_id": "CWE-79",
+  "slug": "jhy/jsoup",
+  "sha": "4edb78991f8d0bf87dafde5e01ccd8922065c9b2",
+  "files": [
+    {
+      "path": "src/main/java/org/jsoup/parser/TokeniserState.java",
+      "vuln": "src__main__java__org__jsoup__parser__TokeniserState.java.vuln.java",
+      "fixed": "src__main__java__org__jsoup__parser__TokeniserState.java.fixed.java"
+    },
+    {
+      "path": "src/test/java/org/jsoup/parser/XmlTreeBuilderTest.java",
+      "vuln": "src__test__java__org__jsoup__parser__XmlTreeBuilderTest.java.vuln.java",
+      "fixed": "src__test__java__org__jsoup__parser__XmlTreeBuilderTest.java.fixed.java"
+    }
+  ]
+}

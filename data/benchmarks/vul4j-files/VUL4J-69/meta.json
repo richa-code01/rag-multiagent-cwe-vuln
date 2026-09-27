@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-69",
+  "cwe_id": "CWE-22",
+  "slug": "spring-projects/spring-framework",
+  "sha": "e2d6e709c3c65a4951eb096843ee75d5200cfcad",
+  "files": [
+    {
+      "path": "spring-webmvc/src/main/java/org/springframework/web/servlet/ResourceServlet.java",
+      "vuln": "spring-webmvc__src__main__java__org__springframework__web__servlet__ResourceServlet.java.vuln.java",
+      "fixed": "spring-webmvc__src__main__java__org__springframework__web__servlet__ResourceServlet.java.fixed.java"
+    }
+  ]
+}

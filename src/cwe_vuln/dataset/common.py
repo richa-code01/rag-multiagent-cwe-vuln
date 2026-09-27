@@ -93,9 +93,18 @@ def sparse_clone(
     paths: list[str],
     *,
     depth: int = 1,
+    rev: str | None = None,
 ) -> str:
-    if dest.exists() and (dest / ".git").exists() and git_head(dest):
-        return git_head(dest)
+    """Sparse-clone ``paths``. When ``rev`` is set, check out that commit.
+
+    A depth-1 tip is not enough: the recorded thesis commits must win if
+    upstream HEAD has moved, so ingested counts stay stable.
+    """
+    if dest.exists() and (dest / ".git").exists():
+        head = git_head(dest)
+        if rev is None or head == rev or rev.startswith(head) or head.startswith(rev):
+            return head
+        subprocess.run(["rm", "-rf", str(dest)], check=True)
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.exists():
         subprocess.run(["rm", "-rf", str(dest)], check=True)
@@ -110,6 +119,23 @@ def sparse_clone(
         str(dest),
     ]
     subprocess.run(cmd, check=True, capture_output=True, text=True)
+    if rev and git_head(dest) != rev:
+        fetched = subprocess.run(
+            ["git", "-C", str(dest), "fetch", "--depth", "1", "origin", rev],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if fetched.returncode != 0:
+            raise SuiteError(
+                f"could not fetch {rev} from {url}: {(fetched.stderr or fetched.stdout).strip()}"
+            )
+        subprocess.run(
+            ["git", "-C", str(dest), "checkout", "--detach", rev],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
     sparse = ["git", "-C", str(dest), "sparse-checkout", "set", "--skip-checks", *paths]
     subprocess.run(sparse, check=True, capture_output=True, text=True)
     return git_head(dest)

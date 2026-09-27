@@ -1,0 +1,18 @@
+{
+  "vul_id": "VUL4J-54",
+  "cwe_id": "CWE-502",
+  "slug": "jenkinsci/jenkins",
+  "sha": "701ea95a52afe53bee28f76a3f96eb0e578852e9",
+  "files": [
+    {
+      "path": "core/src/main/java/hudson/util/XStream2.java",
+      "vuln": "core__src__main__java__hudson__util__XStream2.java.vuln.java",
+      "fixed": "core__src__main__java__hudson__util__XStream2.java.fixed.java"
+    },
+    {
+      "path": "core/src/test/java/hudson/util/XStream2Test.java",
+      "vuln": "core__src__test__java__hudson__util__XStream2Test.java.vuln.java",
+      "fixed": "core__src__test__java__hudson__util__XStream2Test.java.fixed.java"
+    }
+  ]
+}

@@ -32,16 +32,13 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
-# Juliet / public benchmark raw trees (adapters + JSON manifests are committed)
-data/benchmarks/juliet-java/
-data/benchmarks/owasp-benchmark/
-data/benchmarks/securibench-micro/
-data/benchmarks/find-sec-bugs/
-data/benchmarks/vul4j/
-data/benchmarks/vul4j-files/
-data/benchmarks/cvefixes-files/
+# Nested clone metadata. The scored slices themselves are committed.
+data/benchmarks/**/.git
 data/benchmarks/downloads/
 *.zip
+
+# Local operator job state
+results/jobs/
 
 # Local thesis drafts (do not commit)
 ApproachDoc.pdf

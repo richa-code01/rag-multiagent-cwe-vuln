@@ -24,9 +24,12 @@ SUITE = "owasp-benchmark"
 GITHUB = "https://github.com/OWASP-Benchmark/BenchmarkJava.git"
 CSV_NAME = "expectedresults-1.2.csv"
 TESTCODE = Path("src/main/java/org/owasp/benchmark/testcode")
+PINNED_COMMIT = "20cbf3d11123347e47ed89541e6942836def53f7"
+LICENSE_PATHS = ["README.md", "LICENSE", "LICENSE.md", "LICENSE.txt"]
 LICENSE_NOTE = (
-    "OWASP Benchmark for Java (BenchmarkJava). Educational AST test suite; "
-    "see the upstream repository license/README. Not redistributed in git."
+    "OWASP Benchmark for Java (BenchmarkJava). Educational test suite. "
+    "The scored slice and upstream license are vendored under data/benchmarks/. "
+    "See data/benchmarks/NOTICES.md."
 )
 
 
@@ -51,7 +54,7 @@ def ensure_owasp(root: Path | None = None) -> dict[str, Any]:
             "source_url": GITHUB,
             "downloaded_at": utc_now(),
             "method": "cached",
-            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else "",
+            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else PINNED_COMMIT,
             "license_note": LICENSE_NOTE,
         }
         write_json(provenance_path(root), prov)
@@ -59,7 +62,8 @@ def ensure_owasp(root: Path | None = None) -> dict[str, Any]:
     commit = sparse_clone(
         GITHUB,
         dest,
-        [str(TESTCODE), CSV_NAME, "README.md"],
+        [str(TESTCODE), CSV_NAME, *LICENSE_PATHS],
+        rev=PINNED_COMMIT,
     )
     prov = {
         "suite": SUITE,

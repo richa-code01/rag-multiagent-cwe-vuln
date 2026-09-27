@@ -102,11 +102,11 @@ uv run cwe-vuln-eval --suite <name>-llm-sample --ablation template
 
 ## Tests
 
-Tiny fixtures under `tests/fixtures/<suite>/`. Mapper tests: gold parse, no silent CWE relabel. `uv run pytest` green. Tests never call live Groq or require full suite trees.
+Tiny fixtures under `tests/fixtures/<suite>/`. Mapper tests: gold parse, no silent CWE relabel. `uv run pytest` green. Tests never call live Groq. The scored slices are vendored, so a fresh clone does not need the network to load them.
 
 ## Git
 
-Gitignore raw trees under `data/benchmarks/**` (except committed manifests `*_llm_sample.json`, `*_provenance.json`). Never commit `.env`, keys, or huge zips.
+The scored slices are committed under `data/benchmarks/` at the pins in `data/benchmarks/NOTICES.md`. Nested `.git` directories, `data/benchmarks/downloads/`, and `*.zip` stay ignored. Never commit `.env` or keys.
 
 ## Honesty checklist
 

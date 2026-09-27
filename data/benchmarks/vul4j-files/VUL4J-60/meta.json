@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-60",
+  "cwe_id": "CWE-79",
+  "slug": "nahsra/antisamy",
+  "sha": "7313931dc3c0d1377b010f07faef2063dd359a36",
+  "files": [
+    {
+      "path": "src/main/java/org/owasp/validator/html/scan/MagicSAXFilter.java",
+      "vuln": "src__main__java__org__owasp__validator__html__scan__MagicSAXFilter.java.vuln.java",
+      "fixed": "src__main__java__org__owasp__validator__html__scan__MagicSAXFilter.java.fixed.java"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "vul_id": "VUL4J-50",
+  "cwe_id": "CWE-79",
+  "slug": "javamelody/javamelody",
+  "sha": "aacbc46151ff4ac1ca34ce0899c2a6113071c66e",
+  "files": [
+    {
+      "path": "javamelody-core/src/main/java/net/bull/javamelody/HtmlSessionInformationsReport.java",
+      "vuln": "javamelody-core__src__main__java__net__bull__javamelody__HtmlSessionInformationsReport.java.vuln.java",
+      "fixed": "javamelody-core__src__main__java__net__bull__javamelody__HtmlSessionInformationsReport.java.fixed.java"
+    }
+  ]
+}

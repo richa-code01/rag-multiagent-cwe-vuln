@@ -29,9 +29,12 @@ from cwe_vuln.dataset.seed import SeedUnit
 SUITE = "vul4j"
 GITHUB = "https://github.com/tuhh-softsec/vul4j.git"
 CSV_REL = Path("dataset/vul4j_dataset.csv")
+PINNED_COMMIT = "376411da11fa705019f731404de1d0679fe73537"
+LICENSE_PATHS = ["README.md", "LICENSE", "LICENSE.md"]
 LICENSE_NOTE = (
     "Vul4J dataset (tuhh-softsec/vul4j), GPLv3 project metadata. "
-    "Java snippets are fetched from upstream patch commits and are not vendored in git."
+    "Java files are the upstream patch blobs for the scored rows, vendored for reproduction. "
+    "See data/benchmarks/NOTICES.md."
 )
 COMMIT_RE = re.compile(r"github\.com/([^/]+/[^/]+)/commit/([0-9a-fA-F]+)")
 
@@ -61,12 +64,17 @@ def ensure_vul4j(root: Path | None = None) -> dict[str, Any]:
             "source_url": GITHUB,
             "downloaded_at": utc_now(),
             "method": "cached",
-            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else "",
+            "sha256_or_commit": git_head(dest) if (dest / ".git").exists() else PINNED_COMMIT,
             "license_note": LICENSE_NOTE,
         }
         write_json(provenance_path(root), prov)
         return prov
-    commit = sparse_clone(GITHUB, dest, [str(CSV_REL.parent), "README.md", "LICENSE"])
+    commit = sparse_clone(
+        GITHUB,
+        dest,
+        [str(CSV_REL.parent), *LICENSE_PATHS],
+        rev=PINNED_COMMIT,
+    )
     prov = {
         "suite": SUITE,
         "source_url": GITHUB,

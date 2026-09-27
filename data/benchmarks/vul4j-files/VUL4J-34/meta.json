@@ -1,0 +1,23 @@
+{
+  "vul_id": "VUL4J-34",
+  "cwe_id": "CWE-79",
+  "slug": "apache/struts",
+  "sha": "fc2179cf1ac9fbfb61e3430fa88b641d87253327",
+  "files": [
+    {
+      "path": "core/src/main/java/com/opensymphony/xwork2/interceptor/I18nInterceptor.java",
+      "vuln": "core__src__main__java__com__opensymphony__xwork2__interceptor__I18nInterceptor.java.vuln.java",
+      "fixed": "core__src__main__java__com__opensymphony__xwork2__interceptor__I18nInterceptor.java.fixed.java"
+    },
+    {
+      "path": "core/src/test/java/com/opensymphony/xwork2/interceptor/I18nInterceptorTest.java",
+      "vuln": "core__src__test__java__com__opensymphony__xwork2__interceptor__I18nInterceptorTest.java.vuln.java",
+      "fixed": "core__src__test__java__com__opensymphony__xwork2__interceptor__I18nInterceptorTest.java.fixed.java"
+    },
+    {
+      "path": "core/src/test/java/org/apache/struts2/interceptor/I18nInterceptorTest.java",
+      "vuln": "core__src__test__java__org__apache__struts2__interceptor__I18nInterceptorTest.java.vuln.java",
+      "fixed": "core__src__test__java__org__apache__struts2__interceptor__I18nInterceptorTest.java.fixed.java"
+    }
+  ]
+}
