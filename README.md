@@ -5,7 +5,7 @@
 **Current milestone:** six public Java suites (`six-benchmarks`)
 
 Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt)
-Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · **HLD:** [`docs/design/hld.md`](docs/design/hld.md) · **LLD:** [`docs/design/lld.md`](docs/design/lld.md) · Thesis chapters: [`docs/thesis/README.md`](docs/thesis/README.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
+Sequence: [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md) · Architecture: [`docs/architecture.md`](docs/architecture.md) · **HLD:** [`docs/design/hld.md`](docs/design/hld.md) · **LLD:** [`docs/design/lld.md`](docs/design/lld.md) · Thesis chapters: [`docs/thesis/README.md`](docs/thesis/README.md) · Mentor notes: [`docs/progress/README.md`](docs/progress/README.md) · Plan: [`docs/implementation-plan.md`](docs/implementation-plan.md)
 
 Authored 36-unit scores and Juliet scores are **different tables**. Do not mix them.
 

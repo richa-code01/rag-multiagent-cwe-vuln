@@ -204,6 +204,11 @@ REPORTS: list[dict] = [
             "We are studying six Java weaknesses only. They are listed in the table. They cover database queries, web pages, file paths, saved objects, passwords in code, and weak encryption.",
             "We are not trying to replace a commercial scanner. The aim is an explanation that can be traced back to a CWE page and to real lines of code.",
         ],
+        "example": [
+            "Suppose a method builds a database query by joining a username onto the text of the query. A yes-or-no scanner might only say \"unsafe\".",
+            "The note we want is longer. It should say the code is unsafe, the weakness is CWE-89 SQL injection, the risky lines are the ones that build the query, and the fix is to use a prepared query so the username is data, not part of the command.",
+            "If the same method uses a prepared query, the note should say the code is safe, and it should still name CWE-89 so a reader knows which risk was checked.",
+        ],
         "caption": "The left box is the Java we read. The right box is the note we want back.",
         "headers": ["Weakness", "Plain meaning"],
         "rows": [
@@ -236,6 +241,11 @@ REPORTS: list[dict] = [
             "On these 12 files it marked every unsafe file and did not mark a safe file. Precision means how many alarms were real bugs. Recall means how many real bugs we caught. Both are 1.000, so F1 is 1.000. F1 is one number that combines those two.",
             "A perfect score is easy to get when we wrote both the files and the patterns. It only shows that the checker matches this tiny set.",
         ],
+        "example": [
+            "One practice file builds a SQL string with the username inside it. The checker sees that pattern and marks the file unsafe. The paired file uses a prepared statement. The checker does not mark it.",
+            "The four held-back files are the same idea for two other weaknesses: a password written in the source, and a weak hash. We did not change the patterns after seeing those four. They still came out right.",
+            "That is why the table is balanced: every weakness in this set has one unsafe file and one safe file. The score cannot hide behind a set that is almost all unsafe.",
+        ],
         "caption": "Eight files are for practice. Four files are held back for a first check.",
         "headers": ["Split", "Files", "Unsafe", "Safe"],
         "rows": [
@@ -264,6 +274,11 @@ REPORTS: list[dict] = [
             "The tool can look up one id, search by words such as \"cross site scripting\", and list neighbors. The pattern checker is not allowed to invent this text. If the answer names a CWE, that name has to come from this book.",
             "Take CWE-89 as the example in the picture. The page says SQL injection. It says what goes wrong when user text is joined into a query. It also points at related pages and at a safer style of query.",
             "A parent weakness is a broader group. A child weakness is a more specific case. We keep both so the explanation can stay honest when the code is close but not exact.",
+        ],
+        "example": [
+            "Ask the book for CWE-89. It returns the name SQL injection, a short description, and a fix such as keeping user text out of the query command.",
+            "Ask it for the neighbors of CWE-89. Parents are broader groups. Children are more specific kinds of injection. The answer can say \"this is SQL injection, which sits under this broader group\" without inventing a new name.",
+            "Search the words \"cross site scripting\". The top hit should be the XSS page, CWE-79, not the SQL page. That is a lookup test, not a test of whether some Java file is unsafe.",
         ],
         "caption": "One stored page, CWE-89, and the kind of related pages we keep beside it.",
         "headers": ["On each page", "Why we keep it"],
@@ -295,6 +310,11 @@ REPORTS: list[dict] = [
             "The mix uses both rankings, plus two extra hints: the CWE id suggested by the pattern checker, and the parent or child pages of a hit. The mix is called hybrid search.",
             "R@1 means the right page was the first result. MiniLM was first on 17 of the 18 questions, which is 0.944. Word match was first on about 14 of 18, which is 0.778. On this small set the mix matched MiniLM. It did not beat it.",
         ],
+        "example": [
+            "The question is the idea \"a SQL string is built by sticking text together\". Word match may miss this if the CWE page says \"injection\" and the question says \"sticking text\". The meaning model can still rank CWE-89 first.",
+            "If the pattern checker has already hinted CWE-89, the mix gives that hint a vote as well. Related pages, such as a child of CWE-89, can appear just below the best hit. They are context, not a second decision.",
+            "If MiniLM cannot be downloaded, the same question is answered by word match only, and the result file says so. We do not quietly pretend the meaning model ran.",
+        ],
         "caption": "A short question from the code is ranked against the book. The first hit is the page we would show.",
         "headers": ["Search", "Right page first (R@1)", "Questions"],
         "rows": [
@@ -324,6 +344,11 @@ REPORTS: list[dict] = [
             "There is no field for attack steps. The tool is not asked to write an exploit or a payload.",
             "We store two sample answers, one unsafe and one safe, and one broken sample. A small check accepts the good samples and rejects the broken one. That check does not need a live model.",
             "The pattern checker still only marks lines. The form is the contract for whoever writes the final note, whether that writer is a template or a model.",
+        ],
+        "example": [
+            "A valid unsafe answer for the SQL example names the decision unsafe, the CWE as CWE-89, the lines that build the query, a cause such as \"user text is joined into the command\", a short explanation, and a fix that says to use a prepared query.",
+            "A valid safe answer for the paired file uses the same fields. The decision is safe. It can still name CWE-89, because that is the risk that was checked.",
+            "If the cited lines are blank, or the decision is a word we did not allow, the check fails. We keep that failure. We do not fill the hole by hand.",
         ],
         "caption": "Every run has to fill these fields. A missing field makes the answer invalid.",
         "headers": ["Field", "What it means"],
@@ -356,6 +381,11 @@ REPORTS: list[dict] = [
             "A checker then reads the form. The CWE must exist in the book. The cited lines must appear in the file. The fields must not contradict each other. A broken form fails.",
             "If the written decision disagrees with the pattern checker, we keep a warning. We do not force the decision to match the checker. We also save a confidence number. We do not use that number to skip any step.",
         ],
+        "example": [
+            "Take the SQL file again. Step 1 marks the lines that join the username into the query. Step 2 retrieves the CWE-89 page. Step 3, the template, fills the form from those marks and says the code is unsafe. Step 4 checks that CWE-89 is in the book and that the cited lines really are in the file.",
+            "The paired safe file may produce no marks. The template then leans toward safe. The checker still requires a complete form.",
+            "If the template said safe while step 1 had found marks, we would record a disagreement warning. We would not change the written decision to match the marks.",
+        ],
         "caption": "Four steps, always in this order. The first step does not make the final decision.",
         "headers": ["Step", "What it is allowed to do"],
         "rows": [
@@ -386,6 +416,11 @@ REPORTS: list[dict] = [
             "The live model is Groq, model openai/gpt-oss-20b. It writes the same answer form. On these 24 files its F1 is 0.923: 2 false alarms and no missed bugs.",
             "We ran the same 24 again with CWE search turned off. The F1 stayed 0.923. So, on this particular set, showing the model the book pages did not change detection. We do not treat that as proof that search is useless in general. We also do not treat it as proof that search helps.",
         ],
+        "example": [
+            "One safe file has a comment that says the code is flawed, but the code itself is fine. The simple checker reads the comment and raises a false alarm. After we blank comments, that alarm can disappear. The template still does not understand a quiet bug.",
+            "One unsafe file never uses the obvious words. The pattern checker misses it. The live model reads the method and can still call it unsafe and name a CWE.",
+            "Turning the book search off did not change the 0.923 score. The model was already getting the decision right from the code. The book may still matter for the explanation, but this test does not prove that.",
+        ],
         "caption": "The simple checker fails these traps. The live model recovers most of them.",
         "headers": ["System", "F1", "False alarms", "Missed bugs", "Files"],
         "rows": [
@@ -415,6 +450,11 @@ REPORTS: list[dict] = [
             "A larger set is not an easier set. The checker is a list of text patterns. It is not CodeQL, and it is not a commercial scanner that follows data through the program.",
             "We did run the live model earlier on small samples of these sets. Those scores are withdrawn. The questions still contained giveaway words, such as a method named bad or a comment that said the code was flawed. A fair test must not show the answer inside the question.",
             "The public sets also do not all contain every weakness we study. When a set has no files for a weakness, we say \"not present\". We do not rename a nearby weakness to fill the gap.",
+        ],
+        "example": [
+            "Juliet has thousands of small teaching files. A file name often says whether it is the bad version or the good version. If we leave the word bad in the question, a model can cheat. That is why the old model scores are withdrawn.",
+            "Securibench is small, 119 files, and the simple checker almost never matches the labels. F1 0.072 means the pattern list does not fit those servlets. A bigger Juliet score of 0.316 is still only a modest pattern match, not a success.",
+            "Find Security Bugs is the highest bar in the picture, 0.435, and it is only 79 files. We do not average the six rows. Each set is its own result.",
         ],
         "caption": "Each bar is the simple checker's F1. Longer is better. None of these bars is a model score.",
         "headers": ["Test set", "Files", "Simple checker F1"],
@@ -448,6 +488,11 @@ REPORTS: list[dict] = [
             "One more pair was cut off. The free daily token limit stopped the run after 35 of 36 files. We leave that pair out of the 9-of-17 count. It is a stopped run, not a model mistake. The status of the model row is partial.",
             "If we ignore the pair rule and score each file alone, F1 on the 35 scored files is 0.789. That number is easier to inflate, because a model can mark both files unsafe and still look good on the unsafe ones. The pair score is the one we stand behind.",
         ],
+        "example": [
+            "Take one pair. The bad file builds a query in an unsafe way. The good file does the safe version of the same lesson. If the model says both are unsafe, it got the bad file right and the good file wrong. The pair counts as wrong.",
+            "If it says the bad file is unsafe and the good file is safe, the pair counts as right. That is one of the 9.",
+            "The range 0.294 to 0.765 means a different draw of 17 pairs could have looked much better or much worse. We show the range so 0.529 is not treated as exact.",
+        ],
         "caption": "Both files in a pair have to be judged correctly. One right answer is not enough.",
         "headers": ["Item", "Value"],
         "rows": [
@@ -478,6 +523,11 @@ REPORTS: list[dict] = [
             "The six public Java sets are stored in the project, with a note of where they came from and which license applies. A fresh copy of the project can score the simple checker without downloading them again.",
             "When code is pushed, GitHub runs the unit tests. Those tests do not call Groq. They check the form, the book, the sanitizer, and the scoring math.",
             "One job runs at a time. The free model key has a daily token cap, and two big runs would spend it twice.",
+        ],
+        "example": [
+            "Open the page on this computer. Choose the seed pipeline, the test split, and the offline setting. The page prints the command it will run. The result is four practice files, scored by the template, with no call to Groq.",
+            "Choose a live Juliet run without a key and the page stops with the same message as the command line. It does not fill in a score.",
+            "The unfinished Juliet file, the search-off Juliet run, the live Vul4J slices, a second model, and the human explanation labels are still open. They need a key, tokens, or a person. This note does not close them.",
         ],
         "caption": "The page is only a front door. The steps behind it are the same pipeline: mark lines, search, write, check.",
         "headers": ["Still open", "Why it matters", "Status"],
@@ -548,6 +598,10 @@ def _build(report: dict, figure: Path) -> Document:
     for sentence in report["did"]:
         _add_text(doc, sentence, size=12, space_after=4)
 
+    _add_text(doc, "A concrete example", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
+    for sentence in report["example"]:
+        _add_text(doc, sentence, size=12, space_after=4)
+
     _add_text(doc, "Picture", size=13, bold=True, color=RGBColor(0x1B, 0x3A, 0x4B), space_after=4)
     doc.add_picture(str(figure), width=Inches(6.4))
     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -602,6 +656,10 @@ def write_pdf(report: dict, figure: Path) -> tuple[Path, int]:
         pdf.ln(1)
     say("What we did", 13, bold=True, color=(27, 58, 75), height=7)
     for sentence in report["did"]:
+        say(sentence, 12)
+        pdf.ln(1)
+    say("A concrete example", 13, bold=True, color=(27, 58, 75), height=7)
+    for sentence in report["example"]:
         say(sentence, 12)
         pdf.ln(1)
     pdf.ln(1)
