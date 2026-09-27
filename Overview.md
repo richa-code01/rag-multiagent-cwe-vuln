@@ -1,33 +1,42 @@
-# System Overview
+# System overview
 
-The current advisor sequence and implementation status live in [`docs/advisor-phase-plan.md`](docs/advisor-phase-plan.md). Canonical context: [`rag-multiagent-context.txt`](rag-multiagent-context.txt). **Assignments 1–4, the wired seed pipeline, MiniLM, Groq LLMReasoner, authored-corpus research eval, and a Juliet Java v1.3 mapped-subset eval are implemented.** Retrieval uses `sentence-transformers` `all-MiniLM-L6-v2`, with TF-IDF fallback if the model is missing (`embedder=tfidf_fallback`). The default live path requires Groq (`GROQ_API_KEY`, default `openai/gpt-oss-20b` at `https://api.groq.com/openai/v1`); `OPENAI_API_KEY` is unused. Missing key → CLI exits non-zero. `TemplateReasoner` is `--offline` / `--ablation template` only. Evaluation tables: seed-only (12), authored research (36), Juliet mapped subset (SAST n=20728 / LLM sample n=72). The notes below are a high-level product sketch.
+RAG-augmented multi-agent detector for explainable Java vulnerability analysis. A deterministic orchestrator runs specialist stages: regex SAST evidence, hybrid CWE retrieval, a schema-bound LLM explanation, and a validator. This is not a LangChain or AutoGen chat, and it is not a production SAST engine.
 
-This project proposes a multi-agent AI system for detecting security bugs in code. The goal is not only to identify vulnerabilities, but also to explain why a code pattern is risky using domain knowledge from security standards.
+Student: Richa Verma (25MCSS02). Advisor: Dr. Akshay Pandey.
 
-To support explainable vulnerability detection, the system will use **Retrieval-Augmented Generation (RAG)** to retrieve relevant facts from the **Common Weakness Enumeration (CWE)** database. By grounding each analysis in CWE references, the agents can produce outputs that are more transparent, traceable, and useful in practice.
+## What runs
 
-## Project Phases
+```text
+Java unit
+  → EvidenceAgent (regex spans, not the decision)
+  → KnowledgeAgent (MiniLM + TF-IDF + SAST ids + CWE relationships, RRF)
+  → ReasoningAgent (Groq by default; template is an ablation)
+  → ValidatorAgent (schema, CWE-in-KB, cited lines, consistency)
+  → metrics
+```
 
-### Phase 1: Knowledge Mapping
+Open the operator console:
 
-Study the CWE database and review existing RAG-based architectures to understand how security knowledge can be retrieved and applied during analysis.
+```bash
+uv sync
+uv run cwe-vuln-ui
+```
 
-### Phase 2: Agent Design
+That serves `http://127.0.0.1:8765` and only binds to localhost. From there you pick a suite, ablation, and token budget, inspect one unit, search the CWE store, and fill C8 labels. The same commands still work:
 
-Define specialized roles for the collaborating agents, such as a **Code Analyzer**, a **CWE Specialist**, and a **Reporter**.
+```bash
+uv run cwe-vuln-pipeline
+uv run cwe-vuln-eval --suite thesis --resume --max-tokens 200000
+```
 
-### Phase 3: RAG Implementation
+## Where to read
 
-Build a vector database of CWE entries so the agents can retrieve relevant facts in real time during vulnerability analysis.
+- Architecture: [`docs/architecture.md`](docs/architecture.md)
+- Design: [`docs/design/hld.md`](docs/design/hld.md) and [`docs/design/lld.md`](docs/design/lld.md)
+- How to run and what is still unfinished: [`docs/operator.md`](docs/operator.md)
+- Thesis chapters: [`docs/thesis/README.md`](docs/thesis/README.md)
+- Benchmark slices: [`data/benchmarks/NOTICES.md`](data/benchmarks/NOTICES.md)
 
-### Phase 4: Prototyping
+Related-work PDFs live in [`research-papers/`](research-papers/). `ResearchPapers/` is an older copy; `RP1Understanding.md` is not identical, so both stay.
 
-Use an orchestration framework such as **LangChain** or **AutoGen** to connect the agents and coordinate the workflow.
-
-### Phase 5: Evaluation
-
-Test the system against known vulnerable code snippets to measure how well it detects security bugs and how clearly it explains them.
-
-## Expected Outcome
-
-The final system should combine multi-agent reasoning with security knowledge retrieval to produce explainable and standards-based vulnerability detection results.
+Authored 36-unit scores and Juliet scores are different tables. Public-suite LLM rows from 2026-09-17 stay retracted. Do not claim that RAG helps on Juliet until `llm_no_retrieval_juliet_pairs` exists.

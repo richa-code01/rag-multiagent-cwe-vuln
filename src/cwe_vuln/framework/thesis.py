@@ -29,6 +29,7 @@ from cwe_vuln.dataset.juliet import (
 )
 from cwe_vuln.dataset.registry import SUITES
 from cwe_vuln.dataset.sanitize import slice_unit
+from cwe_vuln.framework.context import RunContext
 from cwe_vuln.framework.eval import (
     DISCLAIMER,
     JULIET_DISCLAIMER,
@@ -179,14 +180,17 @@ def run_thesis_eval(
     include_model_ablation: bool = False,
     resume: bool = False,
     max_tokens: int | None = None,
+    context: RunContext | None = None,
 ) -> list[dict[str, Any]]:
     """C1–C5 (+ optional C7). Stops live LLM work on rate limit / token budget; never template-fills."""
     dest = output_dir or thesis_results_dir()
     dest.mkdir(parents=True, exist_ok=True)
-    from cwe_vuln.framework import eval as eval_mod
-
-    eval_mod.RAW_LLM_DIR = dest / "raw_llm"
-    eval_mod.REPLAY_RAW_LLM = resume
+    context = RunContext(
+        raw_llm_dir=(context.raw_llm_dir if context and context.raw_llm_dir else dest / "raw_llm"),
+        replay=resume,
+        should_stop=context.should_stop if context else None,
+        log=context.log if context else None,
+    )
     retriever = HybridRetriever.load(allow_download=True)
     budget = _Budget(dest, resume=resume, max_tokens=max_tokens)
     trials: list[dict[str, Any]] = []
@@ -210,6 +214,7 @@ def run_thesis_eval(
                 "research",
                 _make_pipeline(retriever, None, skip_llm_when_sast_hits=True, use_llm=False),
                 notes="C4 ablation: TemplateReasoner on authored traps. Not the system of record.",
+                context=context,
             ),
             llm=False,
         )
@@ -255,11 +260,23 @@ def run_thesis_eval(
                 notes="C1 sanitized authored traps. System of record. " + model_notes,
                 stop_on_rate_limit=True,
                 delay_seconds=8.0,
+                context=context,
             ),
             llm=True,
         )
         trials.append(live_c1)
-        trials.extend(_ablation_trials(research, retriever, llm, model_notes, budget, split="research_test", suite="research"))
+        trials.extend(
+            _ablation_trials(
+                research,
+                retriever,
+                llm,
+                model_notes,
+                budget,
+                split="research_test",
+                suite="research",
+                context=context,
+            )
+        )
 
     juliet_trials, pair_units, pairs = _juliet_pair_trials(
         retriever,
@@ -270,6 +287,7 @@ def run_thesis_eval(
         seed=sample_seed,
         dest=dest,
         budget=budget,
+        context=context,
     )
     trials.extend(juliet_trials)
 
@@ -284,14 +302,15 @@ def run_thesis_eval(
                 split="juliet_pairs",
                 suite="juliet-pairs",
                 only_no_retrieval=True,
+                context=context,
             )
         )
 
     if llm is not None:
-        trials.extend(_sliced_realworld(retriever, llm, model_notes, dest=dest, budget=budget))
+        trials.extend(_sliced_realworld(retriever, llm, model_notes, dest=dest, budget=budget, context=context))
     trials.append(_semgrep_or_skip(pair_units))
     if include_model_ablation and llm is not None:
-        trials.extend(_model_ablation(research, retriever, dest=dest, budget=budget))
+        trials.extend(_model_ablation(research, retriever, dest=dest, budget=budget, context=context))
     trials.append(_human_spotcheck_placeholder(dest, trials))
     _write_all(trials, dest)
     return trials
@@ -307,6 +326,7 @@ def _ablation_trials(
     split: str,
     suite: str,
     only_no_retrieval: bool = False,
+    context: RunContext | None = None,
 ) -> list[dict[str, Any]]:
     from cwe_vuln.agents import EvidenceAgent, KnowledgeAgent, ReasoningAgent, ValidatorAgent
 
@@ -331,6 +351,7 @@ def _ablation_trials(
                 notes="C4 ablation: LLM + code + SAST, empty CWE hits. " + model_notes,
                 stop_on_rate_limit=True,
                 delay_seconds=8.0,
+                context=context,
             ),
             llm=True,
         )
@@ -358,6 +379,7 @@ def _ablation_trials(
                 notes="C4 ablation: LLM + retrieval only, empty SAST evidence. " + model_notes,
                 stop_on_rate_limit=True,
                 delay_seconds=8.0,
+                context=context,
             ),
             llm=True,
         )
@@ -375,6 +397,7 @@ def _juliet_pair_trials(
     seed: int,
     dest: Path,
     budget: _Budget,
+    context: RunContext | None = None,
 ) -> tuple[list[dict[str, Any]], list[SeedUnit], list[Pair]]:
     try:
         units = load_juliet_units(tree=tree, require_download=tree is None)
@@ -446,6 +469,7 @@ def _juliet_pair_trials(
                 notes="C2 template ablation on the Juliet pair sample.",
                 evaluation_scope="juliet_java_v1_3_pair_sample",
                 disclaimer=JULIET_DISCLAIMER,
+                context=context,
             ),
             llm=False,
         ),
@@ -460,7 +484,7 @@ def _juliet_pair_trials(
         return trials, sample, pairs
     live = budget.take(
         "llm_then_juliet_pairs",
-        lambda: _run_c2_llm(sample, pairs, retriever, llm, model_notes, seed),
+        lambda: _run_c2_llm(sample, pairs, retriever, llm, model_notes, seed, context),
         llm=True,
     )
     if live.get("status") == "ok" and "pair_metrics" not in live:
@@ -477,6 +501,7 @@ def _run_c2_llm(
     llm: LLMReasoner,
     model_notes: str,
     seed: int,
+    context: RunContext | None = None,
 ) -> dict[str, Any]:
     live = trial_pipeline(
         "llm_then_juliet_pairs",
@@ -489,6 +514,7 @@ def _run_c2_llm(
         stop_on_rate_limit=True,
         evaluation_scope="juliet_java_v1_3_pair_sample",
         disclaimer=JULIET_DISCLAIMER,
+        context=context,
     )
     return _attach_pair_metrics(live, pairs, seed)
 
@@ -580,6 +606,7 @@ def _sliced_realworld(
     *,
     dest: Path,
     budget: _Budget,
+    context: RunContext | None = None,
 ) -> list[dict[str, Any]]:
     name = "vul4j"
     spec = SUITES[name]
@@ -625,6 +652,7 @@ def _sliced_realworld(
                 stop_on_rate_limit=True,
                 evaluation_scope="vul4j_sliced_hunks",
                 disclaimer=spec.disclaimer,
+                context=context,
             ),
             llm=True,
         ),
@@ -650,7 +678,7 @@ def _semgrep_or_skip(units: list[SeedUnit] | None) -> dict[str, Any]:
             "suite": "juliet-pairs",
             "status": "skipped",
             "metrics": None,
-            "notes": f"semgrep is installed but the Juliet pair sample was empty. Not compared to CodeQL.",
+            "notes": "semgrep is installed but the Juliet pair sample was empty. Not compared to CodeQL.",
             "error": None,
         }
     try:
@@ -726,6 +754,7 @@ def _model_ablation(
     *,
     dest: Path,
     budget: _Budget,
+    context: RunContext | None = None,
 ) -> list[dict[str, Any]]:
     del dest
     trials: list[dict[str, Any]] = []
@@ -749,6 +778,7 @@ def _model_ablation(
                 _make_pipeline(retriever, built, skip_llm_when_sast_hits=False, use_llm=True),
                 notes=f"C7 model ablation model={model_name}. Same sanitized authored traps.",
                 stop_on_rate_limit=True,
+                context=context,
             )
 
         trials.append(budget.take(trial_id, _run, llm=True))

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cwe-vuln operator</title>
+  <link rel="stylesheet" href="/static/console.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">Localhost only · no auth</p>
+      <h1>cwe-vuln operator</h1>
+    </div>
+    <p class="lede">Select a suite, ablation, and token budget. The command below is what the job runs. Skipped rows stay skipped.</p>
+  </header>
+
+  <nav class="tabs">
+    <button type="button" data-tab="status" class="active">Status</button>
+    <button type="button" data-tab="run">Run</button>
+    <button type="button" data-tab="inspect">Inspect</button>
+    <button type="button" data-tab="knowledge">Knowledge</button>
+    <button type="button" data-tab="spotcheck">Spot-check</button>
+  </nav>
+
+  <main>
+    <section id="status" class="panel">
+      <h2>Thesis trials</h2>
+      <p id="retracted" class="note"></p>
+      <div id="cards" class="cards"></div>
+      <h2>Trial detail</h2>
+      <div id="detail" class="detail">Select a card.</div>
+    </section>
+
+    <section id="run" class="panel hidden">
+      <h2>Run</h2>
+      <form id="run-form">
+        <label>Kind
+          <select name="kind">
+            <option value="eval">Evaluation suite</option>
+            <option value="pipeline">Seed pipeline</option>
+          </select>
+        </label>
+        <label>Suite
+          <select name="suite" id="suite"></select>
+        </label>
+        <label>Ablation
+          <select name="ablation">
+            <option value="none">none (live LLM)</option>
+            <option value="template">template / offline</option>
+            <option value="skip-llm">skip-llm</option>
+          </select>
+        </label>
+        <label>Seed split
+          <select name="split">
+            <option value="test">test</option>
+            <option value="train">train</option>
+            <option value="all">all</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" name="offline"> Offline template</label>
+        <label class="check"><input type="checkbox" name="resume"> Resume completed trials</label>
+        <label class="check"><input type="checkbox" name="include_model_ablation"> C7 model ablation</label>
+        <label>Max tokens
+          <input name="max_tokens" type="number" min="1" placeholder="200000">
+        </label>
+        <label>Provider <span id="key-state"></span>
+          <select name="provider" id="provider"></select>
+        </label>
+        <label>Model
+          <select name="model" id="model"></select>
+        </label>
+        <p class="command" id="command"></p>
+        <p class="note">Provider and model are read from the environment this process started with. The form shows which key is configured and does not print it. Set <code>CWE_VULN_LLM_PROVIDER</code> and <code>CWE_VULN_LLM_MODEL</code> before launching the console to switch hosts.</p>
+        <button type="submit">Start job</button>
+      </form>
+      <h2>Job</h2>
+      <pre id="job-log">No job yet.</pre>
+      <button type="button" id="cancel" disabled>Cancel</button>
+      <h2>Remaining experiments</h2>
+      <ul id="experiments"></ul>
+    </section>
+
+    <section id="inspect" class="panel hidden">
+      <h2>Inspect one unit</h2>
+      <form id="inspect-form">
+        <label>Seed or research unit id
+          <input name="unit_id" placeholder="java_cwe89_sqli_concat">
+        </label>
+        <label>Or paste Java
+          <textarea name="source" rows="8" placeholder="class Snippet { ... }"></textarea>
+        </label>
+        <label class="check"><input type="checkbox" name="offline" checked> Offline template</label>
+        <button type="submit">Run pipeline</button>
+      </form>
+      <pre id="inspect-out">No unit yet.</pre>
+    </section>
+
+    <section id="knowledge" class="panel hidden">
+      <h2>CWE knowledge</h2>
+      <form id="kb-form">
+        <label>Search
+          <input name="q" value="sql injection">
+        </label>
+        <button type="submit">Search</button>
+      </form>
+      <div id="kb-hits"></div>
+      <form id="retrieve-form">
+        <label>Retrieve
+          <input name="query" value="string concatenated into a SQL statement">
+        </label>
+        <button type="submit">Rank</button>
+      </form>
+      <div id="retrieve-hits"></div>
+    </section>
+
+    <section id="spotcheck" class="panel hidden">
+      <h2>C8 human spot-check</h2>
+      <p class="note" id="spot-note"></p>
+      <form id="spot-form"></form>
+    </section>
+  </main>
+  <script src="/static/console.js"></script>
+</body>
+</html>

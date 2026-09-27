@@ -117,8 +117,8 @@ def _markdown(report: dict) -> str:
             f"- Paths: `{report['detector_path_counts']}`",
             f"- Reasoners: `{report.get('reasoner_counts')}`",
             "",
-            f"| Precision | Recall | F1 | TP | FP | TN | FN |",
-            f"| ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "| Precision | Recall | F1 | TP | FP | TN | FN |",
+            "| ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
             f"| {m['precision']:.3f} | {m['recall']:.3f} | {m['f1']:.3f} | {m['tp']} | {m['fp']} | {m['tn']} | {m['fn']} |",
             "",
         ]

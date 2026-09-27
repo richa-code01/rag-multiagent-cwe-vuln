@@ -1,5 +1,7 @@
 # Implementation plan
 
+This file is a historical record of the layout and embeddings work. Current behavior is [`design/hld.md`](design/hld.md), [`architecture.md`](architecture.md), and [`operator.md`](operator.md). Sentences below that say public benchmarks are out of scope, or that the tree is still flat, are out of date.
+
 Thesis: **RAG-Augmented Multi-Agent LLM Framework for Explainable Software Vulnerability Detection Using CWE Knowledge Bases**
 Student: Richa Verma (25MCSS02) · Advisor: Dr. Akshay Pandey
 

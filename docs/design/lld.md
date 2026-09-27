@@ -563,8 +563,8 @@ Do not log `api_key`. `ChatProvider.api_key` exists on the object — never seri
 
 These are **explicit**, not accidental:
 
-1. No HTTP API, auth, or multi-tenant isolation.
-2. OpenAI client constructed per `complete()` (no shared timeout/circuit-breaker config).
+1. Localhost operator API only (`cwe-vuln-ui`). No auth and no multi-tenant isolation.
+2. Chat client uses a 90s timeout and `max_retries=0`. No circuit breaker.
 3. Fusion weights not calibrated.
 4. Regex SAST is pedagogical.
 5. Knowledge is a MITRE **subset**.

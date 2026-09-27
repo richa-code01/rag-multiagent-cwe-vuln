@@ -47,6 +47,8 @@ uv run pytest
 # requires GROQ_API_KEY in gitignored .env
 uv run cwe-vuln-pipeline
 uv run cwe-vuln-eval --suite research
+# localhost operator console (suites, ablations, one-unit inspect)
+uv run cwe-vuln-ui
 ```
 
 Default pipeline split is the **4 test units**. `uv run cwe-vuln-pipeline --split all` runs all 12. Writes `results/framework-seed.json`.

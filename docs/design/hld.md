@@ -37,7 +37,7 @@ The product job is: take a Java source unit, emit **explainable** CWE-oriented v
 
 - Production SAST engine (no AST, no taint, not CodeQL / SpotBugs / Semgrep-as-engine).
 - Full MITRE CWE catalog, C/C++/Python/RTL corpora, fine-tuning, LangChain/AutoGen orchestration.
-- Multi-tenant SaaS, HTTP API, SSO, queue workers, horizontal autoscaling — **not implemented**. Specified below as production *targets*, not as current features.
+- Multi-tenant SaaS, SSO, queue workers, horizontal autoscaling — **not implemented**. A localhost operator API (`cwe-vuln-ui` on `127.0.0.1`) is implemented. It is not a public endpoint.
 - Exploit / payload generation (system prompt forbids it).
 - Invented SOTA, “first RAG-CWE detector,” or CodeQL numbers we did not run.
 
@@ -51,7 +51,7 @@ Java only. Authored seed (12) + research traps (24) are **not** Juliet. Public-s
 
 | Actor | Role | Interface |
 | --- | --- | --- |
-| Analyst / student (Richa) | Runs pipeline and eval; reviews JSON reports | CLI (`cwe-vuln-*`) |
+| Analyst / student (Richa) | Runs pipeline and eval; reviews JSON reports | CLI (`cwe-vuln-*`) and `cwe-vuln-ui` |
 | Advisor | Reviews claims, architecture, metrics | Docs + `results/*.json` |
 | CI | Unit tests, secret-guard; **no live LLM** | `uv run pytest` |
 | Chat LLM provider | Schema JSON generation | HTTPS OpenAI-compatible `/chat/completions` |
@@ -59,7 +59,7 @@ Java only. Authored seed (12) + research traps (24) are **not** Juliet. Public-s
 | MITRE | CWE catalog XML | Download once → parse subset |
 | Public suite hosts | Juliet / OWASP / … labeled Java | Gitignored trees under `data/benchmarks/` |
 
-There is no end-user GUI and no unauthenticated public endpoint.
+The operator console is `uv run cwe-vuln-ui` on `127.0.0.1:8765`. There is no unauthenticated public endpoint.
 
 ---
 
@@ -265,7 +265,7 @@ Every trial JSON must carry `evaluation_scope`, `disclaimer`, `status`, and for 
 | Public suites | Outbound git/HTTP | Adapters in `dataset/` | Missing tree → skip/fail the suite honestly |
 | dotenv | Local | File | Missing `.env` is OK; missing required key is hard fail on default path |
 
-Timeouts: provider SDK defaults. Production target: explicit connect/read timeout + circuit breaker per provider. Not implemented yet — must be added before any service wrap.
+The OpenAI-compatible client uses a 90s timeout and `max_retries=0` (`llm/provider.py`). A provider circuit breaker is still not implemented. Add one before exposing this process beyond localhost.
 
 ---
 

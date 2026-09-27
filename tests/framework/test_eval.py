@@ -155,7 +155,7 @@ def test_thesis_resume_does_not_overwrite_ok_trial(tmp_path) -> None:
 def test_trial_pipeline_replays_raw_llm_without_calling_provider(tmp_path) -> None:
     from cwe_vuln.agents import EvidenceAgent, ReasoningAgent, ValidatorAgent
     from cwe_vuln.dataset.sanitize import opaque_unit_id
-    from cwe_vuln.framework import eval as eval_mod
+    from cwe_vuln.framework.context import RunContext
     from cwe_vuln.framework.eval import trial_pipeline
     from cwe_vuln.knowledge import CWEKnowledgeBase
     from cwe_vuln.orchestrator import Pipeline
@@ -190,9 +190,8 @@ def test_trial_pipeline_replays_raw_llm_without_calling_provider(tmp_path) -> No
         def complete(self, messages, *, json_mode=None):
             raise AssertionError("provider must not be called on replay")
 
-    eval_mod.RAW_LLM_DIR = tmp_path / "raw_llm"
-    eval_mod.REPLAY_RAW_LLM = True
-    dest = eval_mod.RAW_LLM_DIR / "replay_trial"
+    context = RunContext(raw_llm_dir=tmp_path / "raw_llm", replay=True)
+    dest = context.raw_llm_dir / "replay_trial"
     dest.mkdir(parents=True)
     (dest / f"{opaque_unit_id(unit.unit_id)}.json").write_text(
         json.dumps(
@@ -214,11 +213,15 @@ def test_trial_pipeline_replays_raw_llm_without_calling_provider(tmp_path) -> No
         skip_llm_when_sast_hits=False,
         use_llm_if_available=True,
     )
-    try:
-        trial = trial_pipeline("replay_trial", units, "research_test", "research", pipeline, "replay")
-    finally:
-        eval_mod.REPLAY_RAW_LLM = False
-        eval_mod.RAW_LLM_DIR = None
+    trial = trial_pipeline(
+        "replay_trial",
+        units,
+        "research_test",
+        "research",
+        pipeline,
+        "replay",
+        context=context,
+    )
     assert trial["status"] == "ok"
     assert trial["replayed_n"] == 1
     assert trial["n_scored"] == 1

@@ -2,7 +2,6 @@
 
 import re
 import subprocess
-from pathlib import Path
 
 from cwe_vuln.config import repo_root
 

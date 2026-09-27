@@ -1,0 +1,70 @@
+:root {
+  color-scheme: light;
+  --ink: #1c1915;
+  --muted: #5c564c;
+  --paper: #f4efe6;
+  --card: #fffaf3;
+  --line: #d9d0c3;
+  --accent: #8f3d2c;
+  --ok: #1f6b45;
+  --warn: #8a5a12;
+  --bad: #8f2d2d;
+  --mono: "IBM Plex Mono", "ui-monospace", monospace;
+  --sans: "Source Serif 4", "Iowan Old Style", Palatino, serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.45;
+}
+.top, main { max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.25rem 0; }
+h1 { font-size: 2rem; margin: 0; letter-spacing: -0.03em; }
+h2 { font-size: 1.15rem; margin: 1.25rem 0 0.5rem; }
+.eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; color: var(--accent); }
+.lede, .note { color: var(--muted); }
+.tabs { display: flex; gap: 0.4rem; max-width: 1100px; margin: 1rem auto 0; padding: 0 1.25rem; }
+.tabs button, button, select, input, textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.4rem 0.7rem;
+}
+.tabs button.active, button[type="submit"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.panel { padding-bottom: 2rem; }
+.hidden { display: none; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.7rem; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+.card strong { display: block; font-size: 0.92rem; }
+.card .status { font-family: var(--mono); font-size: 0.78rem; }
+.status-ok { color: var(--ok); }
+.status-partial, .status-skipped, .status-not_run, .status-submitted { color: var(--warn); }
+.status-failed { color: var(--bad); }
+form { display: grid; gap: 0.7rem; max-width: 640px; }
+label { display: grid; gap: 0.25rem; font-size: 0.92rem; }
+label.check { display: flex; align-items: center; gap: 0.5rem; }
+.command, pre, .detail {
+  background: #221e1a;
+  color: #f3eadf;
+  padding: 0.8rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  white-space: pre-wrap;
+}
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { border-bottom: 1px solid var(--line); text-align: left; padding: 0.35rem 0.4rem; vertical-align: top; }
+code { font-family: var(--mono); font-size: 0.85em; }

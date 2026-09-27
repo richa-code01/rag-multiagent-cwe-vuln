@@ -25,7 +25,9 @@ src/cwe_vuln/
   reasoner/              Reasoner.reason → schema-valid ReasoningResult (LLM default; template ablation)
   validator/             schema + KB + cited lines + JSON consistency (SAST disagreement = warning)
   orchestrator/          Pipeline wiring + SAST-then-LLM routing + ports
-  framework/             cwe-vuln-pipeline CLI + cwe-vuln-eval research runner
+  framework/             trials, summaries, thesis runner, cwe-vuln-pipeline and cwe-vuln-eval
+  api/                   localhost FastAPI operator (cwe-vuln-ui)
+  web/                   console templates and static assets
   cli/                   baseline, knowledge, retrieval, schema, evidence entrypoints
 ```
 

@@ -49,7 +49,6 @@ Do **not** tell the advisor this is SOTA, Juliet/OWASP numbers, 100% novel, or t
 - Research evaluation is on an **authored expanded corpus** (36 units, 24 held-out traps, 48 queries) — **not** the Juliet table
 - Juliet Java v1.3 mapped subset SAST n=20728 F1=0.316 is kept. The n=72 Groq F1=0.733 row is **retracted**. Replacement: rebuilt single-file pair sample, pair accuracy **9/17 = 0.529** (CI [0.294, 0.765]) on complete pairs; n_scored=35/36 TPD; binary F1=0.789 ([thesis/05-results.md](thesis/05-results.md)). First C2 sample included multi-file `_NNa` variants and is archived; later pair pools exclude them.
 - A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
-- A3 retrieval has a MiniLM dense path; TF-IDF remains the lexical baseline and the offline fallback
 - `LLMReasoner` is the default live composer; `TemplateReasoner` is `--offline` / `--ablation template` only
 - SAST and template F1=0 on research_test is the **contrast**, not the deployed system
 - Trial-and-error kept: label leak, javadoc regex, retired `llama-3.1-8b-instant`

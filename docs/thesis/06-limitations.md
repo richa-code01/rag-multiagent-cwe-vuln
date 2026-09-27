@@ -8,5 +8,5 @@
 - `final_confidence` is uncalibrated and does not route.
 - Cited-line pass is reported raw **and** indent-normalized; we do not rewrite spans.
 - Single-rater C8 not run; no inter-rater statistics.
-- No HTTP API, auth, or multi-tenant service (see HLD gaps).
+- Localhost operator console only (`cwe-vuln-ui` on 127.0.0.1). No auth and no multi-tenant service (see HLD gaps).
 - RAG benefit on Juliet is unproven until C4 `llm_no_retrieval_juliet_pairs` exists.
